@@ -1,0 +1,7 @@
+# Yerel makine kalıntıları
+Thumbs.db
+.DS_Store
+
+# Düzenleyici
+.vscode/
+.idea/

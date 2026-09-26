@@ -1,0 +1,1752 @@
+<title>Mailhanem Operatör</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  /* Müşteri paneliyle aynı dil, tek tema — her koşulda beyaz. */
+  --yuzey:#FFFFFF; --yuzey2:#F4F6F9;
+  --cizgi:#E6EAEF; --cizgi2:#D4DAE2;
+  --metin:#16202B; --metin2:#485664; --soluk:#64717F;
+  --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
+  --olumlu:#0F7154; --olm-yum:#E3F2EC;
+  --uyari:#8A5A07;  --uyr-yum:#FBF1DF;
+  --kritik:#B23A40; --krt-yum:#FBE9EA;
+  --serit:#12314F; --serit-metin:#A8C2DA;
+  --r:11px; --r2:8px;
+  --ui:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+}
+/* ── tarayıcı yüzeyleri: seçim, imleç, kaydırma çubuğu ── */
+::selection{background:var(--mrk-yum);color:var(--mrk-metin)}
+html{scrollbar-color:var(--cizgi2) transparent;scrollbar-width:thin}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--cizgi2);border-radius:6px;
+  border:3px solid var(--yuzey);background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--soluk);background-clip:padding-box}
+::-webkit-scrollbar-corner{background:transparent}
+input,textarea,select{caret-color:var(--murekkep)}
+input::placeholder{color:var(--soluk)}
+.ikn{flex:none;display:block}
+
+/* tek yetkili hareket */
+@keyframes yerlesir{from{opacity:.45;transform:translateY(5px)}to{opacity:1;transform:none}}
+*{box-sizing:border-box}
+body{background:var(--yuzey);color-scheme:light;color:var(--metin);font-family:var(--ui);
+  font-size:14px;line-height:1.5;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--murekkep);outline-offset:2px;border-radius:5px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}
+h1,h2,h3,p,dl,dd,ul{margin:0}
+
+.uygulama{height:100dvh;min-height:640px;display:grid;grid-template-rows:auto 1fr}
+
+.serit{background:var(--serit);color:var(--serit-metin);display:flex;align-items:center;
+  gap:11px;padding:9px 16px;font-size:12px}
+.serit b{color:#fff;font-weight:700;letter-spacing:.1em;font-size:11px;text-transform:uppercase}
+.serit .ayrac{width:1px;height:14px;background:rgba(255,255,255,.2)}
+.serit .ortam{margin-left:auto;display:flex;align-items:center;gap:6px;font-family:var(--mono);font-size:11px}
+.serit .ortam i{width:6px;height:6px;border-radius:50%;background:#3DD68C;display:block}
+
+.govde{display:grid;grid-template-columns:232px 1fr;overflow:hidden}
+.yannav{border-right:1px solid var(--cizgi);padding:18px 12px 14px;
+  display:flex;flex-direction:column;overflow-y:auto}
+.nav-marka{display:flex;align-items:center;gap:10px;padding:0 8px;margin-bottom:20px}
+.nav-marka .amblem{width:34px;height:34px;border-radius:9px;flex:none;background:var(--serit);
+  display:grid;place-items:center;color:#fff;font-size:14px}
+.nav-marka b{font-size:15px;font-weight:700;letter-spacing:-.026em;display:block}
+.nav-marka small{color:var(--soluk);font-size:11.5px}
+.nav-bolum{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--soluk);padding:0 11px;margin:16px 0 6px}
+.nav-oge{display:flex;align-items:center;gap:10px;width:100%;text-align:left;padding:8px 11px;
+  border:0;background:none;border-radius:var(--r2);cursor:pointer;color:var(--metin2);
+  font-size:13.5px;font-weight:500;margin-bottom:2px;transition:background .12s,color .12s}
+.nav-oge:hover{background:var(--yuzey2);color:var(--metin)}
+.nav-oge.aktif{background:var(--mrk-yum);color:var(--mrk-metin);font-weight:600}
+.nav-oge .ikon{width:16px;text-align:center;font-size:13px;flex:none;opacity:.85}
+.nav-oge .et{flex:1}
+.nav-oge .sayi{font-family:var(--mono);font-size:11px;font-weight:600;padding:1px 7px;
+  border-radius:9px;background:var(--yuzey2);color:var(--soluk)}
+.nav-oge .sayi.dikkat{background:var(--krt-yum);color:var(--kritik)}
+.nav-alt{margin-top:auto;padding:12px 11px 0;border-top:1px solid var(--cizgi);
+  display:flex;align-items:center;gap:10px}
+.nav-alt b{display:block;font-size:13px;font-weight:600}
+.nav-alt small{color:var(--soluk);font-size:11.5px}
+.av{border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;
+  flex:none;width:30px;height:30px;font-size:11.5px;background:var(--serit)}
+.av.kare{border-radius:8px;width:32px;height:32px;font-size:12px;letter-spacing:-.02em}
+
+.sahne{overflow-y:auto}
+.sayfa{padding:24px 28px 46px;max-width:1320px;animation:yerlesir .22s cubic-bezier(.16,1,.3,1)}
+.sayfa-ust{display:flex;align-items:flex-start;gap:14px;margin-bottom:20px}
+.sayfa-ust h1{font-size:23px;font-weight:700;letter-spacing:-.035em}
+.sayfa-ust p{color:var(--soluk);font-size:13.5px;margin-top:3px}
+.ornek{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--uyari);background:var(--uyr-yum);padding:4px 8px;border-radius:5px;flex:none}
+
+/* ── istatistik + eğilim ───────────────────── */
+.kartlar{display:grid;grid-template-columns:repeat(auto-fit,minmax(214px,1fr));gap:13px;margin-bottom:22px}
+.skart{padding:14px 16px;border:1px solid var(--cizgi);border-radius:var(--r)}
+.skart dt{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  color:var(--soluk);margin-bottom:6px}
+.skart .deger{display:flex;align-items:flex-end;gap:9px}
+.skart dd{font-family:var(--mono);font-size:24px;font-weight:600;letter-spacing:-.04em;
+  line-height:1;font-variant-numeric:tabular-nums}
+.kivilcim{margin-left:auto;flex:none;line-height:0}
+.skart .not{font-size:12px;color:var(--soluk);margin-top:8px;display:flex;align-items:center;gap:5px}
+.yon{font-weight:700;font-family:var(--ui)}
+.yon.iyi{color:var(--olumlu)} .yon.kotu{color:var(--kritik)}
+
+.bolum{font-size:15px;font-weight:700;letter-spacing:-.024em;margin:0 0 11px;
+  display:flex;align-items:center;gap:9px}
+.bolum .sayi{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--soluk);
+  background:var(--yuzey2);padding:2px 8px;border-radius:9px}
+.bolum .aciklayici{margin-left:auto;font-size:12.5px;font-weight:500;color:var(--soluk)}
+
+/* ── iş kuyruğu ────────────────────────────── */
+.triyaj{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
+.tsatir{display:flex;align-items:center;gap:13px;padding:13px 16px;border:1px solid var(--cizgi);
+  border-radius:var(--r);background:var(--yuzey)}
+.tsatir.kritik{background:var(--krt-yum);border-color:#F0CFD1}
+.tsatir.uyari{background:var(--uyr-yum);border-color:#EBD9B4}
+.tsatir.bitti{opacity:.55}
+.tsatir .ne{flex:1;min-width:0}
+.tsatir .firma{display:block;font-size:14px;font-weight:600;letter-spacing:-.016em}
+.tsatir .aciklama{display:block;font-size:12.5px;color:var(--metin2);margin-top:2px}
+.tsatir .aciklama code{font-family:var(--mono);font-size:11.5px}
+.tsatir .sure{font-family:var(--mono);font-size:11.5px;color:var(--soluk);flex:none}
+.tsatir.kritik .sure{color:var(--kritik);font-weight:600}
+/* ── demo talebi kuyruğu ── */
+.talep-satir{display:flex;align-items:flex-start;gap:13px;padding:14px 16px;
+  border:1px solid var(--cizgi);border-radius:var(--r);background:var(--yuzey)}
+.talep-satir.yeni{background:var(--uyr-yum);border-color:#EBD9B4}
+.talep-satir.kapandi{opacity:.58}
+.talep-satir .av.kare{margin-top:1px}
+.talep-ne{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.talep-kim{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+.talep-kim b{font-size:14.5px;font-weight:600;letter-spacing:-.018em}
+.talep-kim .ad{font-size:13px;color:var(--metin2)}
+.talep-bilgi{font-size:12.5px;color:var(--metin2);display:flex;align-items:center;
+  gap:6px;flex-wrap:wrap}
+.talep-bilgi a{color:var(--mrk-metin);text-decoration:none;
+  text-decoration-line:underline;text-decoration-color:var(--cizgi2);text-underline-offset:2px}
+.talep-bilgi a:hover{text-decoration-color:var(--murekkep)}
+.talep-bilgi .ayrac{color:var(--cizgi2)}
+.talep-not{display:flex;align-items:flex-start;gap:7px;margin-top:3px;
+  font-size:12.5px;line-height:1.5;color:var(--metin2);
+  padding:7px 10px;border-radius:var(--r2);background:var(--yuzey2)}
+.talep-satir.yeni .talep-not{background:rgba(255,255,255,.72)}
+.talep-not .ikn{margin-top:2px;color:var(--soluk)}
+.talep-satir .sure{font-family:var(--mono);font-size:11.5px;color:var(--soluk);
+  flex:none;padding-top:4px;width:106px;text-align:right}
+.talep-satir .rozet{margin-top:2px}
+.talep-eylem{display:flex;align-items:center;gap:7px;flex:none;padding-top:1px}
+.talep-suz{margin-left:auto;display:inline-flex;gap:2px;padding:2px;
+  background:var(--yuzey2);border-radius:var(--r2)}
+.talep-suz button{border:0;cursor:pointer;background:transparent;color:var(--metin2);
+  font:600 12.5px/1 var(--ui);padding:6px 11px;border-radius:6px}
+.talep-suz button.etkin{background:var(--yuzey);color:var(--metin);
+  box-shadow:0 1px 2px rgba(22,32,43,.12)}
+.talep-bos{display:flex;flex-direction:column;align-items:center;gap:6px;
+  padding:44px 20px;border:1px dashed var(--cizgi2);border-radius:var(--r);
+  color:var(--soluk);text-align:center}
+.talep-bos .ikn{color:var(--olumlu)}
+.talep-bos b{font-size:14.5px;color:var(--metin);letter-spacing:-.016em}
+.talep-bos span{font-size:13px}
+.r-kapali{background:var(--yuzey2);color:var(--soluk)}
+@media (max-width:920px){
+  .talep-satir{flex-wrap:wrap}
+  .talep-satir .sure{width:auto;text-align:left;padding-top:0}
+  .talep-eylem{width:100%;padding-top:4px}
+}
+
+.rozet{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 8px;border-radius:4px;flex:none}
+.r-kritik{background:var(--kritik);color:#fff}
+.r-uyari{background:var(--uyr-yum);color:var(--uyari)}
+.r-bilgi{background:var(--mrk-yum);color:var(--mrk-metin)}
+.r-bitti{background:var(--olm-yum);color:var(--olumlu)}
+
+.dugme{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r2);
+  border:1px solid var(--cizgi2);background:var(--yuzey);font-size:13px;font-weight:600;
+  cursor:pointer;letter-spacing:-.01em;white-space:nowrap;flex:none;
+  transition:background .12s,border-color .12s}
+.dugme:hover{background:var(--yuzey2);border-color:var(--soluk)}
+.dugme.ana{background:var(--murekkep);border-color:var(--murekkep);color:#fff}
+.dugme.ana:hover{filter:brightness(1.12)}
+.dugme.ufak{padding:5px 10px;font-size:12.5px}
+.dugme.sade{border-color:transparent;color:var(--soluk);padding:5px 8px;font-size:12.5px}
+.dugme.sade:hover{background:var(--yuzey2);color:var(--metin);border-color:transparent}
+
+/* ── araç çubuğu ───────────────────────────── */
+.arac{display:flex;align-items:center;gap:9px;margin-bottom:11px}
+.arama{position:relative;flex:none}
+.arama input{width:230px;padding:7px 11px 7px 30px;border:1px solid var(--cizgi);
+  border-radius:var(--r2);background:var(--yuzey2);font-size:13px}
+.arama svg{position:absolute;left:10px;top:9px;color:var(--soluk)}
+.sirala-not{margin-left:auto;font-size:12.5px;color:var(--soluk)}
+
+/* ── tablo ─────────────────────────────────── */
+.tablo-sar{border:1px solid var(--cizgi);border-radius:var(--r);overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px;min-width:1020px}
+th{text-align:left;font-size:11px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--soluk);padding:0;border-bottom:1px solid var(--cizgi);white-space:nowrap;
+  background:var(--yuzey2)}
+th button{width:100%;text-align:inherit;padding:11px 14px;border:0;background:none;
+  font:inherit;color:inherit;cursor:pointer;display:flex;align-items:center;gap:5px}
+th.sag button{justify-content:flex-end}
+th button:hover{color:var(--metin)}
+th button .ok{opacity:0;display:inline-flex;transition:transform .15s}
+th button.etkin .ok{transform:rotate(90deg)}
+th button.etkin.ters .ok{transform:rotate(-90deg)}
+th button.etkin{color:var(--mrk-metin)}
+th button.etkin .ok{opacity:1}
+th.dokunma{padding:11px 14px}
+th.sag,td.sag{text-align:right}
+td{padding:11px 14px;border-bottom:1px solid var(--cizgi);vertical-align:middle}
+tr:last-child td{border-bottom:0}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--yuzey2)}
+tbody tr.secili{background:var(--mrk-yum)}
+.mus{display:flex;align-items:center;gap:10px}
+.mus b{font-weight:600;letter-spacing:-.014em;display:block}
+.mus small{color:var(--soluk);font-size:11.5px;font-family:var(--mono)}
+.sayi-h{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.plan{font-size:11px;font-weight:600;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.p-kurumsal{background:var(--mrk-yum);color:var(--mrk-metin)}
+.p-pro{background:var(--olm-yum);color:var(--olumlu)}
+.p-baslangic{background:var(--yuzey2);color:var(--soluk)}
+.p-deneme{background:var(--uyr-yum);color:var(--uyari)}
+
+/* sağlık skoru — renk tek başına anlam taşımaz, sayı hep yanında */
+.saglik{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end}
+.saglik b{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums;
+  min-width:22px;text-align:right}
+.saglik .ray{width:44px;height:6px;background:var(--yuzey2);border-radius:3px;overflow:hidden;flex:none}
+.saglik .ray i{display:block;height:100%;border-radius:3px}
+.s-iyi b{color:var(--olumlu)}   .s-iyi .ray i{background:var(--olumlu)}
+.s-orta b{color:var(--uyari)}   .s-orta .ray i{background:var(--uyari)}
+.s-kotu b{color:var(--kritik)}  .s-kotu .ray i{background:var(--kritik)}
+
+.marj{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+.marj.dusuk{color:var(--uyari)}
+.marj.eksi{color:var(--kritik)}
+.durum-n{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;white-space:nowrap}
+.durum-n i{width:7px;height:7px;border-radius:50%;flex:none;background:var(--olumlu)}
+.durum-n.kotu i{background:var(--kritik)}
+.durum-n.bekle i{background:var(--uyari)}
+
+.dip{font-size:12.5px;color:var(--soluk);margin-top:13px;max-width:76ch;line-height:1.55}
+.dip b{color:var(--metin2)}
+
+/* ── yan panel ─────────────────────────────── */
+.perde{position:fixed;inset:0;background:rgba(16,26,38,.4);z-index:20}
+.cekmece{position:fixed;top:0;right:0;bottom:0;width:min(520px,100%);background:var(--yuzey);
+  box-shadow:-14px 0 40px -14px rgba(16,26,38,.35);z-index:21;overflow-y:auto;
+  display:flex;flex-direction:column}
+.c-ust{display:flex;align-items:flex-start;gap:12px;padding:20px 22px 16px;
+  border-bottom:1px solid var(--cizgi);position:sticky;top:0;background:var(--yuzey);z-index:2}
+.c-ust h2{font-size:18px;font-weight:700;letter-spacing:-.03em}
+.c-ust .alt{color:var(--soluk);font-size:12.5px;margin-top:3px;font-family:var(--mono)}
+.c-kapat{margin-left:auto;border:0;background:none;font-size:19px;color:var(--soluk);
+  cursor:pointer;line-height:1;padding:2px 5px;flex:none}
+.c-kapat:hover{color:var(--metin)}
+.c-ic{padding:18px 22px 28px;display:flex;flex-direction:column;gap:22px}
+.c-baslik{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;
+  color:var(--soluk);margin-bottom:10px}
+
+.skor-ust{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.skor-buyuk{font-family:var(--mono);font-size:34px;font-weight:700;letter-spacing:-.04em;line-height:1}
+.skor-yorum{font-size:13px;color:var(--metin2)}
+.kirilim{display:flex;flex-direction:column;gap:9px}
+.kir{display:grid;grid-template-columns:112px 1fr 58px;align-items:center;gap:10px;font-size:12.5px}
+.kir .ad{color:var(--metin2)}
+.kir .ray{height:6px;background:var(--yuzey2);border-radius:3px;overflow:hidden}
+.kir .ray i{display:block;height:100%;background:var(--murekkep);border-radius:3px}
+.kir .puan{font-family:var(--mono);font-size:12px;text-align:right;color:var(--soluk);
+  font-variant-numeric:tabular-nums}
+
+.hesap-satir{display:flex;align-items:baseline;gap:10px;padding:8px 0;
+  border-bottom:1px dashed var(--cizgi);font-size:13px}
+.hesap-satir:last-child{border-bottom:0}
+.hesap-satir .ad{color:var(--metin2)}
+.hesap-satir .aciklayici{font-size:11.5px;color:var(--soluk)}
+.hesap-satir .tut{margin-left:auto;font-family:var(--mono);font-weight:600;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.hesap-satir.sonuc{border-top:2px solid var(--metin);border-bottom:0;margin-top:4px;padding-top:11px}
+.hesap-satir.sonuc .ad{font-weight:700;color:var(--metin)}
+.hesap-satir.sonuc .tut{font-size:16px}
+.eksi{color:var(--kritik)}
+
+.notlar{display:flex;flex-direction:column;gap:9px}
+.not-k{padding:11px 13px;background:var(--yuzey2);border-radius:var(--r2);font-size:13px;
+  color:var(--metin2)}
+.not-k .ust{display:flex;align-items:baseline;gap:8px;margin-bottom:3px}
+.not-k .kim{font-size:11.5px;font-weight:600;color:var(--metin)}
+.not-k .vakit{font-family:var(--mono);font-size:11px;color:var(--soluk);margin-left:auto}
+.not-ekle{display:flex;gap:8px;margin-top:4px}
+.not-ekle input{flex:1;padding:8px 11px;border:1px solid var(--cizgi2);border-radius:var(--r2);
+  font-size:13px;background:var(--yuzey)}
+.c-eylem{display:flex;gap:9px;flex-wrap:wrap;padding-top:4px}
+
+/* ── sistem ve anahtarlar ──────────────────── */
+.kural-kutu{display:flex;gap:13px;padding:15px 17px;background:var(--mrk-yum);
+  border-radius:var(--r);margin-bottom:20px;max-width:78ch}
+.kural-kutu .im{font-size:17px;color:var(--mrk-metin);flex:none;line-height:1.3}
+.kural-kutu h3{font-size:13.5px;font-weight:700;color:var(--mrk-metin);margin-bottom:5px;
+  letter-spacing:-.014em}
+.kural-kutu p{font-size:13px;color:var(--metin2);line-height:1.55}
+.kural-kutu code{font-family:var(--mono);font-size:12px;background:var(--yuzey);
+  padding:1px 5px;border-radius:4px}
+
+.ent{border:1px solid var(--cizgi);border-radius:var(--r);margin-bottom:11px}
+.ent.uyari{border-color:#EBD9B4}
+.ent-ust{display:flex;align-items:center;gap:12px;padding:14px 16px}
+.ent-ikon{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;
+  font-size:15px;flex:none;background:var(--mrk-yum);color:var(--mrk-metin)}
+.ent.uyari .ent-ikon{background:var(--uyr-yum);color:var(--uyari)}
+.ent-bilgi{flex:1;min-width:0}
+.ent-ad{display:block;font-size:14px;font-weight:600;letter-spacing:-.016em}
+.ent-ne{display:block;font-size:12.5px;color:var(--soluk);margin-top:1px}
+.ent-env{font-family:var(--mono);font-size:11.5px;color:var(--metin2);
+  background:var(--yuzey2);padding:4px 9px;border-radius:5px;flex:none}
+.ent-durum{display:inline-flex;align-items:center;gap:6px;font-size:12.5px;font-weight:600;
+  flex:none;white-space:nowrap}
+.ent-durum i{width:7px;height:7px;border-radius:50%;background:var(--olumlu);flex:none}
+.ent-durum.uyari{color:var(--uyari)} .ent-durum.uyari i{background:var(--uyari)}
+.ent-olcum{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:1px;
+  background:var(--cizgi);border-top:1px solid var(--cizgi);border-radius:0 0 var(--r) var(--r);
+  overflow:hidden}
+.ent-olcum div{background:var(--yuzey);padding:9px 16px}
+.ent-olcum dt{font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--soluk)}
+.ent-olcum dd{font-family:var(--mono);font-size:13px;font-weight:600;letter-spacing:-.03em;
+  margin-top:1px;font-variant-numeric:tabular-nums}
+.ent-not{padding:0 16px 13px;font-size:12.5px;color:var(--uyari)}
+
+.kod{background:#0F2237;color:#C7DBEC;font-family:var(--mono);font-size:12.5px;
+  padding:15px 17px;border-radius:var(--r);overflow-x:auto;line-height:1.7;
+  white-space:pre;margin-top:11px}
+.kod .yorum{color:#6E8CA8}
+.kod .ad{color:#8FD1B0}
+
+/* ── ortak panel kutusu ────────────────────── */
+.pizgara{display:grid;gap:14px;margin-bottom:22px}
+.p2{grid-template-columns:1fr 1fr}
+.p32{grid-template-columns:1.45fr 1fr}
+@media (max-width:1080px){.p2,.p32{grid-template-columns:1fr}}
+.kt{border:1px solid var(--cizgi);border-radius:var(--r);display:flex;flex-direction:column;min-width:0}
+.kt-ust{display:flex;align-items:center;gap:9px;padding:14px 17px 0}
+.kt-ad{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--soluk)}
+.kt-not{margin-left:auto;font-family:var(--mono);font-size:11px;color:var(--soluk)}
+.kt-ic{padding:16px 17px;flex:1}
+
+/* ── bağlantı sağlığı ──────────────────────── */
+.kutu-satir{display:flex;align-items:center;gap:12px;padding:11px 16px;
+  border-bottom:1px solid var(--cizgi)}
+.kutu-satir:last-child{border-bottom:0}
+.kutu-satir.kopuk{background:var(--krt-yum)}
+.kutu-satir.yavas{background:var(--uyr-yum)}
+.kutu-satir .adres{font-family:var(--mono);font-size:12.5px;font-weight:500;
+  letter-spacing:-.025em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis}
+.kutu-satir .frm{font-size:12.5px;color:var(--soluk);width:150px;flex:none;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.kutu-satir .sag-ad{font-size:12px;color:var(--soluk);width:132px;flex:none}
+.kutu-satir .gec{font-family:var(--mono);font-size:12px;width:82px;text-align:right;flex:none;
+  font-variant-numeric:tabular-nums}
+.kutu-satir.kopuk .gec{color:var(--kritik);font-weight:600}
+.kutu-satir.yavas .gec{color:var(--uyari);font-weight:600}
+.nb{width:8px;height:8px;border-radius:50%;flex:none;background:var(--olumlu)}
+.nb.kopuk{background:var(--kritik)} .nb.yavas{background:var(--uyari)}
+.sag-satir{display:grid;grid-template-columns:1fr 54px 1fr 62px;align-items:center;gap:10px;
+  padding:9px 0;border-bottom:1px solid var(--cizgi);font-size:13px}
+.sag-satir:last-child{border-bottom:0}
+.sag-satir .ray{height:6px;background:var(--yuzey2);border-radius:3px;overflow:hidden}
+.sag-satir .ray i{display:block;height:100%;border-radius:3px;background:var(--kritik)}
+.sag-satir .adet{font-family:var(--mono);font-size:12px;color:var(--soluk);text-align:right}
+.sag-satir .oran{font-family:var(--mono);font-size:12.5px;font-weight:600;text-align:right;
+  font-variant-numeric:tabular-nums}
+
+/* ── maliyet ───────────────────────────────── */
+.kaz{display:flex;align-items:center;gap:14px;padding:15px 17px;background:var(--olm-yum);
+  border-radius:var(--r);margin-bottom:14px}
+.kaz > b{font-family:var(--mono);font-size:26px;font-weight:700;color:var(--olumlu);
+  letter-spacing:-.04em;line-height:1;flex:none}
+.kaz .ne{font-size:13px;color:var(--olumlu);line-height:1.5}
+.kaz .ne b{font:inherit;font-weight:700;color:inherit}
+.mal-satir{display:flex;align-items:baseline;gap:10px;padding:9px 0;
+  border-bottom:1px dashed var(--cizgi);font-size:13px}
+.mal-satir:last-child{border-bottom:0}
+.mal-satir .ad{color:var(--metin2)}
+.mal-satir .ek{font-size:11.5px;color:var(--soluk);font-family:var(--mono)}
+.mal-satir .tut{margin-left:auto;font-family:var(--mono);font-weight:600;
+  font-variant-numeric:tabular-nums;white-space:nowrap}
+.mal-satir.top{border-top:2px solid var(--metin);border-bottom:0;margin-top:5px;padding-top:11px}
+.mal-satir.top .ad{font-weight:700;color:var(--metin)}
+.mal-satir.top .tut{font-size:15px}
+
+/* ── abonelik şelalesi ─────────────────────── */
+.selale{display:flex;align-items:flex-end;gap:6px;height:150px;padding-top:8px}
+.sel{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;
+  gap:6px;height:100%}
+.sel .cub{width:100%;border-radius:3px;min-height:3px}
+.sel .deg{font-family:var(--mono);font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.sel .et{font-size:11px;color:var(--soluk);text-align:center;line-height:1.3}
+.sel.baz .cub{background:var(--soluk)} .sel.arti .cub{background:var(--olumlu)}
+.sel.eksi .cub{background:var(--kritik)} .sel.son .cub{background:var(--murekkep)}
+.sel.arti .deg{color:var(--olumlu)} .sel.eksi .deg{color:var(--kritik)}
+.tak-satir{display:flex;align-items:center;gap:11px;padding:10px 0;
+  border-bottom:1px solid var(--cizgi);font-size:13px}
+.tak-satir:last-child{border-bottom:0}
+.tak-satir .gun{font-family:var(--mono);font-size:12px;color:var(--soluk);width:58px;flex:none}
+.tak-satir .frm{flex:1;font-weight:500}
+.tak-satir .tut{font-family:var(--mono);font-weight:600;font-variant-numeric:tabular-nums}
+
+/* ── sistem günlüğü ────────────────────────── */
+.gun-suz{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.gun-suz button{padding:5px 11px;border:1px solid var(--cizgi);background:var(--yuzey);
+  border-radius:6px;font-size:12.5px;font-weight:600;color:var(--soluk);cursor:pointer}
+.gun-suz button:hover{background:var(--yuzey2);color:var(--metin)}
+.gun-suz button.aktif{background:var(--mrk-yum);color:var(--mrk-metin);border-color:transparent}
+.olay{display:flex;align-items:flex-start;gap:12px;padding:11px 16px;
+  border-bottom:1px solid var(--cizgi);font-size:13px}
+.olay:last-child{border-bottom:0}
+.olay.vurgu{background:var(--uyr-yum)}
+.olay .vakit{font-family:var(--mono);font-size:11.5px;color:var(--soluk);width:84px;flex:none;
+  font-variant-numeric:tabular-nums}
+.olay .tur{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;
+  padding:3px 7px;border-radius:4px;width:92px;text-align:center;flex:none}
+.t-giris{background:var(--uyr-yum);color:var(--uyari)}
+.t-senkron{background:var(--mrk-yum);color:var(--mrk-metin)}
+.t-hata{background:var(--krt-yum);color:var(--kritik)}
+.t-gonderim{background:var(--olm-yum);color:var(--olumlu)}
+.t-yonetim{background:var(--yuzey2);color:var(--soluk)}
+.olay .ic{flex:1;min-width:0}
+.olay .ic b{font-weight:600}
+.olay .ic code{font-family:var(--mono);font-size:11.5px;color:var(--metin2)}
+.olay .kim{font-size:11.5px;color:var(--soluk);flex:none;white-space:nowrap}
+
+.kural-kutu > .ikn{color:var(--mrk-metin);flex:none;margin-top:1px}
+.kutu-uyari .ikn,.giris-uyari .ikn{flex:none;margin-top:1px}
+.giris-uyari{display:flex;gap:9px}
+.ent-ikon .ikn,.amblem .ikn,.cikis .ikn{color:currentColor}
+.c-kapat{display:grid;place-items:center}
+.serit .ikn{color:currentColor}
+.yakinda{display:grid;place-items:center;padding:70px 30px}
+.yakinda-ic{max-width:460px;text-align:center}
+.yakinda h2{font-size:19px;font-weight:700;letter-spacing:-.03em;margin-bottom:7px}
+.yakinda p{color:var(--soluk);font-size:13.5px;margin-bottom:16px}
+.yakinda ul{text-align:left;border:1px solid var(--cizgi);border-radius:var(--r);
+  padding:15px 17px 15px 33px;font-size:13px;color:var(--metin2);
+  display:flex;flex-direction:column;gap:6px}
+
+.secenek{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--cizgi);
+  border-radius:var(--r2);cursor:pointer;margin-bottom:9px;background:var(--yuzey);
+  text-align:left;width:100%;transition:border-color .12s,background .12s}
+.secenek:hover{background:var(--yuzey2)}
+.secenek.secili{border-color:var(--murekkep);background:var(--mrk-yum)}
+.secenek .kutucuk{width:17px;height:17px;border-radius:50%;border:2px solid var(--cizgi2);
+  flex:none;display:grid;place-items:center}
+.secenek.secili .kutucuk{border-color:var(--murekkep)}
+.secenek.secili .kutucuk::after{content:"";width:8px;height:8px;border-radius:50%;
+  background:var(--murekkep)}
+.secenek b{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.014em}
+.secenek small{display:block;color:var(--soluk);font-size:12px;margin-top:1px}
+.giris{position:fixed;inset:0;background:var(--yuzey);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:22px;padding:24px;z-index:50}
+.giris-kart{width:min(392px,100%);border:1px solid var(--cizgi);border-radius:14px;padding:28px 26px}
+.giris-marka{display:flex;align-items:center;gap:11px;margin-bottom:22px}
+.giris-marka .amblem{width:38px;height:38px;border-radius:11px;flex:none;background:var(--serit);
+  display:grid;place-items:center;color:#fff;font-size:17px}
+.giris-marka b{display:block;font-size:16px;font-weight:700;letter-spacing:-.028em}
+.giris-marka small{color:var(--soluk);font-size:11.5px}
+.giris-kart h1{font-size:20px;font-weight:700;letter-spacing:-.03em;margin-bottom:6px}
+.giris-kart p{color:var(--metin2);font-size:13.5px;line-height:1.55;margin-bottom:18px}
+.form-satir{margin-bottom:13px}
+.form-satir label{display:block;font-size:12px;font-weight:600;color:var(--metin2);margin-bottom:5px}
+.form-satir input{width:100%;padding:9px 12px;border:1px solid var(--cizgi2);
+  border-radius:var(--r2);background:var(--yuzey);font-size:13.5px}
+.form-satir input[readonly]{background:var(--yuzey2);color:var(--soluk)}
+.dugme.genis{width:100%;justify-content:center}
+.giris-uyari{margin-top:16px;padding:11px 13px;background:var(--uyr-yum);color:var(--uyari);
+  border-radius:var(--r2);font-size:12.5px;line-height:1.5}
+.giris-dip{font-size:12px;color:var(--soluk)}
+.cikis{border:0;background:none;color:var(--soluk);font-size:15px;cursor:pointer;
+  padding:4px 6px;border-radius:6px;flex:none}
+.cikis:hover{background:var(--yuzey2);color:var(--kritik)}
+
+.modal-perde{position:fixed;inset:0;background:rgba(16,26,38,.45);display:grid;place-items:center;
+  padding:24px;z-index:30}
+.modal{background:var(--yuzey);border-radius:14px;width:min(480px,100%);padding:22px;
+  box-shadow:0 24px 60px -12px rgba(16,26,38,.4)}
+.modal h2{font-size:17px;font-weight:700;letter-spacing:-.028em;margin-bottom:6px}
+.modal p{color:var(--metin2);font-size:13.5px;margin-bottom:14px}
+.kutu-uyari{background:var(--uyr-yum);color:var(--uyari);padding:12px 14px;border-radius:var(--r2);
+  font-size:12.5px;margin-bottom:16px;display:flex;gap:9px}
+.modal .eylem{display:flex;gap:9px;justify-content:flex-end}
+
+#bildirim{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--metin);
+  color:#fff;padding:10px 17px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;
+  pointer-events:none;transition:opacity .18s,transform .18s;z-index:40}
+#bildirim.gorunur{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:900px){
+  .govde{grid-template-columns:62px 1fr}
+  .nav-oge .et,.nav-oge .sayi,.nav-marka div,.nav-alt .kim{display:none}
+  .nav-oge{justify-content:center;padding:10px 0}
+  .nav-marka{justify-content:center;padding:0}
+  .sayfa{padding:18px 14px 40px}
+  .arama input{width:150px}
+}
+</style>
+
+<div class="uygulama">
+  <div class="serit">
+    <b>Operatör paneli</b><span class="ayrac"></span>
+    <span>Mailhanem · servis yönetimi</span>
+    <span class="ortam"><i></i>canlı ortam</span>
+  </div>
+  <div class="govde">
+    <nav class="yannav">
+      <div class="nav-marka">
+        <span class="amblem" id="amblem"></span>
+        <div><b>Mailhanem</b><small>yönetim</small></div>
+      </div>
+      <div class="nav-bolum">Servis</div>
+      <div id="nav"></div>
+      <div class="nav-alt">
+        <span class="av">Eİ</span>
+        <span class="kim"><b>Enes Işhak</b><small>Servis sahibi</small></span>
+        <button class="cikis" id="op-cikis" title="Çıkış yap" aria-label="Çıkış yap"></button>
+      </div>
+    </nav>
+    <div class="sahne" id="sahne"></div>
+  </div>
+</div>
+<div id="kaplama"></div>
+<div id="bildirim" role="status" aria-live="polite"></div>
+
+<script>
+/* ── ikon ailesi ───────────────────────────────
+   24×24 ızgara, 1.75 kalınlık, yuvarlak uç ve birleşim.
+   Tek aile; unicode glif ya da emoji kullanılmaz. */
+const IKON = {
+  pano:    '<rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/>',
+  zarf:    '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3.6 7.6l7.5 5a1.6 1.6 0 0 0 1.8 0l7.5-5"/>',
+  sunucu:  '<rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/>',
+  suzgec:  '<path d="M4 5h16l-6.2 7.3v5.4l-3.6 2v-7.4z"/>',
+  kitap:   '<path d="M5 4.5A1.5 1.5 0 0 1 6.5 3H19v18H6.5A1.5 1.5 0 0 1 5 19.5z"/><path d="M9 7.5h6M9 11h6"/>',
+  kisiler: '<circle cx="9" cy="8" r="3.2"/><path d="M3.5 19.5a5.5 5.5 0 0 1 11 0"/><path d="M16 5.4a3.2 3.2 0 0 1 0 5.2"/><path d="M17.5 14.6a5.5 5.5 0 0 1 3 4.9"/>',
+  bina:    '<path d="M4 21V5.5A1.5 1.5 0 0 1 5.5 4h8A1.5 1.5 0 0 1 15 5.5V21"/><path d="M15 10h3.5A1.5 1.5 0 0 1 20 11.5V21"/><path d="M2.5 21h19"/><path d="M7.5 8h4M7.5 12h4M7.5 16h4"/>',
+  nabiz:   '<path d="M2.5 12h4l2.6-6.6 4.4 13L16 12h5.5"/>',
+  grafik:  '<path d="M3.5 20.5h17"/><path d="M7 20.5v-6M12 20.5V6M17 20.5v-9"/>',
+  kart:    '<rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M2.5 9.5h19"/><path d="M6 14.5h3"/>',
+  anahtar: '<circle cx="8.5" cy="8.5" r="4.5"/><path d="M11.8 11.8l8 8"/><path d="M16.6 16.6l2.2-2.2"/>',
+  liste:   '<path d="M9 6.5h12M9 12h12M9 17.5h12"/><path d="M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/>',
+  uyari:   '<path d="M12 4.4L21 19.6H3z"/><path d="M12 10v4M12 17.2h.01"/>',
+  onay:    '<path d="M4.5 12.5l5 5 10-11"/>',
+  carpi:   '<path d="M6 6l12 12M18 6L6 18"/>',
+  bilgi:   '<circle cx="12" cy="12" r="8.5"/><path d="M12 11.5v5M12 8h.01"/>',
+  soru:    '<circle cx="12" cy="12" r="8.5"/><path d="M9.6 9.6a2.5 2.5 0 1 1 3.3 2.4c-.6.2-.9.8-.9 1.4v.4M12 17h.01"/>',
+  etiket:  '<path d="M11.6 3.5H20v8.4l-8.6 8.6a1.5 1.5 0 0 1-2.1 0l-6.3-6.3a1.5 1.5 0 0 1 0-2.1z"/><path d="M16.4 7.6h.01"/>',
+  kamyon:  '<path d="M2.5 6.5A1.5 1.5 0 0 1 4 5h9.5v11H2.5z"/><path d="M13.5 9h3.8l3.2 3.5V16h-7z"/><circle cx="7" cy="18.4" r="1.9"/><circle cx="17" cy="18.4" r="1.9"/>',
+  geri:    '<path d="M4 11.6A8 8 0 1 1 6.3 17.4"/><path d="M3 6v5.6h5.6"/>',
+  saat:    '<circle cx="12" cy="12" r="8.5"/><path d="M12 7v5.2l3.4 2"/>',
+  kilit:   '<rect x="4.5" y="10.5" width="15" height="10" rx="2.5"/><path d="M8 10.5V7.5a4 4 0 0 1 8 0v3"/>',
+  parilti: '<path d="M11 3.5l1.7 4.4 4.4 1.7-4.4 1.7L11 15.7 9.3 11.3 4.9 9.6l4.4-1.7z"/><path d="M18 14.6l.8 2.1 2.1.8-2.1.8-.8 2.1-.8-2.1-2.1-.8 2.1-.8z"/>',
+  cikis:   '<path d="M9.5 20.5H5.5A1.5 1.5 0 0 1 4 19V5a1.5 1.5 0 0 1 1.5-1.5h4"/><path d="M15.5 16.5l4.5-4.5-4.5-4.5"/><path d="M20 12H9.5"/>',
+  yildiz:  '<path d="M12 3.6l2.7 5.5 6.1.9-4.4 4.3 1 6-5.4-2.8-5.4 2.8 1-6-4.4-4.3 6.1-.9z"/>',
+  sagok:   '<path d="M4.5 12h14"/><path d="M13 6.5l5.5 5.5-5.5 5.5"/>',
+  atac:    '<path d="M19.6 11.6l-8.3 8.3a5 5 0 0 1-7.1-7.1l8.8-8.8a3.35 3.35 0 0 1 4.7 4.7l-8.6 8.6a1.7 1.7 0 0 1-2.4-2.4l7.8-7.8"/>',
+  veritab: '<ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v12c0 1.7 3.6 3 8 3s8-1.3 8-3V6"/><path d="M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/>',
+  ara:     '<circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.4 15.4l4.6 4.6"/>',
+  ekle:    '<path d="M12 5v14M5 12h14"/>',
+  kalem:   '<path d="M4 20h4L18.6 9.4a2.8 2.8 0 0 0-4-4L4 16z"/>',
+  indir:   '<path d="M12 3.5v11"/><path d="M7.5 10.5L12 15l4.5-4.5"/><path d="M4 18.5h16"/>',
+  yenile:  '<path d="M20.5 5.5v5h-5"/><path d="M19.7 10.5a8 8 0 1 0-1.6 6"/>',
+  ok:      '<path d="M9 6l6 6-6 6"/>',
+  kutu:    '<path d="M3 8.5L12 3.5l9 5v7L12 20.5l-9-5z"/><path d="M3 8.5l9 5 9-5M12 13.5v7"/>',
+  kalkan:  '<path d="M12 3.2l7.5 3v5.4c0 4.4-3 8.1-7.5 9.2-4.5-1.1-7.5-4.8-7.5-9.2V6.2z"/><path d="M9 12l2.2 2.2L15.2 10"/>'
+};
+
+function ikon(ad, boyut, dolu){
+  const b = boyut || 18;
+  return '<svg class="ikn" width="' + b + '" height="' + b + '" viewBox="0 0 24 24" ' +
+    'fill="' + (dolu ? 'currentColor' : 'none') + '" stroke="currentColor" stroke-width="1.75" ' +
+    'stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + (IKON[ad] || '') + '</svg>';
+}
+
+/* ── sabitler ──────────────────────────────── */
+const ALTYAPI = 38;      // aylık toplam sunucu + depolama gideri
+const SAAT_UCRET = 25;   // operatörün kendi saatinin maliyeti
+const AYLAR = ["Eki","Kas","Ara","Oca","Şub","Mar"];
+
+const GECMIS = {
+  mrr: [897, 996, 1095, 1194, 1245, 1344],
+  ai:  [61, 74, 89, 103, 112, 124],
+  mus: [4, 5, 5, 6, 6, 6]
+};
+
+const MUSTERILER = [
+  {ad:"Tekno Yapı A.Ş.", alan:"teknoyapi.com.tr", bas:"TY", plan:"kurumsal", durum:"aktif",
+   kullanici:12, aktif:11, mail:11800, ai:62.10, ucret:399, destek:1.5, onay:0.81,
+   son:"12 dk önce", ay:14, hacim:[8100,9200,9900,10400,11200,11800],
+   notlar:[{kim:"Enes", vakit:"6 gün önce", metin:"Murat Bey ikinci şube için ek kutu istedi. Kurumsal planda sınır yok, ücretsiz ekledik."}]},
+
+  {ad:"Arkun Mobilya", alan:"arkunmobilya.com", bas:"AM", plan:"pro", durum:"sorun",
+   kullanici:5, aktif:5, mail:3240, ai:17.40, ucret:249, destek:3.0, onay:0.76,
+   son:"3 dk önce", ay:8, hacim:[2900,3100,3050,3300,3180,3240],
+   notlar:[{kim:"Enes", vakit:"bugün", metin:"destek@ kutusu Microsoft 365'e taşındıktan sonra üçüncü kez koptu. Uygulama parolası yerine OAuth'a geçirmek lazım — kalıcı çözüm bu."},
+           {kim:"Enes", vakit:"3 hafta önce", metin:"Elif Hanım şablonları kendi düzenlemek istiyor. Yanıt Şablonları ekranı çıkınca ilk ona gösterelim."}]},
+
+  {ad:"Deniz Lojistik", alan:"denizlojistik.com", bas:"DL", plan:"pro", durum:"aktif",
+   kullanici:4, aktif:4, mail:4150, ai:22.60, ucret:249, destek:0.5, onay:0.84,
+   son:"1 saat önce", ay:6, hacim:[3200,3500,3700,3900,4020,4150], notlar:[]},
+
+  {ad:"Aktaş İnşaat", alan:"aktasinsaat.com", bas:"Aİ", plan:"pro", durum:"odeme",
+   kullanici:6, aktif:4, mail:2910, ai:15.20, ucret:249, destek:1.0, onay:0.72,
+   son:"2 saat önce", ay:5, hacim:[3400,3300,3150,3000,2950,2910],
+   notlar:[{kim:"Enes", vakit:"2 gün önce", metin:"Kart reddedildi. Muhasebeye yazdım, yeni kart gönderecekler. Hacim de 5 aydır düşüyor, sebebini sormalıyım."}]},
+
+  {ad:"Yıldırım Ofis", alan:"yildirimofis.com", bas:"YO", plan:"baslangic", durum:"aktif",
+   kullanici:2, aktif:2, mail:680, ai:3.80, ucret:99, destek:2.5, onay:0.88,
+   son:"4 saat önce", ay:3, hacim:[500,540,590,620,650,680],
+   notlar:[{kim:"Enes", vakit:"9 gün önce", metin:"Buse Hanım her hafta arıyor, küçük sorular. Ürünü seviyor ama destek yükü planın taşıyabileceğinden fazla."}]},
+
+  {ad:"Ergün Mali Müşavirlik", alan:"ergundenetim.com", bas:"EM", plan:"baslangic", durum:"sessiz",
+   kullanici:3, aktif:0, mail:420, ai:2.10, ucret:99, destek:0.5, onay:0.34,
+   son:"11 gün önce", ay:9, hacim:[980,870,720,610,480,420], notlar:[]},
+
+  {ad:"Mobilup Showroom", alan:"mobilup.com.tr", bas:"MS", plan:"deneme", durum:"deneme",
+   kullanici:2, aktif:2, mail:190, ai:1.10, ucret:0, destek:2.0, onay:0.61,
+   son:"1 gün önce", ay:0, hacim:[0,0,0,40,90,190], notlar:[]}
+];
+
+let TRIYAJ = [
+  {id:1, seviye:"kritik", firma:"Arkun Mobilya", sure:"3 saat", bitti:false,
+   metin:"<code>destek@arkunmobilya.com</code> IMAP bağlantısı kopuk — kimlik doğrulama reddedildi. Bu kutuya gelen mailler panele düşmüyor.",
+   eylem:"Müşteriyi ara"},
+  {id:2, seviye:"kritik", firma:"Aktaş İnşaat", sure:"2 gün", bitti:false,
+   metin:"Aylık ödeme alınamadı, kart reddedildi. 5 gün sonra hesap otomatik askıya alınacak.",
+   eylem:"Ödeme linki gönder"},
+  {id:3, seviye:"uyari", firma:"Ergün Mali Müşavirlik", sure:"6 haftadır", bitti:false,
+   metin:"Mail hacmi 6 ayda 980'den 420'ye düştü, 3 lisanslı kullanıcının hiçbiri 11 gündür giriş yapmadı. Sağlık skoru 20.",
+   eylem:"Kontrol maili at"},
+  {id:4, seviye:"bilgi", firma:"Mobilup Showroom", sure:"5 gün kaldı", bitti:false,
+   metin:"Deneme süresi bitiyor. 190 mail işlendi, 2 kullanıcı da aktif — dönüşüm ihtimali yüksek.",
+   eylem:"Teklif hazırla"}
+];
+
+const PLAN_AD = {kurumsal:"Kurumsal", pro:"Pro", baslangic:"Başlangıç", deneme:"Deneme"};
+const DURUM_AD = {aktif:["","Aktif"], sorun:["kotu","Bağlantı sorunu"], odeme:["kotu","Ödeme başarısız"],
+                  sessiz:["bekle","Sessiz"], deneme:["bekle","Deneme"]};
+
+const SAYFALAR = [
+  {id:"bakis",   ad:"Genel Bakış",          ikon:"pano"},
+  {id:"talep",   ad:"Demo Talepleri",      ikon:"zarf"},
+  {id:"mus",     ad:"Müşteriler",           ikon:"bina"},
+  {id:"saglik",  ad:"Bağlantı Sağlığı",     ikon:"nabiz"},
+  {id:"maliyet", ad:"Maliyet ve Marj",      ikon:"grafik"},
+  {id:"abone",   ad:"Abonelikler",          ikon:"kart"},
+  {id:"sistem",  ad:"Sistem ve Anahtarlar", ikon:"anahtar"},
+  {id:"gunluk",  ad:"Sistem Günlüğü",       ikon:"liste"}
+];
+
+/* Tanıtım sayfasındaki demo formu buraya düşer. Alanlar site/index.html'deki
+   form ile birebir aynı: ad, firma, eposta, telefon, saglayici, kisi, not.
+   Durumlar: yeni · yazildi · kuruldu · kapandi. */
+let TALEPLER = [
+  {id:1, ad:"Murat Şen", firma:"Arkun Mobilya", eposta:"murat@arkunmobilya.com",
+   telefon:"0532 114 22 08", saglayici:"cPanel tabanlı yerel hosting", kisi:"3–5 kişi",
+   not:"Fatura mailleri kargo sorularının arasında kalıyor, muhasebe günde iki kez tarıyor.",
+   gelen:"41 dakika önce", durum:"yeni"},
+  {id:2, ad:"Zeynep Kaya", firma:"Kaya Isı Sistemleri", eposta:"zeynep@kayaisi.com.tr",
+   telefon:"", saglayici:"Microsoft 365", kisi:"6–10 kişi",
+   not:"", gelen:"3 saat önce", durum:"yeni"},
+  {id:3, ad:"Hakan Yılmaz", firma:"Yıldırım Ofis", eposta:"h.yilmaz@yildirimofis.com",
+   telefon:"0216 447 91 30", saglayici:"Google Workspace", kisi:"1–2 kişi",
+   not:"Bayi başvuruları ile müşteri şikayetleri aynı kutuya düşüyor.",
+   gelen:"dün 16:20", durum:"yazildi"},
+  {id:4, ad:"Elif Aktaş", firma:"Aktaş İnşaat", eposta:"elif@aktasinsaat.com",
+   telefon:"0312 285 60 14", saglayici:"Bilmiyorum", kisi:"10 kişiden fazla",
+   not:"Şube bazlı ayırma mümkün mü diye soruyor.",
+   gelen:"2 gün önce", durum:"kuruldu"},
+  {id:5, ad:"Serkan Doğan", firma:"Tekno Yapı A.Ş.", eposta:"sdogan@teknoyapi.com",
+   telefon:"", saglayici:"Yandex", kisi:"3–5 kişi",
+   not:"", gelen:"4 gün önce", durum:"kuruldu"},
+  {id:6, ad:"Burak Erdem", firma:"Erdem Lojistik", eposta:"burak@erdemlojistik.com",
+   telefon:"0224 512 77 05", saglayici:"Microsoft 365", kisi:"1–2 kişi",
+   not:"Kendi geliştirdikleri sistem varmış, şimdilik bakmak istemiyor.",
+   gelen:"9 gün önce", durum:"kapandi"}
+];
+let talepSuzgec = "acik";
+
+const TALEP_DURUM = {
+  yeni:    {ad:"Yeni",             sinif:"r-uyari"},
+  yazildi: {ad:"Yazıldı",          sinif:"r-bilgi"},
+  kuruldu: {ad:"Görüşme kuruldu",  sinif:"r-bitti"},
+  kapandi: {ad:"Kapandı",          sinif:"r-kapali"}
+};
+
+/* Anahtarların kendisi burada YOK — sadece sağlıkları.
+   Değerler sunucudaki ortam değişkenlerinde durur, hiçbir arayüze düşmez. */
+const ENTEGRASYONLAR = [
+  {ad:"Anthropic API", ne:"Sınıflandırma ve taslak üretimi", ikon:"parilti",
+   env:"ANTHROPIC_API_KEY", durum:"iyi", kontrol:"2 dk önce",
+   olcum:[["Bu ay","$124,30"],["Sınıflandırma","Haiku 4.5"],["Taslak","Sonnet 5"],["Hız limiti","%18"]]},
+  {ad:"iyzico", ne:"Abonelik tahsilatı ve fatura", ikon:"kart",
+   env:"IYZICO_API_KEY · IYZICO_SECRET", durum:"iyi", kontrol:"11 dk önce",
+   olcum:[["Bu ay tahsil","$1.344"],["Başarısız","1 kart"],["Sonraki döngü","4 gün"]]},
+  {ad:"Sistem postası", ne:"Giriş linki, davet ve uyarı mailleri", ikon:"zarf",
+   env:"POSTA_ANAHTARI", durum:"iyi", kontrol:"1 saat önce",
+   olcum:[["Bu ay","318 mail"],["Teslim oranı","%99,4"],["Şikayet","0"]]},
+  {ad:"Hata takibi", ne:"Çöken istekler ve worker hataları", ikon:"uyari",
+   env:"SENTRY_DSN", durum:"uyari", kontrol:"3 gün önce",
+   olcum:[["Açık hata","4"],["Son 24 saat","0 yeni"]],
+   not:"Anahtarın geçerlilik süresi 12 gün sonra doluyor. Şimdi yenile, dolduğunda sessizce kör kalırsın."},
+  {ad:"Nesne depolama", ne:"PDF ekleri ve gecelik yedekler", ikon:"veritab",
+   env:"S3_ANAHTAR · S3_GIZLI", durum:"iyi", kontrol:"5 dk önce",
+   olcum:[["Kullanım","41 GB"],["Aylık","$5,20"],["Son yedek","06:00"]]}
+];
+
+let sayfa = "bakis", secilenMus = null, girilecek = null, planDegis = null;
+let opOturum = false;
+let siraAlan = "skor", siraYon = -1, aramaMetni = "";
+
+const $ = s => document.querySelector(s);
+const kacar = s => String(s).replace(/[&<>"]/g, k => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;"}[k]));
+const para  = n => "$" + Math.round(n).toLocaleString("tr-TR");
+const para2 = n => "$" + n.toLocaleString("tr-TR", {minimumFractionDigits:2, maximumFractionDigits:2});
+
+/* ── sağlık skoru: dört bileşen, hepsi görünür ── */
+function skorKirilim(m){
+  const onceki = m.hacim[3] || m.hacim[5] || 1;
+  const oran = m.plan === "deneme" ? 1.0 : m.hacim[5] / onceki;
+  const buyume   = Math.max(0, Math.min(1, (oran - 0.7) / 0.6));
+  const aktiflik = m.kullanici ? m.aktif / m.kullanici : 0;
+  const kullanim = m.onay;
+  const yuk      = Math.max(0, 1 - m.destek / 4);
+  return [
+    {ad:"Hacim eğilimi", pay:buyume,   agirlik:35},
+    {ad:"Aktif kullanıcı", pay:aktiflik, agirlik:30},
+    {ad:"Taslak onayı",  pay:kullanim, agirlik:20},
+    {ad:"Destek yükü",   pay:yuk,      agirlik:15}
+  ];
+}
+const skor = m => Math.round(skorKirilim(m).reduce((t,k) => t + k.pay * k.agirlik, 0));
+const skorSinif = s => s >= 70 ? "s-iyi" : s >= 45 ? "s-orta" : "s-kotu";
+const skorYorum = s => s >= 70 ? "Sağlıklı — büyüme veya referans için uygun"
+                     : s >= 45 ? "İzlemede — bir bileşen zayıflamış"
+                               : "Kayıp riski yüksek — bu ay temas edilmeli";
+
+/* ── net marj: senin zamanın dahil ─────────── */
+function marjHesap(m){
+  const altyapiPay = ALTYAPI / MUSTERILER.length;
+  const destekBedel = m.destek * SAAT_UCRET;
+  const net = m.ucret - m.ai - altyapiPay - destekBedel;
+  return {altyapiPay, destekBedel, net,
+          brutY: m.ucret ? Math.round((m.ucret - m.ai) / m.ucret * 100) : null,
+          netY:  m.ucret ? Math.round(net / m.ucret * 100) : null};
+}
+
+/* ── kıvılcım çizgisi (tek seri, tek renk) ─── */
+function kivilcim(dizi, renk, g, y){
+  g = g || 74; y = y || 26;
+  const enB = Math.max.apply(null, dizi), enK = Math.min.apply(null, dizi);
+  const araliq = (enB - enK) || 1;
+  const nokta = dizi.map((v,i) => {
+    const x = (i / (dizi.length - 1)) * (g - 2) + 1;
+    const yy = y - 3 - ((v - enK) / araliq) * (y - 8);
+    return x.toFixed(1) + "," + yy.toFixed(1);
+  });
+  const sonX = (g - 1).toFixed(1);
+  const sonY = (y - 3 - ((dizi[dizi.length-1] - enK) / araliq) * (y - 8)).toFixed(1);
+  return "<svg width=\"" + g + "\" height=\"" + y + "\" viewBox=\"0 0 " + g + " " + y + "\" aria-hidden=\"true\">" +
+    "<polyline points=\"" + nokta.join(" ") + "\" fill=\"none\" stroke=\"" + renk +
+    "\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"></polyline>" +
+    "<circle cx=\"" + sonX + "\" cy=\"" + sonY + "\" r=\"2.4\" fill=\"" + renk + "\"></circle></svg>";
+}
+const degisim = d => Math.round((d[d.length-1] - d[d.length-2]) / d[d.length-2] * 100);
+
+/* ── sol menü ──────────────────────────────── */
+function opGirisHTML(){
+  return "<div class=\"giris\"><div class=\"giris-kart\">" +
+    "<div class=\"giris-marka\"><span class=\"amblem\">" + ikon("anahtar",20) + "</span>" +
+      "<div><b>Mailhanem</b><small>servis yönetimi</small></div></div>" +
+    "<h1>Operatör girişi</h1>" +
+    "<p>Bu panel tüm müşteri hesaplarına erişim verir. Giriş iki adımlıdır ve her oturum kayda alınır.</p>" +
+    "<div class=\"form-satir\"><label>Yönetici e-postası</label>" +
+      "<input type=\"email\" value=\"enes@mailhanem.com\" readonly></div>" +
+    "<div class=\"form-satir\"><label>Doğrulama kodu</label>" +
+      "<input id=\"op-kod\" placeholder=\"6 haneli kod\" value=\"418 205\"></div>" +
+    "<button class=\"dugme ana genis\" id=\"op-gir\">Giriş yap</button>" +
+    "<div class=\"giris-uyari\">" + ikon("uyari",15) + "<span>Müşteri panelinden ayrı bir adrestir ve ayrı kimlik doğrulaması " +
+    "ister. Müşteri hesabınızla buraya girilemez.</span></div>" +
+    "</div><p class=\"giris-dip\">Mailhanem · örnek veriyle çalışan tasarım prototipi</p></div>";
+}
+
+function navCiz(){
+  const acikIs = TRIYAJ.filter(t => !t.bitti).length;
+  $("#nav").innerHTML = SAYFALAR.map(s => {
+    let r = "";
+    if (s.id === "bakis" && acikIs) r = "<span class=\"sayi dikkat\">" + acikIs + "</span>";
+    if (s.id === "talep"){
+      const y = TALEPLER.filter(t => t.durum === "yeni").length;
+      if (y) r = "<span class=\"sayi dikkat\">" + y + "</span>";
+    }
+    if (s.id === "mus")    r = "<span class=\"sayi\">" + MUSTERILER.length + "</span>";
+    if (s.id === "saglik") r = "<span class=\"sayi dikkat\">1</span>";
+    return "<button class=\"nav-oge" + (sayfa === s.id ? " aktif" : "") + "\" data-sayfa=\"" + s.id + "\">" +
+      "<span class=\"ikon\">" + ikon(s.ikon) + "</span><span class=\"et\">" + s.ad + "</span>" + r + "</button>";
+  }).join("");
+  $("#nav").querySelectorAll("[data-sayfa]").forEach(b => {
+    b.onclick = () => { sayfa = b.dataset.sayfa; secilenMus = null; ciz(); };
+  });
+}
+
+/* ── tablo ─────────────────────────────────── */
+const SUTUNLAR = [
+  {id:"ad",     ad:"Müşteri",     sag:false},
+  {id:"plan",   ad:"Plan",        sag:false, sirasiz:true},
+  {id:"skor",   ad:"Sağlık",      sag:true},
+  {id:"mail",   ad:"Mail / ay",   sag:true},
+  {id:"ai",     ad:"Yapay zekâ",  sag:true},
+  {id:"destek", ad:"Destek sa.",  sag:true},
+  {id:"ucret",  ad:"Abonelik",    sag:true},
+  {id:"net",    ad:"Net marj",    sag:true},
+  {id:"durum",  ad:"Durum",       sag:false, sirasiz:true}
+];
+
+function siralanmis(){
+  const l = MUSTERILER.filter(m =>
+    !aramaMetni || (m.ad + " " + m.alan).toLowerCase().includes(aramaMetni.toLowerCase()));
+  const anahtar = m => {
+    if (siraAlan === "ad") return m.ad;
+    if (siraAlan === "skor") return skor(m);
+    if (siraAlan === "net") return marjHesap(m).netY === null ? -999 : marjHesap(m).netY;
+    return m[siraAlan];
+  };
+  return l.sort((a,b) => {
+    const x = anahtar(a), y = anahtar(b);
+    if (typeof x === "string") return x.localeCompare(y, "tr") * siraYon;
+    return (x - y) * siraYon;
+  });
+}
+
+function musSatir(m){
+  const d = DURUM_AD[m.durum], s = skor(m), mh = marjHesap(m);
+  return "<tr data-mus=\"" + m.alan + "\"" + (secilenMus === m.alan ? " class=\"secili\"" : "") + ">" +
+    "<td><span class=\"mus\"><span class=\"av kare\">" + m.bas + "</span>" +
+      "<span><b>" + m.ad + "</b><small>" + m.alan + "</small></span></span></td>" +
+    "<td><span class=\"plan p-" + m.plan + "\">" + PLAN_AD[m.plan] + "</span></td>" +
+    "<td class=\"sag\"><span class=\"saglik " + skorSinif(s) + "\">" +
+      "<span class=\"ray\"><i style=\"width:" + s + "%\"></i></span><b>" + s + "</b></span></td>" +
+    "<td class=\"sag\"><span class=\"sayi-h\">" + m.mail.toLocaleString("tr-TR") + "</span> " +
+      kivilcim(m.hacim, "var(--soluk)", 42, 16) + "</td>" +
+    "<td class=\"sag sayi-h\">" + para2(m.ai) + "</td>" +
+    "<td class=\"sag sayi-h\">" + m.destek.toLocaleString("tr-TR", {minimumFractionDigits:1}) + "</td>" +
+    "<td class=\"sag sayi-h\">" + (m.ucret ? para(m.ucret) : "—") + "</td>" +
+    "<td class=\"sag\">" + (mh.netY === null
+      ? "<span class=\"marj eksi\">" + para(mh.net) + "</span>"
+      : "<span class=\"marj" + (mh.netY < 0 ? " eksi" : mh.netY < 55 ? " dusuk" : "") + "\">%" + mh.netY + "</span>") + "</td>" +
+    "<td><span class=\"durum-n " + d[0] + "\"><i></i>" + d[1] + "</span></td>" +
+  "</tr>";
+}
+
+function tabloHTML(){
+  const basliklar = SUTUNLAR.map(c => {
+    if (c.sirasiz) return "<th class=\"dokunma" + (c.sag ? " sag" : "") + "\">" + c.ad + "</th>";
+    const etkin = siraAlan === c.id;
+    return "<th" + (c.sag ? " class=\"sag\"" : "") + ">" +
+      "<button data-sirala=\"" + c.id + "\"" + (etkin ? " class=\"etkin\"" : "") + ">" + c.ad +
+      "<span class=\"ok\">" + ikon("ok",10) + "</span></button></th>";
+  }).join("");
+  return "<div class=\"tablo-sar\"><table><thead><tr>" + basliklar + "</tr></thead>" +
+    "<tbody>" + siralanmis().map(musSatir).join("") + "</tbody></table></div>";
+}
+
+function aracHTML(){
+  return "<div class=\"arac\"><div class=\"arama\">" +
+    "<svg width=\"13\" height=\"13\" viewBox=\"0 0 16 16\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.7\" aria-hidden=\"true\">" +
+    "<circle cx=\"7\" cy=\"7\" r=\"4.5\"></circle><path d=\"M10.5 10.5L14 14\"></path></svg>" +
+    "<input type=\"search\" id=\"arama\" placeholder=\"Firma veya alan adı ara\" value=\"" + kacar(aramaMetni) + "\" aria-label=\"Ara\"></div>" +
+    "<span class=\"sirala-not\">Satıra tıkla · detay açılır</span></div>";
+}
+
+/* ── genel bakış ───────────────────────────── */
+function bakisHTML(){
+  const mrr = MUSTERILER.reduce((t,m) => t + m.ucret, 0);
+  const ai  = MUSTERILER.reduce((t,m) => t + m.ai, 0);
+  const destekSaat = MUSTERILER.reduce((t,m) => t + m.destek, 0);
+  const netTop = MUSTERILER.reduce((t,m) => t + marjHesap(m).net, 0);
+  const brutY  = Math.round((mrr - ai - ALTYAPI) / mrr * 100);
+  const netY   = Math.round(netTop / mrr * 100);
+  const mrrD = degisim(GECMIS.mrr), aiD = degisim(GECMIS.ai);
+
+  const isler = TRIYAJ.map(t =>
+    "<div class=\"tsatir " + (t.bitti ? "bitti" : t.seviye) + "\">" +
+      "<span class=\"rozet " + (t.bitti ? "r-bitti" : "r-" + t.seviye) + "\">" +
+        (t.bitti ? "bitti" : t.seviye === "kritik" ? "acil" : t.seviye === "uyari" ? "risk" : "fırsat") + "</span>" +
+      "<span class=\"ne\"><span class=\"firma\">" + t.firma + "</span>" +
+        "<span class=\"aciklama\">" + t.metin + "</span></span>" +
+      "<span class=\"sure\">" + t.sure + "</span>" +
+      (t.bitti ? "" :
+        "<button class=\"dugme ufak\" data-is=\"" + t.id + "\">" + t.eylem + "</button>" +
+        "<button class=\"dugme sade\" data-ertele=\"" + t.id + "\">Ertele</button>") +
+    "</div>").join("");
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Genel Bakış</h1>" +
+      "<p>Bugün müşteri kaybettirebilecek her şey en üstte</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<dl class=\"kartlar\">" +
+      "<div class=\"skart\"><dt>Aylık gelir</dt><div class=\"deger\"><dd>" + para(mrr) + "</dd>" +
+        "<span class=\"kivilcim\">" + kivilcim(GECMIS.mrr, "var(--olumlu)") + "</span></div>" +
+        "<div class=\"not\"><span class=\"yon iyi\">+%" + mrrD + "</span>6 ayda " + para(GECMIS.mrr[0]) + " → " + para(mrr) + "</div></div>" +
+
+      "<div class=\"skart\"><dt>Yapay zekâ maliyeti</dt><div class=\"deger\"><dd>" + para2(ai) + "</dd>" +
+        "<span class=\"kivilcim\">" + kivilcim(GECMIS.ai, "var(--uyari)") + "</span></div>" +
+        "<div class=\"not\"><span class=\"yon\">+%" + aiD + "</span>gelirden yavaş artıyor</div></div>" +
+
+      "<div class=\"skart\"><dt>Destek yükün</dt><div class=\"deger\"><dd>" +
+        destekSaat.toLocaleString("tr-TR", {minimumFractionDigits:1}) + " sa</dd></div>" +
+        "<div class=\"not\">bu ay · " + para(destekSaat * SAAT_UCRET) + " karşılığı</div></div>" +
+
+      "<div class=\"skart\"><dt>Net marj</dt><div class=\"deger\"><dd>%" + netY + "</dd></div>" +
+        "<div class=\"not\">brüt %" + brutY + " · aradaki fark senin zamanın</div></div>" +
+    "</dl>" +
+
+    "<h2 class=\"bolum\">İş kuyruğu<span class=\"sayi\">" + TRIYAJ.filter(t => !t.bitti).length + " açık</span>" +
+      "<span class=\"aciklayici\">önem sırasına göre</span></h2>" +
+    "<div class=\"triyaj\">" + isler + "</div>" +
+
+    "<h2 class=\"bolum\">Müşteriler<span class=\"sayi\">" + MUSTERILER.length + "</span>" +
+      "<span class=\"aciklayici\">sağlık skoruna göre sıralı</span></h2>" +
+    aracHTML() + tabloHTML() +
+    "<p class=\"dip\"><b>Net marj</b> = abonelik − yapay zekâ − altyapı payı − destek saatin (saati " +
+    para(SAAT_UCRET) + "). Brüt marj senin zamanını bedava sayar; net marj saymaz. " +
+    "Aradaki fark, hangi müşterinin gerçekten kâr getirdiğini gösteren tek sayıdır.</p>" +
+    "</div>";
+}
+
+function musHTML(){
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Müşteriler</h1>" +
+      "<p>" + MUSTERILER.length + " firma · " + MUSTERILER.reduce((t,m) => t + m.kullanici, 0) +
+      " lisans · ayda " + MUSTERILER.reduce((t,m) => t + m.mail, 0).toLocaleString("tr-TR") + " mail</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+    aracHTML() + tabloHTML() +
+    "<p class=\"dip\"><b>Sağlık skoru</b> dört bileşenden gelir: hacim eğilimi (35), aktif kullanıcı oranı (30), " +
+    "taslak onay oranı (20), destek yükü (15). Bir satıra tıklayıp kırılımı görebilirsin — " +
+    "skor kara kutu olursa kimse güvenmez.</p></div>";
+}
+
+/* ── müşteri çekmecesi ─────────────────────── */
+function cekmeceHTML(m){
+  const s = skor(m), mh = marjHesap(m), kir = skorKirilim(m);
+  const enB = Math.max.apply(null, m.hacim);
+
+  const kirilim = kir.map(k =>
+    "<div class=\"kir\"><span class=\"ad\">" + k.ad + "</span>" +
+    "<span class=\"ray\"><i style=\"width:" + Math.round(k.pay * 100) + "%\"></i></span>" +
+    "<span class=\"puan\">" + Math.round(k.pay * k.agirlik) + " / " + k.agirlik + "</span></div>").join("");
+
+  const cubuklar = m.hacim.map((v,i) =>
+    "<div style=\"flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;gap:5px;height:100%\">" +
+    "<div style=\"width:100%;height:" + Math.max(2, Math.round(v / enB * 100)) + "%;background:var(--murekkep);border-radius:3px 3px 0 0\"></div>" +
+    "<span style=\"font-family:var(--mono);font-size:11px;color:var(--soluk)\">" + AYLAR[i] + "</span></div>").join("");
+
+  const notlar = m.notlar.length
+    ? m.notlar.map(n => "<div class=\"not-k\"><div class=\"ust\"><span class=\"kim\">" + n.kim +
+        "</span><span class=\"vakit\">" + n.vakit + "</span></div>" + kacar(n.metin) + "</div>").join("")
+    : "<p style=\"color:var(--soluk);font-size:13px\">Henüz not yok. Görüşmeleri buraya yaz — 15 müşteride kafan yetmez.</p>";
+
+  return "<div class=\"perde\" id=\"perde\"></div><aside class=\"cekmece\" role=\"dialog\" aria-label=\"" + m.ad + "\">" +
+    "<div class=\"c-ust\"><span class=\"av kare\" style=\"width:38px;height:38px;font-size:14px\">" + m.bas + "</span>" +
+      "<div><h2>" + m.ad + "</h2><div class=\"alt\">" + m.alan + " · " +
+      (m.ay ? m.ay + " aydır müşteri" : "deneme sürümü") + " · son giriş " + m.son + "</div></div>" +
+      "<button class=\"c-kapat\" id=\"c-kapat\" aria-label=\"Kapat\">" + ikon("carpi",16) + "</button></div>" +
+
+    "<div class=\"c-ic\">" +
+      "<section><h3 class=\"c-baslik\">Sağlık skoru</h3>" +
+        "<div class=\"skor-ust\"><span class=\"skor-buyuk " + skorSinif(s) +
+          "\" style=\"color:" + (s >= 70 ? "var(--olumlu)" : s >= 45 ? "var(--uyari)" : "var(--kritik)") + "\">" + s + "</span>" +
+          "<span class=\"skor-yorum\">" + skorYorum(s) + "</span></div>" +
+        "<div class=\"kirilim\">" + kirilim + "</div></section>" +
+
+      "<section><h3 class=\"c-baslik\">Aylık mail hacmi</h3>" +
+        "<div style=\"display:flex;align-items:flex-end;gap:6px;height:96px\">" + cubuklar + "</div></section>" +
+
+      "<section><h3 class=\"c-baslik\">Bu müşteri gerçekten ne kazandırıyor</h3>" +
+        "<div class=\"hesap-satir\"><span class=\"ad\">Abonelik</span>" +
+          "<span class=\"tut\">" + (m.ucret ? para(m.ucret) : "$0") + "</span></div>" +
+        "<div class=\"hesap-satir\"><span class=\"ad\">Yapay zekâ</span>" +
+          "<span class=\"aciklayici\">" + m.mail.toLocaleString("tr-TR") + " mail</span>" +
+          "<span class=\"tut eksi\">−" + para2(m.ai) + "</span></div>" +
+        "<div class=\"hesap-satir\"><span class=\"ad\">Altyapı payı</span>" +
+          "<span class=\"aciklayici\">" + para(ALTYAPI) + " ÷ " + MUSTERILER.length + "</span>" +
+          "<span class=\"tut eksi\">−" + para2(mh.altyapiPay) + "</span></div>" +
+        "<div class=\"hesap-satir\"><span class=\"ad\">Destek zamanın</span>" +
+          "<span class=\"aciklayici\">" + m.destek.toLocaleString("tr-TR", {minimumFractionDigits:1}) +
+          " sa × " + para(SAAT_UCRET) + "</span>" +
+          "<span class=\"tut eksi\">−" + para2(mh.destekBedel) + "</span></div>" +
+        "<div class=\"hesap-satir sonuc\"><span class=\"ad\">Net</span>" +
+          "<span class=\"tut" + (mh.net < 0 ? " eksi" : "") + "\">" + para2(mh.net) +
+          (mh.netY !== null ? "  ·  %" + mh.netY : "") + "</span></div>" +
+        (mh.brutY !== null && mh.brutY - mh.netY > 30
+          ? "<p class=\"dip\" style=\"margin-top:11px\">Brüt marj %" + mh.brutY + " görünüyor ama net %" + mh.netY +
+            ". Fark destek yükünden geliyor — bu müşteri ya daha üst plana geçmeli ya da " +
+            "sorularının cevabı ürünün içine girmeli.</p>"
+          : "") +
+      "</section>" +
+
+      "<section><h3 class=\"c-baslik\">Notlar</h3><div class=\"notlar\">" + notlar + "</div>" +
+        "<div class=\"not-ekle\"><input id=\"not-girdi\" placeholder=\"Görüşme notu ekle\">" +
+        "<button class=\"dugme\" id=\"not-kaydet\">Ekle</button></div></section>" +
+
+      "<div class=\"c-eylem\">" +
+        "<button class=\"dugme ana\" data-gir=\"" + m.ad + "\">Hesabına gir</button>" +
+        "<button class=\"dugme\" data-is-yeni=\"" + m.ad + "\">İş kuyruğuna ekle</button>" +
+        "<button class=\"dugme\" data-plan=\"" + m.ad + "\">Plan değiştir</button>" +
+      "</div>" +
+    "</div></aside>";
+}
+
+function girisModalHTML(){
+  return "<div class=\"modal-perde\" id=\"m-perde\"><div class=\"modal\" role=\"dialog\">" +
+    "<h2>" + girilecek + " hesabına gir</h2>" +
+    "<p>Müşterinin panelini onun gördüğü haliyle açacaksınız. Yaptığınız her işlem o firmanın verisi üzerinde gerçekleşir.</p>" +
+    "<div class=\"kutu-uyari\">" + ikon("uyari",16) + "<span>Bu giriş <b>kayda alınır</b> ve firma yöneticisine bildirim gider. " +
+    "Oturum 30 dakika sonra kendiliğinden kapanır.</span></div>" +
+    "<div class=\"eylem\"><button class=\"dugme\" id=\"g-iptal\">Vazgeç</button>" +
+    "<button class=\"dugme ana\" id=\"g-onay\">Girişi başlat</button></div></div></div>";
+}
+
+function sistemHTML(){
+  const kartlar = ENTEGRASYONLAR.map(e =>
+    "<div class=\"ent" + (e.durum === "uyari" ? " uyari" : "") + "\">" +
+      "<div class=\"ent-ust\"><span class=\"ent-ikon\">" + ikon(e.ikon) + "</span>" +
+        "<span class=\"ent-bilgi\"><span class=\"ent-ad\">" + e.ad + "</span>" +
+          "<span class=\"ent-ne\">" + e.ne + "</span></span>" +
+        "<span class=\"ent-env\">" + e.env + "</span>" +
+        "<span class=\"ent-durum " + (e.durum === "uyari" ? "uyari" : "") + "\"><i></i>" +
+          (e.durum === "uyari" ? "Süresi doluyor" : "Bağlı") + "</span>" +
+        "<button class=\"dugme ufak\" data-dogrula=\"" + e.ad + "\">Doğrula</button></div>" +
+      (e.not ? "<div class=\"ent-not\">" + e.not + "</div>" : "") +
+      "<dl class=\"ent-olcum\">" + e.olcum.map(o =>
+        "<div><dt>" + o[0] + "</dt><dd>" + o[1] + "</dd></div>").join("") + "</dl>" +
+    "</div>").join("");
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Sistem ve Anahtarlar</h1>" +
+      "<p>Servisin bağlı olduğu dış sistemler ve sağlık durumları</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<div class=\"kural-kutu\">" + ikon("kilit",19) + "<div>" +
+      "<h3>Anahtarlar buradan girilmez — ve hiçbir arayüzden girilmez</h3>" +
+      "<p>Bu ekran anahtar değeri göstermez, kabul de etmez. Değerler sunucudaki ortam " +
+      "değişkenlerinde durur; yalnızca worker süreci okur, tarayıcıya gönderilmez, " +
+      "veritabanına yazılmaz, günlüklere düşmez. Burada gördüğün tek şey <b>anahtarın " +
+      "çalışıp çalışmadığı</b>.</p></div></div>" +
+
+    "<h2 class=\"bolum\">Bağlı servisler<span class=\"sayi\">" + ENTEGRASYONLAR.length + "</span>" +
+      "<span class=\"aciklayici\">hepsi senin hesabın</span></h2>" +
+    kartlar +
+
+    "<h2 class=\"bolum\" style=\"margin-top:26px\">Sır nerede durur</h2>" +
+    "<p class=\"dip\" style=\"margin-top:0;margin-bottom:11px\">Tek bir kural iki tür sırrı ayırır: " +
+    "<b>sana ait olan ortam değişkenine</b>, <b>müşteriye ait olan veritabanına şifreli</b> gider. " +
+    "Senin anahtarların nadiren değişir ve açılışta okunur; müşterinin posta şifresi ise her " +
+    "firma için ayrıdır, çalışma anında eklenir — ortam değişkenine sığmaz.</p>" +
+
+    "<div class=\"kod\">" +
+      "<span class=\"yorum\"># sunucu · .env — servise ait sırlar, koda ve panele girmez</span>\n" +
+      "<span class=\"ad\">ANTHROPIC_API_KEY</span>=sk-ant-…\n" +
+      "<span class=\"ad\">IYZICO_API_KEY</span>=…\n" +
+      "<span class=\"ad\">ANA_ANAHTAR</span>=…            <span class=\"yorum\"># müşteri şifrelerini açan kök anahtar</span>\n\n" +
+      "<span class=\"yorum\"># postgres · mail_hesaplari — müşteriye ait sırlar, şifreli</span>\n" +
+      "tenant_id  | adres                  | kimlik_sifreli\n" +
+      "──────────────────────────────────────────────────────\n" +
+      "arkun      | destek@arkunmobilya…   | AES-256-GCM ▓▓▓▓▓▓▓▓\n" +
+      "teknoyapi  | info@teknoyapi.com.tr  | AES-256-GCM ▓▓▓▓▓▓▓▓" +
+    "</div>" +
+
+    "<p class=\"dip\">Kök anahtar (<b>ANA_ANAHTAR</b>) ortam değişkeninde, müşteri şifreleri " +
+    "onunla şifrelenmiş halde veritabanında durur. Sızan bir veritabanı yedeği tek başına " +
+    "hiçbir posta kutusunu açmaz — iki sırrın da aynı anda ele geçmesi gerekir.</p>" +
+
+    "<h2 class=\"bolum\" style=\"margin-top:26px\">Müşteri kendi anahtarını kullanabilir mi</h2>" +
+    "<p class=\"dip\" style=\"margin-top:0\">Teknik olarak evet, ama <b>v1'de yapma</b>. " +
+    "KOBİ sahibinden Anthropic hesabı açıp dolarla kart tanımlamasını istemek, kurulumu " +
+    "daha başlamadan bitirir. Üstelik tek anahtar üzerinden gidince önbellek, toplu iş ve " +
+    "model seçimi optimizasyonlarını sen yapabiliyorsun — müşteri başına maliyet düşüyor. " +
+    "Kendi anahtarını isteyen kurumsal müşteri çıkarsa, o anahtar da müşteriye ait bir sır " +
+    "olur: posta şifresiyle aynı şekilde, veritabanında şifreli durur.</p>" +
+    "</div>";
+}
+
+/* ══ BAĞLANTI SAĞLIĞI ══════════════════════ */
+const KUTULAR = [
+  {firma:"Arkun Mobilya", adres:"destek@arkunmobilya.com", sag:"Microsoft 365", gec:"3 sa 12 dk", durum:"kopuk", bugun:0, hata:"AUTHENTICATIONFAILED"},
+  {firma:"Aktaş İnşaat", adres:"info@aktasinsaat.com", sag:"Natro cPanel", gec:"2 dk 40 sn", durum:"yavas", bugun:62},
+  {firma:"Aktaş İnşaat", adres:"teklif@aktasinsaat.com", sag:"Natro cPanel", gec:"2 dk 18 sn", durum:"yavas", bugun:47},
+  {firma:"Tekno Yapı A.Ş.", adres:"info@teknoyapi.com.tr", sag:"Microsoft 365", gec:"42 sn", durum:"iyi", bugun:210},
+  {firma:"Tekno Yapı A.Ş.", adres:"satinalma@teknoyapi.com.tr", sag:"Microsoft 365", gec:"38 sn", durum:"iyi", bugun:96},
+  {firma:"Tekno Yapı A.Ş.", adres:"muhasebe@teknoyapi.com.tr", sag:"Microsoft 365", gec:"51 sn", durum:"iyi", bugun:64},
+  {firma:"Deniz Lojistik", adres:"operasyon@denizlojistik.com", sag:"Yandex", gec:"29 sn", durum:"iyi", bugun:114},
+  {firma:"Deniz Lojistik", adres:"info@denizlojistik.com", sag:"Yandex", gec:"31 sn", durum:"iyi", bugun:88},
+  {firma:"Arkun Mobilya", adres:"info@arkunmobilya.com", sag:"Turhost cPanel", gec:"55 sn", durum:"iyi", bugun:21},
+  {firma:"Arkun Mobilya", adres:"siparis@arkunmobilya.com", sag:"Turhost cPanel", gec:"49 sn", durum:"iyi", bugun:19},
+  {firma:"Yıldırım Ofis", adres:"info@yildirimofis.com", sag:"Google Workspace", gec:"44 sn", durum:"iyi", bugun:31},
+  {firma:"Ergün Mali Müşavirlik", adres:"muhasebe@ergundenetim.com", sag:"Turhost cPanel", gec:"58 sn", durum:"iyi", bugun:19},
+  {firma:"Mobilup Showroom", adres:"info@mobilup.com.tr", sag:"Google Workspace", gec:"47 sn", durum:"iyi", bugun:12}
+];
+const SAGLAYICI = [
+  {ad:"Microsoft 365", kutu:4, kopma:7},
+  {ad:"Natro cPanel", kutu:2, kopma:4},
+  {ad:"Turhost cPanel", kutu:3, kopma:2},
+  {ad:"Google Workspace", kutu:2, kopma:1},
+  {ad:"Yandex", kutu:2, kopma:0}
+];
+
+function talepHTML(){
+  const bekleyen = TALEPLER.filter(t => t.durum === "yeni").length;
+  const yazilan  = TALEPLER.filter(t => t.durum === "yazildi").length;
+  const kurulan  = TALEPLER.filter(t => t.durum === "kuruldu").length;
+  const acikLar  = TALEPLER.filter(t => t.durum !== "kapandi");
+  const gorunen  = talepSuzgec === "acik" ? acikLar : TALEPLER;
+  const donusum  = TALEPLER.length ? Math.round(kurulan / TALEPLER.length * 100) : 0;
+
+  const satirlar = gorunen.length ? gorunen.map(t => {
+    const d = TALEP_DURUM[t.durum];
+    const bas = t.firma.trim().charAt(0).toUpperCase();
+    const konu = encodeURIComponent("Mailhanem demo görüşmesi — " + t.firma);
+    /* satır sonları önceden kodlanır: kaynakta ters bölü bırakmıyoruz */
+    const NL = "%0A";
+    const govde =
+      encodeURIComponent("Merhaba " + t.ad.split(" ")[0] + ",") + NL + NL +
+      encodeURIComponent("Demo talebiniz için teşekkürler. Kırk beş dakikalık bir görüşme " +
+        "öneriyorum; kutunuzu birlikte bağlayıp ilk sınıflandırmayı ekranda görüyoruz.") + NL + NL +
+      encodeURIComponent("Size uygun olabilecek saatler:") + NL +
+      encodeURIComponent("  · ") + NL + encodeURIComponent("  · ") + NL +
+      encodeURIComponent("  · ") + NL + NL +
+      encodeURIComponent("Uymazsa siz bir saat söyleyin.") + NL + NL +
+      encodeURIComponent("Enes");
+    return "<div class=\"talep-satir " + t.durum + "\">" +
+      "<span class=\"av kare\">" + bas + "</span>" +
+      "<div class=\"talep-ne\">" +
+        "<span class=\"talep-kim\"><b>" + t.firma + "</b><span class=\"ad\">" + t.ad + "</span></span>" +
+        "<span class=\"talep-bilgi\">" +
+          "<a href=\"mailto:" + t.eposta + "\">" + t.eposta + "</a>" +
+          (t.telefon ? "<span class=\"ayrac\">·</span><span class=\"sayi-h\">" + t.telefon + "</span>" : "") +
+          "<span class=\"ayrac\">·</span>" + t.saglayici +
+          "<span class=\"ayrac\">·</span>kutuya " + t.kisi +
+        "</span>" +
+        (t.not ? "<span class=\"talep-not\">" + ikon("soru",13) + "<span>" + t.not + "</span></span>" : "") +
+      "</div>" +
+      "<span class=\"sure\">" + t.gelen + "</span>" +
+      "<span class=\"rozet " + d.sinif + "\">" + d.ad + "</span>" +
+      "<span class=\"talep-eylem\">" +
+        (t.durum === "yeni"
+          ? "<a class=\"dugme ufak ana\" href=\"mailto:" + t.eposta + "?subject=" + konu + "&body=" + govde + "\" data-yazildi=\"" + t.id + "\">Saat öner</a>"
+          : "") +
+        (t.durum === "yazildi"
+          ? "<button class=\"dugme ufak\" data-kuruldu=\"" + t.id + "\">Görüşme kuruldu</button>"
+          : "") +
+        (t.durum === "kapandi"
+          ? "<button class=\"dugme ufak sade\" data-geriac=\"" + t.id + "\">Geri aç</button>"
+          : "<button class=\"dugme ufak sade\" data-kapat=\"" + t.id + "\">Kapat</button>") +
+      "</span>" +
+    "</div>";
+  }).join("") :
+    "<div class=\"talep-bos\">" + ikon("onay",22) +
+      "<b>Bekleyen talep yok</b><span>Siteden yeni bir form düştüğünde burada belirir.</span></div>";
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Demo Talepleri</h1>" +
+      "<p>Tanıtım sayfasındaki formdan düşer. Yanıtlamadığın her saat bir müşteri kaybı.</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<dl class=\"kartlar\">" +
+      "<div class=\"skart\"><dt>Yanıt bekleyen</dt><div class=\"deger\"><dd" +
+        (bekleyen ? " style=\"color:var(--uyari)\"" : "") + ">" + bekleyen + "</dd></div>" +
+        "<div class=\"not\">en eskisi 3 saat önce geldi</div></div>" +
+      "<div class=\"skart\"><dt>Saat önerildi</dt><div class=\"deger\"><dd>" + yazilan + "</dd></div>" +
+        "<div class=\"not\">cevap bekleniyor</div></div>" +
+      "<div class=\"skart\"><dt>Görüşme kuruldu</dt><div class=\"deger\"><dd style=\"color:var(--olumlu)\">" +
+        kurulan + "</dd></div><div class=\"not\">takvime girdi</div></div>" +
+      "<div class=\"skart\"><dt>Talepten görüşmeye</dt><div class=\"deger\"><dd>%" + donusum + "</dd></div>" +
+        "<div class=\"not\">" + TALEPLER.length + " talebin " + kurulan + " tanesi</div></div>" +
+    "</dl>" +
+
+    "<h2 class=\"bolum\">Kuyruk<span class=\"sayi\">" + acikLar.length + " açık</span>" +
+      "<span class=\"talep-suz\">" +
+        "<button class=\"" + (talepSuzgec === "acik" ? "etkin" : "") + "\" data-suz=\"acik\">Açık</button>" +
+        "<button class=\"" + (talepSuzgec === "tum" ? "etkin" : "") + "\" data-suz=\"tum\">Tümü</button>" +
+      "</span></h2>" +
+    "<div class=\"triyaj\">" + satirlar + "</div>" +
+
+    "<div class=\"kutu-uyari\">" + ikon("bilgi",16) +
+      "<span><b>Bu ekran sitenin formuyla eşleşir.</b> Alanlar birebir aynı: ad, firma, " +
+      "e-posta, telefon, posta sağlayıcısı, kutuya bakan kişi sayısı ve serbest not. " +
+      "Sitedeki iletişim bilgileri de buradan yönetilir; boş bırakılan bir alan sayfada " +
+      "hiç görünmez.</span></div>" +
+    "</div>";
+}
+
+function saglikHTML(){
+  const kopuk = KUTULAR.filter(k => k.durum === "kopuk").length;
+  const yavas = KUTULAR.filter(k => k.durum === "yavas").length;
+  const bugun = KUTULAR.reduce((t,k) => t + k.bugun, 0);
+
+  const satirlar = KUTULAR.map(k =>
+    "<div class=\"kutu-satir " + (k.durum === "iyi" ? "" : k.durum) + "\">" +
+      "<span class=\"nb " + (k.durum === "iyi" ? "" : k.durum) + "\"></span>" +
+      "<span class=\"adres\">" + k.adres + "</span>" +
+      "<span class=\"frm\">" + k.firma + "</span>" +
+      "<span class=\"sag-ad\">" + k.sag + "</span>" +
+      "<span class=\"gec\">" + k.gec + "</span>" +
+      "<span class=\"bekleme sayi-h\" style=\"width:52px;text-align:right;flex:none;color:var(--soluk);font-size:12px\">" +
+        k.bugun + "</span>" +
+      (k.durum === "kopuk"
+        ? "<button class=\"dugme ufak\" data-yeniden=\"" + k.adres + "\">Yeniden dene</button>"
+        : "<span style=\"width:96px;flex:none\"></span>") +
+    "</div>").join("");
+
+  const enKotu = Math.max.apply(null, SAGLAYICI.map(s => s.kopma / s.kutu));
+  const sagList = SAGLAYICI.map(s => {
+    const oran = s.kopma / s.kutu;
+    return "<div class=\"sag-satir\"><span>" + s.ad + "</span>" +
+      "<span class=\"adet\">" + s.kutu + " kutu</span>" +
+      "<span class=\"ray\"><i style=\"width:" + Math.round(oran / enKotu * 100) + "%\"></i></span>" +
+      "<span class=\"oran\">" + oran.toFixed(1) + "</span></div>";
+  }).join("");
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Bağlantı Sağlığı</h1>" +
+      "<p>Müşteri seni aramadan önce görmen gereken ekran</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<dl class=\"kartlar\">" +
+      "<div class=\"skart\"><dt>İzlenen posta kutusu</dt><div class=\"deger\"><dd>" + KUTULAR.length + "</dd></div>" +
+        "<div class=\"not\">" + MUSTERILER.length + " firma</div></div>" +
+      "<div class=\"skart\"><dt>Kopuk</dt><div class=\"deger\"><dd style=\"color:var(--kritik)\">" + kopuk + "</dd></div>" +
+        "<div class=\"not\">mail hiç çekilmiyor</div></div>" +
+      "<div class=\"skart\"><dt>Yavaş senkron</dt><div class=\"deger\"><dd style=\"color:var(--uyari)\">" + yavas + "</dd></div>" +
+        "<div class=\"not\">2 dk üstü gecikme</div></div>" +
+      "<div class=\"skart\"><dt>Bugün çekilen</dt><div class=\"deger\"><dd>" + bugun.toLocaleString("tr-TR") + "</dd></div>" +
+        "<div class=\"not\">tüm kutular toplamı</div></div>" +
+    "</dl>" +
+
+    "<h2 class=\"bolum\">Posta kutuları<span class=\"sayi\">" + KUTULAR.length + "</span>" +
+      "<span class=\"aciklayici\">en sorunlu en üstte</span></h2>" +
+    "<div class=\"tablo-sar\">" + satirlar + "</div>" +
+
+    "<div class=\"pizgara p32\" style=\"margin-top:22px\">" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Sağlayıcı başına kopma</span>" +
+        "<span class=\"kt-not\">son 30 gün · kutu başına</span></div>" +
+        "<div class=\"kt-ic\">" + sagList +
+        "<p class=\"dip\" style=\"margin-top:14px\">Microsoft 365 kutuları ayda ortalama " +
+        "<b>1,8 kez</b> kopuyor — hepsi uygulama parolasıyla bağlı. Uygulama parolaları " +
+        "kullanıcı şifresi değişince sessizce iptal oluyor. Bu müşterileri <b>OAuth'a taşımak</b> " +
+        "destek yükünün en büyük tek kalemini bitirir.</p></div></div>" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Şu an ne yapmalı</span></div>" +
+        "<div class=\"kt-ic\" style=\"display:flex;flex-direction:column;gap:11px\">" +
+        "<div class=\"kaz\" style=\"background:var(--krt-yum);margin:0\"><b style=\"color:var(--kritik)\">1</b>" +
+          "<span class=\"ne\" style=\"color:var(--kritik)\">Arkun Mobilya · destek@ üç saattir kopuk. " +
+          "Şifre yenilenmeli, kalıcı çözüm OAuth.</span></div>" +
+        "<div class=\"kaz\" style=\"background:var(--uyr-yum);margin:0\"><b style=\"color:var(--uyari)\">2</b>" +
+          "<span class=\"ne\" style=\"color:var(--uyari)\">Aktaş İnşaat · Natro sunucusu yavaş yanıt " +
+          "veriyor. Müşteri henüz fark etmedi ama gecikme büyüyor.</span></div>" +
+        "</div></div>" +
+    "</div></div>";
+}
+
+/* ══ MALİYET VE MARJ ═══════════════════════ */
+const MODELLER = [
+  {model:"Haiku 4.5", is:"Sınıflandırma", cagri:23480, token:"18,4M", tutar:21.60},
+  {model:"Sonnet 5", is:"Taslak üretimi", cagri:9120, token:"9,1M", tutar:87.30},
+  {model:"Sonnet 5", is:"PDF analizi", cagri:1340, token:"4,2M", tutar:15.40}
+];
+const ENGELLENEN = 8940, ENGEL_BIRIM = 0.0053, ONBELLEK = 71, ONBELLEK_KAZANC = 38.20;
+
+function maliyetHTML(){
+  const ai = MODELLER.reduce((t,m) => t + m.tutar, 0);
+  const destekSaat = MUSTERILER.reduce((t,m) => t + m.destek, 0);
+  const destekBedel = destekSaat * SAAT_UCRET;
+  const mrr = MUSTERILER.reduce((t,m) => t + m.ucret, 0);
+  const mail = MUSTERILER.reduce((t,m) => t + m.mail, 0);
+  const engelKazanc = ENGELLENEN * ENGEL_BIRIM;
+
+  const modelSatir = MODELLER.map(m =>
+    "<div class=\"mal-satir\"><span class=\"ad\">" + m.is + "</span>" +
+      "<span class=\"ek\">" + m.model + " · " + m.cagri.toLocaleString("tr-TR") + " çağrı · " + m.token + " token</span>" +
+      "<span class=\"tut\">" + para2(m.tutar) + "</span></div>").join("");
+
+  const birim = MUSTERILER.filter(m => m.ucret).map(m => {
+    const bm = m.ai / m.mail * 1000;
+    return "<div class=\"mal-satir\"><span class=\"ad\">" + m.ad + "</span>" +
+      "<span class=\"ek\">" + m.mail.toLocaleString("tr-TR") + " mail</span>" +
+      "<span class=\"tut\">" + para2(bm) + " <span style=\"color:var(--soluk);font-weight:400\">/1000</span></span></div>";
+  }).join("");
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Maliyet ve Marj</h1>" +
+      "<p>Her kuruş nereye gidiyor, hangi müşteri gerçekten kazandırıyor</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<div class=\"kaz\"><b>" + para(engelKazanc + ONBELLEK_KAZANC) + "</b>" +
+      "<span class=\"ne\">Bu ay yapay zekâya <b>hiç gönderilmeyerek</b> tasarruf edilen tutar. " +
+      "Kural motoru " + ENGELLENEN.toLocaleString("tr-TR") + " bülten ve otomatik yanıtı eledi (" +
+      para(engelKazanc) + "), prompt önbelleği %" + ONBELLEK + " isabetle " + para(ONBELLEK_KAZANC) +
+      " kazandırdı. Bu iki optimizasyon olmasa fatura " +
+      para(ai + engelKazanc + ONBELLEK_KAZANC) + " olurdu.</span></div>" +
+
+    "<div class=\"pizgara p2\">" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Yapay zekâ · iş türüne göre</span>" +
+        "<span class=\"kt-not\">bu ay</span></div><div class=\"kt-ic\">" + modelSatir +
+        "<div class=\"mal-satir top\"><span class=\"ad\">Toplam</span>" +
+        "<span class=\"tut\">" + para2(ai) + "</span></div>" +
+        "<p class=\"dip\" style=\"margin-top:13px\">Sınıflandırma çağrıların %69'u ama maliyetin " +
+        "sadece %17'si — ucuz modele verildiği için. Aynı işi Sonnet'e yaptırsan bu satır " +
+        para2(21.60 * 2) + " olurdu.</p></div></div>" +
+
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Aylık maliyet tablosu</span></div>" +
+        "<div class=\"kt-ic\">" +
+        "<div class=\"mal-satir\"><span class=\"ad\">Gelir</span><span class=\"tut\">" + para(mrr) + "</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">Yapay zekâ</span>" +
+          "<span class=\"ek\">" + mail.toLocaleString("tr-TR") + " mail</span>" +
+          "<span class=\"tut eksi\">−" + para2(ai) + "</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">Sunucu ve depolama</span>" +
+          "<span class=\"tut eksi\">−" + para2(ALTYAPI) + "</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">Destek zamanın</span>" +
+          "<span class=\"ek\">" + destekSaat.toLocaleString("tr-TR",{minimumFractionDigits:1}) +
+          " sa × " + para(SAAT_UCRET) + "</span>" +
+          "<span class=\"tut eksi\">−" + para2(destekBedel) + "</span></div>" +
+        "<div class=\"mal-satir top\"><span class=\"ad\">Net</span><span class=\"tut\">" +
+          para2(mrr - ai - ALTYAPI - destekBedel) + "  ·  %" +
+          Math.round((mrr - ai - ALTYAPI - destekBedel) / mrr * 100) + "</span></div>" +
+        "<p class=\"dip\" style=\"margin-top:13px\">Destek kalemi yapay zekânın <b>iki katından " +
+        "fazla</b>. Ölçeklenirken model maliyetini değil, destek saatini düşürmen gerekiyor.</p>" +
+        "</div></div>" +
+    "</div>" +
+
+    "<div class=\"pizgara p2\">" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">1000 mail başına maliyet</span>" +
+        "<span class=\"kt-not\">müşteri bazında</span></div><div class=\"kt-ic\">" + birim +
+        "<p class=\"dip\" style=\"margin-top:13px\">Birim maliyet müşteriye göre değişiyor çünkü " +
+        "mail karışımı farklı: çok ek gönderen müşteride PDF analizi payı büyüyor.</p></div></div>" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Plan bazlı net marj</span></div>" +
+        "<div class=\"kt-ic\">" +
+        ["kurumsal","pro","baslangic"].map(p => {
+          const g = MUSTERILER.filter(m => m.plan === p);
+          const gelir = g.reduce((t,m) => t + m.ucret, 0);
+          const net = g.reduce((t,m) => t + marjHesap(m).net, 0);
+          return "<div class=\"mal-satir\"><span class=\"ad\">" + PLAN_AD[p] + "</span>" +
+            "<span class=\"ek\">" + g.length + " müşteri · " + para(gelir) + "</span>" +
+            "<span class=\"tut" + (net / gelir < 0.55 ? " eksi" : "") + "\">%" +
+            Math.round(net / gelir * 100) + "</span></div>";
+        }).join("") +
+        "<p class=\"dip\" style=\"margin-top:13px\"><b>Başlangıç planı sorunlu.</b> $99'luk " +
+        "müşteriler en çok destek isteyenler; net marj burada çöküyor. Ya fiyat artmalı, " +
+        "ya destek bu plandan çıkmalı (yalnızca e-posta, 48 saat yanıt).</p></div></div>" +
+    "</div></div>";
+}
+
+/* ══ ABONELİKLER ═══════════════════════════ */
+const MRR_HAREKET = [
+  {ad:"Şubat MRR", tur:"baz", d:1245},
+  {ad:"Yeni müşteri", tur:"arti", d:99},
+  {ad:"Plan yükseltme", tur:"arti", d:150},
+  {ad:"Plan düşürme", tur:"eksi", d:-150},
+  {ad:"Mart MRR", tur:"son", d:1344}
+];
+const TAKVIM = [
+  {gun:"4 gün", firma:"Tekno Yapı A.Ş.", tutar:399, durum:"iyi"},
+  {gun:"6 gün", firma:"Deniz Lojistik", tutar:249, durum:"iyi"},
+  {gun:"9 gün", firma:"Arkun Mobilya", tutar:249, durum:"iyi"},
+  {gun:"14 gün", firma:"Yıldırım Ofis", tutar:99, durum:"iyi"},
+  {gun:"21 gün", firma:"Ergün Mali Müşavirlik", tutar:99, durum:"risk"}
+];
+
+function aboneHTML(){
+  const mrr = MUSTERILER.reduce((t,m) => t + m.ucret, 0);
+  const enB = Math.max.apply(null, MRR_HAREKET.map(h => Math.abs(h.d)));
+
+  const selale = MRR_HAREKET.map(h =>
+    "<div class=\"sel " + h.tur + "\">" +
+      "<span class=\"deg\">" + (h.d > 0 && h.tur === "arti" ? "+" : "") + para(h.d) + "</span>" +
+      "<div class=\"cub\" style=\"height:" + Math.round(Math.abs(h.d) / enB * 100) + "%\"></div>" +
+      "<span class=\"et\">" + h.ad + "</span></div>").join("");
+
+  const takvim = TAKVIM.map(t =>
+    "<div class=\"tak-satir\"><span class=\"gun\">" + t.gun + "</span>" +
+      "<span class=\"frm\">" + t.firma + "</span>" +
+      (t.durum === "risk" ? "<span class=\"plan p-deneme\">risk</span>" : "") +
+      "<span class=\"tut\">" + para(t.tutar) + "</span></div>").join("");
+
+  const dagilim = ["kurumsal","pro","baslangic","deneme"].map(p => {
+    const g = MUSTERILER.filter(m => m.plan === p);
+    const gelir = g.reduce((t,m) => t + m.ucret, 0);
+    return "<div class=\"mal-satir\"><span class=\"ad\"><span class=\"plan p-" + p + "\">" +
+      PLAN_AD[p] + "</span></span><span class=\"ek\">" + g.length + " müşteri</span>" +
+      "<span class=\"tut\">" + (gelir ? para(gelir) : "—") + "</span></div>";
+  }).join("");
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Abonelikler</h1>" +
+      "<p>Kim ödedi, kimin kartı düştü, kim yenilenecek</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<dl class=\"kartlar\">" +
+      "<div class=\"skart\"><dt>Aylık gelir</dt><div class=\"deger\"><dd>" + para(mrr) + "</dd>" +
+        "<span class=\"kivilcim\">" + kivilcim(GECMIS.mrr, "var(--olumlu)") + "</span></div>" +
+        "<div class=\"not\"><span class=\"yon iyi\">+%" + degisim(GECMIS.mrr) + "</span>geçen aya göre</div></div>" +
+      "<div class=\"skart\"><dt>Tahsil edilen</dt><div class=\"deger\"><dd>" + para(mrr - 249) + "</dd></div>" +
+        "<div class=\"not\"><span class=\"yon kotu\">" + para(249) + "</span>bekliyor</div></div>" +
+      "<div class=\"skart\"><dt>Başarısız ödeme</dt><div class=\"deger\"><dd style=\"color:var(--kritik)\">1</dd></div>" +
+        "<div class=\"not\">3. deneme · 5 gün sonra askı</div></div>" +
+      "<div class=\"skart\"><dt>Aylık churn</dt><div class=\"deger\"><dd>%0</dd></div>" +
+        "<div class=\"not\">6 aydır müşteri kaybı yok</div></div>" +
+    "</dl>" +
+
+    "<div class=\"pizgara p32\">" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Gelir nasıl değişti</span>" +
+        "<span class=\"kt-not\">şubat → mart</span></div>" +
+        "<div class=\"kt-ic\"><div class=\"selale\">" + selale + "</div>" +
+        "<p class=\"dip\" style=\"margin-top:14px\">Büyüme yeni müşteriden değil, <b>mevcut " +
+        "müşterinin plan yükseltmesinden</b> geldi. Bu iyi haber: ürün derinleştikçe kendi " +
+        "içinde büyüyor. Ama plan düşüren de var — Aktaş İnşaat'ın hacmi 5 aydır azalıyor.</p>" +
+        "</div></div>" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Yaklaşan yenilemeler</span></div>" +
+        "<div class=\"kt-ic\">" + takvim + "</div></div>" +
+    "</div>" +
+
+    "<div class=\"pizgara p2\">" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Başarısız ödeme</span></div>" +
+        "<div class=\"kt-ic\">" +
+        "<div class=\"kaz\" style=\"background:var(--krt-yum);margin:0 0 13px\">" +
+          "<b style=\"color:var(--kritik)\">" + para(249) + "</b>" +
+          "<span class=\"ne\" style=\"color:var(--kritik)\">Aktaş İnşaat · kart reddedildi. " +
+          "3 deneme yapıldı, 5 gün sonra hesap otomatik askıya alınacak.</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">1. deneme</span>" +
+          "<span class=\"ek\">2 gün önce</span><span class=\"tut eksi\">reddedildi</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">2. deneme</span>" +
+          "<span class=\"ek\">dün</span><span class=\"tut eksi\">reddedildi</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">3. deneme</span>" +
+          "<span class=\"ek\">bugün 04:00</span><span class=\"tut eksi\">reddedildi</span></div>" +
+        "<div class=\"mal-satir\"><span class=\"ad\">Son deneme</span>" +
+          "<span class=\"ek\">5 gün sonra</span><span class=\"tut\">planlandı</span></div>" +
+        "<div class=\"c-eylem\" style=\"margin-top:13px\">" +
+          "<button class=\"dugme ana\" data-is-yeni=\"Aktaş İnşaat\">Ödeme linki gönder</button>" +
+          "<button class=\"dugme\" data-plan=\"Aktaş İnşaat\">Askıyı ertele</button></div>" +
+        "</div></div>" +
+      "<div class=\"kt\"><div class=\"kt-ust\"><span class=\"kt-ad\">Plan dağılımı</span>" +
+        "<span class=\"kt-not\">" + MUSTERILER.length + " hesap</span></div>" +
+        "<div class=\"kt-ic\">" + dagilim +
+        "<p class=\"dip\" style=\"margin-top:13px\">Gelirin <b>%59'u iki Pro müşteriden</b> " +
+        "geliyor. Bu yoğunlaşma risk: birini kaybetmek aylık gelirin beşte birini götürür. " +
+        "Başlangıç planından Pro'ya geçişi kolaylaştırmak en güvenli büyüme yolu.</p></div></div>" +
+    "</div></div>";
+}
+
+/* ══ SİSTEM GÜNLÜĞÜ ════════════════════════ */
+const OLAYLAR = [
+  {vakit:"14:02:11", tur:"giris", kim:"Enes Işhak", vurgu:true,
+   ic:"<b>Arkun Mobilya</b> hesabına giriş yapıldı — 30 dk oturum. Firma yöneticisine bildirim gönderildi."},
+  {vakit:"13:47:03", tur:"hata", kim:"worker-2",
+   ic:"<b>destek@arkunmobilya.com</b> IMAP bağlantısı reddedildi — <code>AUTHENTICATIONFAILED</code>. 4. yeniden deneme başarısız."},
+  {vakit:"13:30:00", tur:"senkron", kim:"worker-1",
+   ic:"Toplu çekim tamamlandı — 13 kutu, <code>612 yeni mail</code>, 41 sn."},
+  {vakit:"12:18:44", tur:"gonderim", kim:"Elif Aydın · Arkun",
+   ic:"Yanıt gönderildi <code>muhasebe@ergundenetim.com</code> — SMTP 250 OK, Sent klasörüne yazıldı."},
+  {vakit:"11:55:20", tur:"hata", kim:"api",
+   ic:"Anthropic çağrısı <code>529 overloaded</code> — 2 sn sonra yeniden denendi, başarılı."},
+  {vakit:"11:40:07", tur:"yonetim", kim:"Enes Işhak",
+   ic:"<b>Tekno Yapı A.Ş.</b> planı Pro → Kurumsal yükseltildi. Fatura farkı orantılı yansıtıldı."},
+  {vakit:"10:22:31", tur:"senkron", kim:"worker-1",
+   ic:"<b>info@aktasinsaat.com</b> senkron gecikmesi eşiği aştı — <code>2 dk 40 sn</code>. Uyarı kaydedildi."},
+  {vakit:"09:12:00", tur:"hata", kim:"worker-2",
+   ic:"<b>destek@arkunmobilya.com</b> bağlantısı koptu. İş kuyruğuna acil kayıt açıldı."},
+  {vakit:"08:30:15", tur:"gonderim", kim:"Enes Işhak · Arkun",
+   ic:"Yanıt gönderildi <code>ayse.demir@outlook.com</code> — iade prosedürü, taslak düzeltilmeden onaylandı."},
+  {vakit:"06:00:00", tur:"senkron", kim:"zamanlayıcı",
+   ic:"Gecelik yedek tamamlandı — <code>41 GB</code>, nesne depolamaya yazıldı."},
+  {vakit:"04:00:02", tur:"yonetim", kim:"iyzico",
+   ic:"<b>Aktaş İnşaat</b> tahsilat denemesi başarısız — kart reddedildi (3/4)."},
+  {vakit:"dün 17:20", tur:"giris", kim:"Enes Işhak", vurgu:true,
+   ic:"<b>Yıldırım Ofis</b> hesabına giriş yapıldı — 30 dk oturum. Destek talebi #118."},
+  {vakit:"dün 15:03", tur:"yonetim", kim:"Enes Işhak",
+   ic:"<b>Mobilup Showroom</b> deneme hesabı oluşturuldu — 14 gün, 2 kullanıcı."}
+];
+const OLAY_AD = {giris:"Hesaba giriş", senkron:"Senkron", hata:"Hata",
+                 gonderim:"Gönderim", yonetim:"Yönetim"};
+let gunlukSuz = "hepsi";
+
+function gunlukHTML(){
+  const l = OLAYLAR.filter(o => gunlukSuz === "hepsi" || o.tur === gunlukSuz);
+  const suzgec = [["hepsi","Tümü"]].concat(Object.keys(OLAY_AD).map(k => [k, OLAY_AD[k]]));
+
+  return "<div class=\"sayfa\">" +
+    "<div class=\"sayfa-ust\"><div><h1>Sistem Günlüğü</h1>" +
+      "<p>Ne oldu, ne zaman, kim yaptı — denetim izi</p></div>" +
+      "<span class=\"ornek\">örnek veri</span></div>" +
+
+    "<div class=\"kural-kutu\" style=\"background:var(--uyr-yum);color:var(--uyari)\">" + ikon("kilit",19) + "<div>" +
+      "<h3 style=\"color:var(--uyari)\">Hesaba giriş kayıtları silinemez</h3>" +
+      "<p>Müşteri panellerine yaptığın her giriş sarı zeminle işaretli. Bu satırlar " +
+      "değiştirilemez ve silinemez; ilgili firmanın yöneticisi de kendi panelinden aynı " +
+      "kayıtları görür. Müşterinin tüm yazışmasını okuyabildiğin bir sistemde bunu " +
+      "gizlemek, öğrenildiği gün şirketi bitirir.</p></div></div>" +
+
+    "<div class=\"gun-suz\">" + suzgec.map(s =>
+      "<button class=\"" + (gunlukSuz === s[0] ? "aktif" : "") + "\" data-gsuz=\"" + s[0] + "\">" +
+      s[1] + (s[0] === "hepsi" ? "" : " · " + OLAYLAR.filter(o => o.tur === s[0]).length) +
+      "</button>").join("") + "</div>" +
+
+    "<div class=\"tablo-sar\">" + l.map(o =>
+      "<div class=\"olay" + (o.vurgu ? " vurgu" : "") + "\">" +
+        "<span class=\"vakit\">" + o.vakit + "</span>" +
+        "<span class=\"tur t-" + o.tur + "\">" + OLAY_AD[o.tur] + "</span>" +
+        "<span class=\"ic\">" + o.ic + "</span>" +
+        "<span class=\"kim\">" + o.kim + "</span></div>").join("") + "</div>" +
+
+    "<p class=\"dip\">Günlük 90 gün saklanır, sonra özetlenip arşive taşınır. " +
+    "<b>Hesaba giriş kayıtları hiç silinmez.</b> KVKK açısından veri işleyen sıfatının " +
+    "gereği bu; bir denetimde ilk istenecek şey de budur.</p></div>";
+}
+
+const PLANLAR = [
+  {id:"baslangic", ad:"Başlangıç", ucret:99,  kutu:2,  kullanici:3,
+   ozet:"Tek kutu, temel kategoriler, e-posta destek"},
+  {id:"pro", ad:"Pro", ucret:249, kutu:5, kullanici:10,
+   ozet:"Yönlendirme kuralları, PDF analizi, öncelikli destek"},
+  {id:"kurumsal", ad:"Kurumsal", ucret:399, kutu:0, kullanici:0,
+   ozet:"Sınırsız kutu ve kullanıcı, şube yönetimi, özel eğitim"}
+];
+let planSecim = null;
+
+function planModalHTML(){
+  const m = MUSTERILER.find(x => x.ad === planDegis);
+  const mevcut = PLANLAR.find(x => x.id === m.plan) || {ad:"Deneme", ucret:0, id:"deneme"};
+  const yeni = PLANLAR.find(x => x.id === (planSecim || m.plan)) || mevcut;
+  const fark = yeni.ucret - mevcut.ucret;
+  const kalan = 21;
+  const orantili = Math.round(fark * kalan / 30);
+  const mh = marjHesap(m);
+  const yeniNet = yeni.ucret - m.ai - mh.altyapiPay - mh.destekBedel;
+
+  const secenekler = PLANLAR.map(x =>
+    "<button class=\"secenek" + (x.id === (planSecim || m.plan) ? " secili" : "") +
+    "\" data-plansec=\"" + x.id + "\"><span class=\"kutucuk\"></span>" +
+    "<span style=\"flex:1\"><b>" + x.ad + " · " + para(x.ucret) + "/ay</b>" +
+    "<small>" + x.ozet + "</small></span>" +
+    (x.id === mevcut.id ? "<span class=\"plan p-" + x.id + "\">mevcut</span>" : "") +
+    "</button>").join("");
+
+  return "<div class=\"modal-perde\" id=\"p-perde\"><div class=\"modal\" role=\"dialog\" " +
+    "style=\"width:min(540px,100%);max-height:88vh;overflow-y:auto\">" +
+    "<h2>" + m.ad + " · plan değiştir</h2>" +
+    "<p>Şu an <b>" + mevcut.ad + "</b> planında, " + para(mevcut.ucret) + "/ay ödüyor.</p>" +
+
+    secenekler +
+
+    (fark !== 0
+      ? "<div class=\"kutu-uyari\" style=\"background:" + (fark > 0 ? "var(--olm-yum)" : "var(--uyr-yum)") +
+        ";color:" + (fark > 0 ? "var(--olumlu)" : "var(--uyari)") + ";margin-top:16px\">" +
+        ikon(fark > 0 ? "grafik" : "geri",16) + "<span>Aylık gelir <b>" +
+        (fark > 0 ? "+" : "") + para(fark) + "</b> değişecek. Bu döngüde " + kalan +
+        " gün kaldığı için ilk faturaya orantılı <b>" + (orantili > 0 ? "+" : "") +
+        para(orantili) + "</b> yansıyacak, sonraki aydan itibaren tam tutar.</span></div>"
+      : "<div class=\"kutu-uyari\" style=\"margin-top:16px\">" + ikon("bilgi",16) + "" +
+        "<span>Farklı bir plan seçilmedi.</span></div>") +
+
+    "<div style=\"margin-top:16px\">" +
+      "<div class=\"mal-satir\"><span class=\"ad\">Yeni abonelik</span>" +
+        "<span class=\"tut\">" + para(yeni.ucret) + "</span></div>" +
+      "<div class=\"mal-satir\"><span class=\"ad\">Yapay zekâ + altyapı + destek</span>" +
+        "<span class=\"ek\">değişmiyor</span>" +
+        "<span class=\"tut eksi\">−" + para2(m.ai + mh.altyapiPay + mh.destekBedel) + "</span></div>" +
+      "<div class=\"mal-satir top\"><span class=\"ad\">Yeni net marj</span>" +
+        "<span class=\"tut" + (yeniNet < 0 ? " eksi" : "") + "\">" + para2(yeniNet) +
+        (yeni.ucret ? "  ·  %" + Math.round(yeniNet / yeni.ucret * 100) : "") + "</span></div>" +
+    "</div>" +
+
+    (m.destek >= 2 && yeni.ucret <= 99
+      ? "<p class=\"dip\" style=\"margin-top:12px\">Bu müşteri ayda " +
+        m.destek.toLocaleString("tr-TR",{minimumFractionDigits:1}) + " saat destek istiyor. " +
+        "Başlangıç planında net marj çok düşük kalıyor — <b>Pro'ya çıkarmak</b> ya da " +
+        "destek kapsamını daraltmak gerekiyor.</p>"
+      : "") +
+
+    "<div class=\"eylem\" style=\"margin-top:18px\">" +
+      "<button class=\"dugme\" id=\"p-iptal\">Vazgeç</button>" +
+      "<button class=\"dugme ana\" id=\"p-onay\"" + (fark === 0 ? " disabled" : "") +
+      ">Planı değiştir</button></div>" +
+    "</div></div>";
+}
+
+let zamanlayici;
+function bildir(metin){
+  const b = $("#bildirim");
+  b.textContent = metin; b.classList.add("gorunur");
+  clearTimeout(zamanlayici);
+  zamanlayici = setTimeout(() => b.classList.remove("gorunur"), 2600);
+}
+
+function bagla(){
+  document.querySelectorAll("[data-sirala]").forEach(b => {
+    b.onclick = () => {
+      const a = b.dataset.sirala;
+      if (siraAlan === a) siraYon = -siraYon; else { siraAlan = a; siraYon = a === "ad" ? 1 : -1; }
+      ciz();
+    };
+  });
+  const ar = $("#arama");
+  if (ar){
+    ar.oninput = e => {
+      aramaMetni = e.target.value;
+      const k = e.target.selectionStart;
+      ciz();
+      const y = $("#arama");
+      if (y){ y.focus(); y.setSelectionRange(k, k); }
+    };
+  }
+  document.querySelectorAll("[data-mus]").forEach(tr => {
+    tr.onclick = () => { secilenMus = tr.dataset.mus; ciz(); };
+  });
+  document.querySelectorAll("[data-suz]").forEach(b => {
+    b.onclick = () => { talepSuzgec = b.dataset.suz; ciz(); };
+  });
+  const talepGec = (sec, yeni, mesaj) => {
+    document.querySelectorAll("[data-" + sec + "]").forEach(b => {
+      b.addEventListener("click", () => {
+        const t = TALEPLER.find(x => x.id === +b.dataset[sec]);
+        if (!t) return;
+        t.durum = yeni;
+        bildir(t.firma + " · " + mesaj);
+        /* mailto bağlantısı kendi işini yapsın, çizim bir tık sonra */
+        setTimeout(ciz, 0);
+      });
+    });
+  };
+  talepGec("yazildi", "yazildi", "saat önerisi yazıldı");
+  talepGec("kuruldu", "kuruldu", "görüşme takvime girdi");
+  talepGec("kapat",   "kapandi", "talep kapatıldı");
+  talepGec("geriac",  "yeni",    "talep yeniden açıldı");
+
+  document.querySelectorAll("[data-is]").forEach(b => {
+    b.onclick = () => {
+      const t = TRIYAJ.find(x => x.id === +b.dataset.is);
+      t.bitti = true;
+      bildir(t.eylem + " · iş tamamlandı olarak işaretlendi");
+      ciz();
+    };
+  });
+  document.querySelectorAll("[data-ertele]").forEach(b => {
+    b.onclick = () => {
+      const t = TRIYAJ.find(x => x.id === +b.dataset.ertele);
+      TRIYAJ = TRIYAJ.filter(x => x.id !== t.id).concat(t);
+      bildir(t.firma + " · yarına ertelendi");
+      ciz();
+    };
+  });
+  document.querySelectorAll("[data-gir]").forEach(b => {
+    b.onclick = () => { girilecek = b.dataset.gir; ciz(); };
+  });
+  document.querySelectorAll("[data-is-yeni]").forEach(b => {
+    b.onclick = () => bildir(b.dataset.isYeni + " · iş kuyruğuna eklendi");
+  });
+  document.querySelectorAll("[data-gsuz]").forEach(b => {
+    b.onclick = () => { gunlukSuz = b.dataset.gsuz; ciz(); };
+  });
+  document.querySelectorAll("[data-yeniden]").forEach(b => {
+    b.onclick = () => bildir(b.dataset.yeniden + " · yeniden bağlanma denemesi kuyruğa alındı");
+  });
+  document.querySelectorAll("[data-dogrula]").forEach(b => {
+    b.onclick = () => bildir(b.dataset.dogrula + " · bağlantı doğrulandı");
+  });
+  document.querySelectorAll("[data-plan]").forEach(b => {
+    b.onclick = () => { planDegis = b.dataset.plan; planSecim = null; ciz(); };
+  });
+  document.querySelectorAll("[data-plansec]").forEach(b => {
+    b.onclick = () => { planSecim = b.dataset.plansec; ciz(); };
+  });
+  if (planDegis){
+    $("#p-iptal").onclick = () => { planDegis = null; planSecim = null; ciz(); };
+    $("#p-perde").onclick = e => { if (e.target.id === "p-perde"){ planDegis = null; planSecim = null; ciz(); } };
+    const po = $("#p-onay");
+    if (po) po.onclick = () => {
+      const m = MUSTERILER.find(x => x.ad === planDegis);
+      if (planSecim){ m.plan = planSecim; m.ucret = PLANLAR.find(x => x.id === planSecim).ucret; }
+      bildir(planDegis + " planı güncellendi");
+      planDegis = null; planSecim = null; ciz();
+    };
+  }
+
+  const kapat = $("#c-kapat");
+  if (kapat) kapat.onclick = () => { secilenMus = null; ciz(); };
+  const perde = $("#perde");
+  if (perde) perde.onclick = () => { secilenMus = null; ciz(); };
+
+  const nk = $("#not-kaydet");
+  if (nk){
+    const kaydet = () => {
+      const g = $("#not-girdi");
+      if (!g.value.trim()) return;
+      const m = MUSTERILER.find(x => x.alan === secilenMus);
+      m.notlar.unshift({kim:"Enes", vakit:"az önce", metin:g.value.trim()});
+      bildir("Not eklendi");
+      ciz();
+    };
+    nk.onclick = kaydet;
+    $("#not-girdi").onkeydown = e => { if (e.key === "Enter") kaydet(); };
+  }
+
+  if (girilecek){
+    $("#g-iptal").onclick = () => { girilecek = null; ciz(); };
+    $("#m-perde").onclick = e => { if (e.target.id === "m-perde"){ girilecek = null; ciz(); } };
+    $("#g-onay").onclick = () => {
+      bildir(girilecek + " paneline giriliyor · kayıt alındı");
+      girilecek = null; ciz();
+    };
+  }
+}
+
+function opAmblem(){
+  const a = $("#amblem");
+  if (a && !a.childElementCount) a.innerHTML = ikon("anahtar", 18);
+  const c = $("#op-cikis");
+  if (c && !c.childElementCount) c.innerHTML = ikon("cikis", 16);
+}
+
+function ciz(){
+  opAmblem();
+  if (!opOturum){
+    document.querySelector(".uygulama").style.display = "none";
+    $("#kaplama").innerHTML = opGirisHTML();
+    $("#op-gir").onclick = () => { opOturum = true; ciz(); };
+    return;
+  }
+  document.querySelector(".uygulama").style.display = "";
+  navCiz();
+  const oc = $("#op-cikis");
+  if (oc) oc.onclick = () => { opOturum = false; sayfa = "bakis"; ciz(); };
+  if (sayfa === "bakis") $("#sahne").innerHTML = bakisHTML();
+  else if (sayfa === "talep") $("#sahne").innerHTML = talepHTML();
+  else if (sayfa === "mus") $("#sahne").innerHTML = musHTML();
+  else if (sayfa === "sistem") $("#sahne").innerHTML = sistemHTML();
+  else if (sayfa === "saglik") $("#sahne").innerHTML = saglikHTML();
+  else if (sayfa === "maliyet") $("#sahne").innerHTML = maliyetHTML();
+  else if (sayfa === "abone") $("#sahne").innerHTML = aboneHTML();
+  else $("#sahne").innerHTML = gunlukHTML();
+
+  const m = MUSTERILER.find(x => x.alan === secilenMus);
+  $("#kaplama").innerHTML = (m ? cekmeceHTML(m) : "") +
+    (girilecek ? girisModalHTML() : "") + (planDegis ? planModalHTML() : "");
+  bagla();
+}
+ciz();
+</script>

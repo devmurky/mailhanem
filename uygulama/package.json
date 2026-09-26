@@ -1,0 +1,33 @@
+{
+  "name": "mailhanem",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Mailhanem — ortak posta kutusu yönetimi. Müşteri paneli, operatör paneli ve site uçları.",
+  "scripts": {
+    "predev": "node araclar/siteyi-kopyala.mjs",
+    "dev": "next dev --port 3100",
+    "preyap": "node araclar/siteyi-kopyala.mjs",
+    "yap": "next build",
+    "basla": "next start --port 3100",
+    "kontrol": "tsc --noEmit",
+    "tohum": "node --experimental-strip-types sunucu/tohum.ts",
+    "dene": "node --test \"test/**/*.test.ts\""
+  },
+  "dependencies": {
+    "@types/nodemailer": "^8.0.1",
+    "imapflow": "^2.0.2",
+    "mailparser": "^3.9.25",
+    "next": "^16.3.5",
+    "nodemailer": "^10.0.9",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "zod": "^4.5.4"
+  },
+  "devDependencies": {
+    "@types/mailparser": "^3.4.6",
+    "@types/node": "^24.0.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "typescript": "^5.7.2"
+  }
+}

@@ -1,0 +1,1466 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mailhanem — ortak posta kutunuz düzene girer</title>
+<meta name="description" content="Ortak posta kutunuza gelen her mail sınıflanır, doğru kişiye atanır ve yanıt taslağı hazırlanır. Gönderme kararı sizde kalır. Mailleriniz kendi sunucunuzda durur.">
+<meta name="theme-color" content="#FFFFFF">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="tr_TR">
+<meta property="og:site_name" content="Mailhanem">
+<meta property="og:url" content="https://mailhanem.app/">
+<!-- Paylasim gorseli uygulama tarafindan uretiliyor (app/og.png). Diskte dosya
+     tutulmuyor ki basliк degisince birinin yeniden disa aktarmasi gerekmesin. -->
+<meta property="og:image" content="https://mailhanem.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Mailhanem — info@ kutunuza üç kişi bakıyor, üçü de diğeri bakar sanıyor.">
+<meta property="og:locale" content="tr_TR">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Mailhanem — ortak posta kutunuz düzene girer">
+<meta name="twitter:description" content="Gelen her mail sınıflanır, doğru kişiye atanır, yanıt taslağı hazırlanır. Gönderme kararı sizde kalır.">
+<meta name="twitter:image" content="https://mailhanem.app/og.png">
+<meta property="og:title" content="Mailhanem — ortak posta kutunuz düzene girer">
+<meta property="og:description" content="info@ kutusuna üç kişi bakıyor, üçü de diğeri bakar sanıyor. Mailhanem gelen her maili sınıflar, doğru kişiye atar, yanıt taslağını hazırlar. Gönderme kararı sizde kalır.">
+<link rel="canonical" href="https://mailhanem.app/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231D4E7C'/%3E%3Crect x='6.5' y='9.5' width='19' height='13' rx='2.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M7.6 11.8l7.2 4.9a2 2 0 0 0 2.4 0l7.2-4.9' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  /* Panelin kendi jetonları: tanıtım sayfası ile ürün aynı aileden. */
+  --ak:#FFFFFF; --ak2:#F4F6F9; --ak3:#FAFBFC;
+  --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#A8B3BE;
+  --metin:#16202B; --metin2:#485664; --soluk:#64717F;
+  --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
+  --olumlu:#0F7154; --olm-yum:#E3F2EC;
+  --uyari:#8A5A07;  --uyr-yum:#FBF1DF;
+  --kritik:#B23A40; --krt-yum:#FBE9EA;
+
+  --ui:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --serif:"Instrument Serif",ui-serif,Georgia,serif;
+  --mono:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+
+  --r:14px; --r2:10px; --r3:999px;
+  --ray:68px;
+}
+*{box-sizing:border-box}
+html{color-scheme:light;scroll-behavior:smooth;scroll-padding-top:calc(var(--ray) + 18px);
+  scrollbar-color:var(--cizgi2) transparent;scrollbar-width:thin}
+body{margin:0;background:var(--ak);color:var(--metin);font-family:var(--ui);
+  font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+h1,h2,h3,h4,p,ul,ol,figure,dl,dd{margin:0}
+a{color:inherit}
+img{max-width:100%}
+::selection{background:var(--mrk-yum);color:var(--mrk-metin)}
+::-webkit-scrollbar{width:11px;height:11px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--cizgi2);border-radius:6px;
+  border:3px solid var(--ak);background-clip:padding-box}
+::-webkit-scrollbar-thumb:hover{background:var(--soluk);background-clip:padding-box}
+input,textarea,select{caret-color:var(--murekkep);font-family:inherit}
+input::placeholder,textarea::placeholder{color:var(--soluk)}
+:focus-visible{outline:2px solid var(--murekkep);outline-offset:3px;border-radius:4px}
+code{font-family:var(--mono);font-size:.88em}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+.kap{width:min(1200px,100% - 56px);margin-inline:auto}
+@media (max-width:680px){.kap{width:calc(100% - 32px)}}
+
+.atla{position:absolute;left:16px;top:-60px;z-index:90;background:var(--metin);color:#fff;
+  font-weight:600;font-size:14px;padding:11px 16px;border-radius:var(--r2);
+  text-decoration:none;transition:top .16s}
+.atla:focus{top:14px}
+.gizli{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);
+  white-space:nowrap}
+
+/* ─────────── ortak dil ─────────── */
+.et{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--soluk)}
+.rzt{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+  font-weight:500;letter-spacing:.13em;text-transform:uppercase;color:var(--metin2);
+  background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r3);padding:7px 15px}
+.rzt.yesil{color:var(--olumlu);background:var(--olm-yum);border-color:#BFE3D4}
+.rzt.mavi{color:var(--mrk-metin);background:var(--mrk-yum);border-color:#C9DCEC}
+.nokta{width:6px;height:6px;border-radius:50%;background:currentColor;flex:none}
+.nokta.canli{background:var(--olumlu)}
+
+h1,h2{font-family:var(--ui);font-weight:700;letter-spacing:-.042em;
+  line-height:1.04;text-wrap:balance;color:var(--metin)}
+h1{font-size:clamp(38px,6.2vw,80px)}
+h2{font-size:clamp(29px,4.1vw,52px);line-height:1.07}
+h1 em,h2 em{font-family:var(--serif);font-style:italic;font-weight:400;
+  letter-spacing:-.012em;display:block;color:var(--metin2)}
+h3{font-family:var(--ui);font-size:21px;font-weight:600;letter-spacing:-.026em;line-height:1.25}
+.alt-metin{color:var(--metin2);font-size:19px;line-height:1.58;max-width:62ch}
+
+.dug{display:inline-flex;align-items:center;justify-content:center;gap:9px;
+  font-family:var(--ui);font-size:15px;font-weight:600;letter-spacing:-.01em;
+  padding:14px 24px;border-radius:var(--r3);border:1px solid var(--cizgi2);
+  background:var(--ak);color:var(--metin);text-decoration:none;cursor:pointer;
+  transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
+.dug:hover{border-color:var(--soluk);transform:translateY(-1px)}
+.dug:active{transform:translateY(0)}
+.dug.koyu{background:var(--metin);border-color:var(--metin);color:#fff;
+  box-shadow:0 6px 14px -8px rgba(22,32,43,.55)}
+.dug.koyu:hover{background:#0E1720;border-color:#0E1720;
+  box-shadow:0 10px 20px -9px rgba(22,32,43,.6)}
+.dug[disabled]{opacity:.6;cursor:progress;transform:none}
+.dug .ok{transition:transform .18s cubic-bezier(.2,.9,.3,1)}
+.dug:hover .ok{transform:translate(2px,-2px)}
+.bag{display:inline-flex;align-items:center;gap:7px;font-weight:600;font-size:15px;
+  color:var(--mrk-metin);text-decoration:none;
+  text-decoration-line:underline;text-decoration-color:var(--cizgi2);
+  text-underline-offset:4px;text-decoration-thickness:1px;transition:text-decoration-color .16s}
+.bag:hover{text-decoration-color:var(--murekkep)}
+
+section{border-top:1px solid var(--cizgi);padding:104px 0}
+.bolum-ust{margin-bottom:56px}
+.bolum-ust .et{display:block;margin-bottom:18px}
+.bolum-ust p{margin-top:20px}
+
+/* ─────────── üst ray ─────────── */
+.ray{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+  backdrop-filter:blur(14px) saturate(1.6);-webkit-backdrop-filter:blur(14px) saturate(1.6);
+  border-bottom:1px solid transparent;transition:border-color .2s,background .2s}
+.ray.kayik{border-bottom-color:var(--cizgi);background:rgba(255,255,255,.93)}
+.ray-ic{height:var(--ray);display:flex;align-items:center;gap:28px}
+.marka{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex:none}
+.marka .im{width:28px;height:28px;border-radius:9px;background:var(--murekkep);
+  display:grid;place-items:center;flex:none}
+.marka .ad{font-size:17px;font-weight:700;letter-spacing:-.028em}
+.ray-nav{display:flex;align-items:center;gap:4px;margin-inline:auto}
+.ray-nav a{position:relative;font-family:var(--mono);font-size:11.5px;font-weight:500;
+  letter-spacing:.12em;text-transform:uppercase;color:var(--metin2);text-decoration:none;
+  padding:9px 13px;border-radius:var(--r2);transition:color .15s,background .15s}
+.ray-nav a:hover{color:var(--metin);background:var(--ak2)}
+.ray-nav a[aria-current="true"]{color:var(--mrk-metin)}
+.ray-nav a[aria-current="true"]::after{content:"";position:absolute;left:13px;right:13px;
+  bottom:3px;height:1.5px;border-radius:1px;background:var(--murekkep)}
+.ray-sag{display:flex;align-items:center;gap:11px;flex:none}
+.ray-giris{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--metin2);text-decoration:none;padding:9px 11px;
+  border-radius:var(--r2);transition:color .15s,background .15s}
+.ray-giris:hover{color:var(--metin);background:var(--ak2)}
+/* Raydaki demo düğmesi: birincil eylem "Demo talebi" koyu kalsın diye açık,
+   ama rayı şişirmesin diye biraz sıkı. */
+.ray-demo{padding:9px 15px;font-size:13.5px;text-decoration:none;white-space:nowrap}
+.ray-menu{display:none;width:40px;height:40px;align-items:center;justify-content:center;
+  border:1px solid var(--cizgi);border-radius:var(--r2);background:var(--ak);cursor:pointer;
+  color:var(--metin)}
+.ray-panel{border-bottom:1px solid var(--cizgi);background:var(--ak);padding:8px 0 22px}
+.ray-panel ul{list-style:none;padding:0;margin:0}
+.ray-panel ul a{display:block;padding:14px 2px;font-size:16px;font-weight:600;
+  color:var(--metin);text-decoration:none;border-bottom:1px solid var(--cizgi)}
+.ray-panel .dug{margin-top:18px;width:100%}
+
+/* ─────────── ilk görüş alanı ─────────── */
+.giris{position:relative;isolation:isolate;padding:92px 0 76px;text-align:center;overflow:hidden}
+/* pastel bantlar: ekranın enine yayılan, yavaşça süzülen renk yıkaması */
+.yikama{position:absolute;inset:-30% -18% auto;height:175%;z-index:-1;pointer-events:none;
+  filter:blur(58px)}
+.yikama span{position:absolute;border-radius:50%;display:block;
+  animation:suzul 26s ease-in-out infinite alternate}
+.y1{width:78%;height:30%;left:-8%;top:6%;
+  background:radial-gradient(60% 100% at 50% 50%,rgba(29,78,124,.30),transparent 72%)}
+.y2{width:72%;height:28%;right:-10%;top:20%;
+  background:radial-gradient(60% 100% at 50% 50%,rgba(15,113,84,.26),transparent 72%);animation-delay:-6s}
+.y3{width:84%;height:26%;left:2%;top:40%;
+  background:radial-gradient(60% 100% at 50% 50%,rgba(138,90,7,.20),transparent 72%);animation-delay:-12s}
+.y4{width:66%;height:26%;right:-4%;top:56%;
+  background:radial-gradient(60% 100% at 50% 50%,rgba(178,58,64,.14),transparent 72%);animation-delay:-18s}
+@keyframes suzul{from{transform:translate3d(0,0,0) scaleX(1)}
+  to{transform:translate3d(4%,-3%,0) scaleX(1.14)}}
+.giris-ic{max-width:960px;margin-inline:auto}
+.giris h1{margin:24px 0 0}
+.giris .alt-metin{margin:26px auto 0;max-width:58ch;text-align:center}
+.durust{margin:20px auto 0;max-width:56ch;font-size:15.5px;line-height:1.6;color:var(--soluk)}
+.durust b{color:var(--metin);font-weight:600}
+
+.kutu-ara{display:flex;align-items:center;gap:6px;margin:36px auto 0;max-width:560px;
+  background:var(--ak);border:1px solid var(--cizgi2);border-radius:var(--r3);padding:6px 6px 6px 8px;
+  box-shadow:0 8px 20px -14px rgba(22,32,43,.45);
+  transition:border-color .16s,box-shadow .16s}
+.kutu-ara:focus-within{border-color:var(--murekkep);
+  box-shadow:0 0 0 4px var(--mrk-yum),0 8px 20px -14px rgba(22,32,43,.45)}
+.kutu-ara .zarf{flex:none;margin-left:8px;color:var(--soluk);display:grid;place-items:center}
+.kutu-ara input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;
+  color:var(--metin);padding:12px 8px}
+.kutu-ara input:focus{outline:none}
+.kutu-ara .dug{flex:none;padding:13px 20px}
+.ara-not{margin-top:16px;font-family:var(--mono);font-size:11px;letter-spacing:.11em;
+  text-transform:uppercase;color:var(--soluk);display:flex;justify-content:center;
+  align-items:center;gap:10px;flex-wrap:wrap}
+.ara-not .vur{color:var(--olumlu)}
+.ara-not i{font-style:normal;color:var(--ayrac)}
+
+/* Turnstile alanı: interaction-only olduğu için çoğu ziyaretçide hiç
+   çizilmiyor ve yüksekliği sıfır kalıyor. Boşken pay bırakmıyoruz. */
+.ts-alan:not(:empty){margin:0 0 16px}
+
+/* Form aydinlatma satiri: gonder dugmesinin hemen ustunde, okunur ama
+   formun onune gecmeyen bir tonda. */
+.form-kvkk{margin:0 0 14px;font-size:12px;line-height:1.55;color:var(--soluk);
+  max-width:62ch}
+.form-kvkk .bag{color:var(--mrk-metin)}
+
+/* Demo bandı — "Ürünün içi" bölümünün sonunda. Hero'daki birincil eylemden
+   uzakta durduğu için burada koyu düğme kullanılabiliyor: bu bölümün asıl
+   eylemi o. */
+.demo-band{margin-top:64px;display:flex;align-items:center;gap:34px;
+  background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);
+  padding:32px 36px}
+.demo-band-yazi{flex:1;min-width:0}
+.demo-band h3{margin:9px 0 8px;font-size:25px;line-height:1.2;letter-spacing:-.018em;
+  font-weight:600;color:var(--metin)}
+.demo-band p{margin:0;color:var(--metin2);font-size:15px;line-height:1.6;max-width:56ch}
+.demo-band .dug{flex:none;text-decoration:none;padding:14px 24px}
+@media (max-width:760px){
+  .demo-band{flex-direction:column;align-items:flex-start;gap:22px;padding:28px 24px}
+  .demo-band .dug{width:100%}
+}
+
+/* ─────────── kayan şerit ─────────── */
+.serit{border-top:1px solid var(--cizgi);border-bottom:1px solid var(--cizgi);
+  padding:19px 0;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 9%,#000 91%,transparent)}
+.serit-akis{display:flex;width:max-content;animation:kay 48s linear infinite}
+.serit:hover .serit-akis{animation-play-state:paused}
+@keyframes kay{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.serit-akis span{font-family:var(--mono);font-size:11.5px;font-weight:500;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--metin2);padding:0 26px;white-space:nowrap;flex:none}
+.serit-akis span::after{content:"/";margin-left:26px;color:var(--ayrac)}
+
+/* ─────────── içeride: ürünün kendisi ─────────── */
+.icerde{display:grid;grid-template-columns:1.04fr .96fr;gap:72px;align-items:center}
+.icerde + .icerde{margin-top:104px}
+.icerde.ters .pano-sar{order:2}
+.icerde-yazi .et{display:block;margin-bottom:16px}
+.icerde-yazi h2{font-size:clamp(28px,3.3vw,43px)}
+.icerde-yazi p{margin-top:20px;color:var(--metin2);font-size:17px;line-height:1.64;max-width:46ch}
+.icerde-yazi .rzt{margin-top:26px}
+
+/* köşe kesim işaretleri: panoyu teknik bir çerçeveye alır */
+.pano-sar{position:relative;padding:15px;
+  background-image:
+    linear-gradient(var(--cizgi2),var(--cizgi2)),linear-gradient(var(--cizgi2),var(--cizgi2)),
+    linear-gradient(var(--cizgi2),var(--cizgi2)),linear-gradient(var(--cizgi2),var(--cizgi2)),
+    linear-gradient(var(--cizgi2),var(--cizgi2)),linear-gradient(var(--cizgi2),var(--cizgi2)),
+    linear-gradient(var(--cizgi2),var(--cizgi2)),linear-gradient(var(--cizgi2),var(--cizgi2));
+  background-repeat:no-repeat;
+  background-size:20px 1px,1px 20px,20px 1px,1px 20px,20px 1px,1px 20px,20px 1px,1px 20px;
+  background-position:left top,left top,right top,right top,
+    left bottom,left bottom,right bottom,right bottom}
+.pano{background:var(--ak2);border-radius:var(--r);padding:22px;display:flex;flex-direction:column}
+.pano-ust{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;gap:12px}
+.canli-et{display:inline-flex;align-items:center;gap:7px;color:var(--olumlu)}
+.pano-alt{display:flex;align-items:center;justify-content:space-between;gap:12px;
+  margin-top:20px;flex-wrap:wrap}
+.tus{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--metin2);background:var(--ak);
+  border:1px solid var(--cizgi);border-radius:var(--r3);padding:7px 13px}
+.tus kbd{font-family:var(--mono);font-size:11px;background:var(--ak2);border:1px solid var(--cizgi2);
+  border-bottom-width:2px;border-radius:5px;padding:2px 6px;color:var(--metin)}
+.tus i{font-style:normal;color:var(--ayrac)}
+
+/* ürün minyatürü */
+/* gri panonun üstünde duruyor: yükselti gerçek, o yüzden gölgesi var */
+.min{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r2);
+  box-shadow:0 6px 16px -10px rgba(22,32,43,.4);overflow:hidden}
+.min-ust{display:flex;align-items:center;gap:9px;padding:12px 15px;border-bottom:1px solid var(--cizgi)}
+.min-ust b{font-size:13.5px;font-weight:600;letter-spacing:-.02em}
+.min-ornek{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--uyari);background:var(--uyr-yum);padding:3px 8px;
+  border-radius:5px;flex:none}
+.mail{display:flex;gap:11px;padding:13px 15px;border-bottom:1px solid var(--cizgi)}
+.mail:last-child{border-bottom:0}
+.mail.vurgu{background:var(--mrk-yum)}
+.mail.vurgu .mail-alt{color:var(--metin2)}
+.av{width:28px;height:28px;border-radius:9px;flex:none;display:grid;place-items:center;
+  color:#fff;font-size:12px;font-weight:700}
+.mail-ic{min-width:0;flex:1}
+.konu{display:block;font-size:13.5px;font-weight:600;letter-spacing:-.018em;white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.mail-alt{display:flex;align-items:center;gap:7px;margin-top:4px;font-size:12px;color:var(--soluk)}
+.knokta{width:6px;height:6px;border-radius:2px;flex:none}
+.cip{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.06em;
+  text-transform:uppercase;padding:2px 7px;border-radius:5px;flex:none}
+.c-yesil{background:var(--olm-yum);color:var(--olumlu)}
+.c-sari{background:var(--uyr-yum);color:var(--uyari)}
+.c-gri{background:var(--ak2);color:var(--soluk)}
+.sahip{margin-left:auto;font-size:12px;font-weight:600;flex:none;color:var(--metin2)}
+.sahip.yok{color:var(--uyari)}
+
+.taslak{padding:15px}
+.taslak-ust{display:flex;align-items:center;gap:9px;margin-bottom:11px;flex-wrap:wrap}
+.taslak p{font-size:14px;line-height:1.6;color:var(--metin2);
+  padding:13px 15px;background:var(--ak2);border-radius:var(--r2)}
+.taslak-dug{display:flex;gap:8px;margin-top:13px;flex-wrap:wrap}
+.tdug{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
+  padding:8px 13px;border-radius:var(--r3);border:1px solid var(--cizgi);background:var(--ak);
+  color:var(--metin2)}
+.tdug.ana{background:var(--murekkep);border-color:var(--murekkep);color:#fff}
+.tdug .harf{width:19px;height:19px;border-radius:6px;display:grid;place-items:center;
+  font-family:var(--mono);font-size:11px;background:var(--ak2);color:var(--metin2)}
+.tdug.ana .harf{background:rgba(255,255,255,.24);color:#fff}
+
+/* ─────────── bağlandığı kutular ─────────── */
+.kutular{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--cizgi);
+  border:1px solid var(--cizgi);border-radius:var(--r);overflow:hidden}
+.kutu{background:var(--ak);padding:30px 28px 32px;transition:background .18s}
+.kutu:hover{background:var(--ak3)}
+.kutu h3{margin:0 0 9px}
+.kutu p{font-size:14.5px;line-height:1.55;color:var(--metin2)}
+
+/* ─────────── nasıl çalışır ─────────── */
+.adimlar{display:flex;flex-direction:column;gap:18px}
+.adim{display:grid;grid-template-columns:150px minmax(0,1fr) 296px;gap:34px;align-items:center;
+  background:var(--ak3);border:1px solid var(--cizgi);border-radius:var(--r);padding:36px 40px}
+.adim-no .et{display:block;margin-bottom:6px}
+/* Adım rakamları dolu, mürekkebin açık tonunda.
+   Önce içi boş (kontur) çizilmişti ama `-webkit-text-stroke` bu yazı tipinin
+   rakamlarında kırılıyor: Instrument Sans'ın "2" ve "3" glifleri kendi üstüne
+   binen konturlarla kurulmuş, kontur o kesişmeyi dolu bir kama olarak
+   çiziyordu — "2"nin çapraz kolu alt bara girdiği yerde. Kalınlık ya da harf
+   aralığıyla geçmiyor, glifin kendisinden geliyor. Dolu rakamda o sorun yok ve
+   hangi yazı tipi, boyut, tarayıcı olursa olsun aynı duruyor.
+   Renk: --murekkep'in açık tonu; nötr griden daha markaya ait. */
+.adim-no b{font-family:var(--ui);font-size:70px;font-weight:500;line-height:.9;
+  letter-spacing:-.03em;color:#A5B8CB;display:block}
+.adim-ic h3{font-size:23px}
+.adim-ic p{margin-top:11px;color:var(--metin2);font-size:16.5px;line-height:1.6;max-width:52ch}
+.adim-meta{display:flex;align-items:center;gap:9px;margin-top:16px;flex-wrap:wrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--soluk)}
+.adim-meta i{font-style:normal;color:var(--ayrac)}
+.adim-meta .im{color:var(--olumlu);display:grid;place-items:center}
+
+/* adımın yanındaki küçük gerçek: ürünün kendi parçası, süs değil */
+.mini{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r2);
+  padding:6px 14px;box-shadow:0 5px 14px -10px rgba(22,32,43,.42)}
+.mini-satir{display:flex;align-items:center;gap:10px;padding:11px 0;font-size:12.5px;
+  color:var(--metin2);border-bottom:1px solid var(--cizgi)}
+.mini-satir:last-child{border-bottom:0}
+.mini-satir .ad{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.mini-satir .ad b{display:block;font-size:13px;font-weight:600;color:var(--metin);
+  letter-spacing:-.015em;overflow:hidden;text-overflow:ellipsis}
+.mini-satir .ad small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.04em;
+  color:var(--soluk);margin-top:2px}
+.mini-satir .im{flex:none;display:grid;place-items:center}
+.mini-satir .im.ol{color:var(--olumlu)} .mini-satir .im.yok{color:var(--soluk)}
+.mini-satir .cip{margin-left:auto}
+.mini-satir.solgun{opacity:.62}
+.mini-satir.solgun .ad b{text-decoration:line-through;text-decoration-color:var(--cizgi2);
+  color:var(--metin2);font-weight:500}
+
+/* ─────────── sayılar: ürün gerçeği, kullanım istatistiği değil ─────────── */
+.sayilar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--cizgi);
+  border-block:1px solid var(--cizgi)}
+.sayi{background:var(--ak);padding:42px 28px 44px}
+.sayi b{display:block;font-family:var(--ui);font-size:clamp(38px,4.4vw,60px);font-weight:700;
+  letter-spacing:-.05em;line-height:1;color:var(--metin)}
+.sayi b.kisa{font-size:clamp(27px,3vw,40px);letter-spacing:-.035em}
+.sayi span{display:block;margin-top:14px;font-family:var(--mono);font-size:11px;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--soluk);line-height:1.65}
+
+/* ─────────── paketler ─────────── */
+.paketler{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.paket{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);
+  padding:30px 28px 32px;display:flex;flex-direction:column}
+/* vurgu rozetten değil, kademenin kendi renginden gelir */
+.paket.one{border-color:#9FD4BF;
+  background:linear-gradient(175deg,var(--olm-yum) 0%,rgba(227,242,236,.3) 44%,var(--ak) 100%)}
+.paket-ad{display:flex;align-items:center;gap:10px;margin-bottom:22px;min-height:34px}
+.paket-olcek{font-family:var(--ui);font-size:clamp(28px,2.7vw,37px);font-weight:700;
+  letter-spacing:-.04em;line-height:1.05;color:var(--metin)}
+.paket-olcek small{display:block;margin-top:10px;font-family:var(--mono);font-size:11px;
+  font-weight:400;letter-spacing:.11em;text-transform:uppercase;color:var(--soluk)}
+.paket-ne{margin-top:18px;font-size:15px;line-height:1.55;color:var(--metin2);min-height:3.1em}
+.paket hr{border:0;border-top:1px solid var(--cizgi);margin:22px 0}
+.paket ul{list-style:none;padding:0;display:flex;flex-direction:column;gap:12px;flex:1}
+.paket li{display:flex;gap:11px;font-size:15px;line-height:1.5;color:var(--metin2)}
+.paket li .im{flex:none;margin-top:3px;color:var(--olumlu)}
+.paket .dug{margin-top:26px;width:100%}
+.fiyat-notu{margin-top:26px;display:grid;grid-template-columns:auto 1fr;gap:24px;
+  align-items:start;background:var(--ak3);border:1px solid var(--cizgi);border-radius:var(--r);
+  padding:26px 28px}
+.fiyat-notu p{color:var(--metin2);font-size:16px;line-height:1.62;max-width:72ch}
+.fiyat-notu strong{color:var(--metin);font-weight:600}
+
+/* ─────────── sorular ─────────── */
+.sss-sek{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:30px}
+.sss-sek button{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
+  color:var(--metin2);background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r3);
+  padding:10px 17px;cursor:pointer;transition:background .16s,border-color .16s,color .16s}
+.sss-sek button:hover{border-color:var(--cizgi2);color:var(--metin)}
+.sss-sek button[aria-selected="true"]{background:var(--metin);border-color:var(--metin);color:#fff}
+.sss{border-top:1px solid var(--cizgi)}
+.sss details{border-bottom:1px solid var(--cizgi)}
+.sss summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:18px;
+  padding:24px 4px;font-size:19px;font-weight:600;letter-spacing:-.024em;line-height:1.35;
+  transition:color .15s}
+.sss summary::-webkit-details-marker{display:none}
+.sss summary::marker{content:""}
+.sss summary:hover{color:var(--mrk-metin)}
+.sss .im{margin-left:auto;flex:none;color:var(--soluk);transition:transform .24s ease-out}
+.sss details[open] .im{transform:rotate(45deg)}
+.sss .cvp{padding:0 60px 26px 4px;color:var(--metin2);font-size:16.5px;line-height:1.68;
+  max-width:80ch}
+.sss .cvp strong{color:var(--metin);font-weight:600}
+
+/* ─────────── demo talebi ─────────── */
+.talep{display:grid;grid-template-columns:1fr 1.06fr;gap:64px;align-items:start}
+.talep-sol h2{font-size:clamp(28px,3.5vw,45px)}
+.talep-sol > p{margin-top:20px;color:var(--metin2);font-size:17.5px;line-height:1.6;max-width:44ch}
+.sonra{list-style:none;padding:0;margin:32px 0 0;display:flex;flex-direction:column}
+.sonra li{display:flex;gap:16px;padding:17px 0;border-top:1px solid var(--cizgi);
+  font-size:15.5px;line-height:1.55;color:var(--metin2)}
+.sonra li .n{font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--soluk);
+  flex:none;padding-top:4px}
+.form-kart{background:var(--ak3);border:1px solid var(--cizgi);border-radius:var(--r);padding:32px}
+.form-kart > .et{display:block;margin-bottom:24px}
+.alanlar{display:grid;grid-template-columns:1fr 1fr;gap:17px}
+.alan{display:flex;flex-direction:column;gap:8px;min-width:0}
+.alan.tam{grid-column:1 / -1}
+.alan label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--metin2)}
+.alan label .ops{text-transform:none;letter-spacing:.02em;color:var(--soluk)}
+.alan input,.alan select,.alan textarea{width:100%;font-size:15.5px;color:var(--metin);
+  background:var(--ak);border:1px solid var(--cizgi2);border-radius:var(--r2);padding:12px 14px;
+  transition:border-color .15s,box-shadow .15s}
+.alan textarea{resize:vertical;min-height:92px;line-height:1.55}
+.alan input:hover,.alan select:hover,.alan textarea:hover{border-color:var(--soluk)}
+.alan input:focus,.alan select:focus,.alan textarea:focus{outline:none;border-color:var(--murekkep);
+  box-shadow:0 0 0 3px var(--mrk-yum)}
+.alan.hata input,.alan.hata select{border-color:var(--kritik)}
+.alan.hata input:focus,.alan.hata select:focus{box-shadow:0 0 0 3px var(--krt-yum)}
+.alan-hata{font-size:13.5px;line-height:1.45;color:var(--kritik)}
+.alan-hata:empty{display:none}
+.form-alt{display:flex;align-items:center;gap:18px;flex-wrap:wrap;margin-top:26px}
+.form-not{font-size:13.5px;line-height:1.5;color:var(--soluk);max-width:32ch}
+.form-durum{margin-top:18px;font-size:15px;line-height:1.55;padding:14px 16px;
+  border-radius:var(--r2);display:none}
+.form-durum.gorun{display:block}
+.form-durum.kotu{background:var(--krt-yum);color:var(--kritik);border:1px solid #F0CFD1}
+.tamam{display:flex;flex-direction:column;gap:16px;align-items:flex-start}
+.tamam .im{width:46px;height:46px;border-radius:14px;display:grid;place-items:center;
+  background:var(--olm-yum);color:var(--olumlu)}
+.tamam h3{outline:none}
+.tamam p{color:var(--metin2);font-size:16px;line-height:1.6;max-width:44ch}
+
+/* ─────────── footer ─────────── */
+footer{border-top:1px solid var(--cizgi);background:var(--ak3);padding:68px 0 30px}
+.ft-ust{display:grid;grid-template-columns:1.6fr 1fr 1fr 1.3fr;gap:44px;
+  padding-bottom:44px;border-bottom:1px solid var(--cizgi)}
+.ft-marka p{margin-top:16px;font-size:15px;line-height:1.6;color:var(--metin2);max-width:34ch}
+.ft-iletisim{margin-top:16px;font-size:15px}
+.ft-bas{display:block;margin-bottom:17px}
+.ft-liste{list-style:none;padding:0;display:flex;flex-direction:column;gap:12px}
+.ft-liste a,.ft-liste span{font-size:15px;color:var(--metin2);text-decoration:none}
+.ft-liste a:hover{color:var(--metin)}
+.ft-durust{font-size:14.5px;line-height:1.62;color:var(--metin2)}
+.ft-durust strong{color:var(--metin);font-weight:600}
+.ft-alt{display:flex;align-items:center;gap:20px;flex-wrap:wrap;padding-top:26px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--soluk)}
+.ft-alt .sag{margin-left:auto}
+
+/* ─────────── kırılmalar ─────────── */
+@media (max-width:1180px){
+  .adim{grid-template-columns:140px minmax(0,1fr);gap:26px 30px}
+  .adim-gorsel{grid-column:1 / -1;max-width:420px}
+  .adim-ic p{max-width:60ch}
+}
+@media (max-width:1100px){
+  .icerde{grid-template-columns:1fr;gap:38px}
+  .icerde.ters .pano-sar{order:0}
+  .talep{grid-template-columns:1fr;gap:44px}
+  .ft-ust{grid-template-columns:1fr 1fr;gap:34px}
+}
+@media (max-width:940px){
+  .ray-nav{display:none}
+  .ray-menu{display:inline-flex}
+  .ray-sag .dug.koyu{display:none}
+  /* Dar ekranda ray daralıyor; iki düğme de menüye iniyor. */
+  .ray-sag .ray-demo{display:none}
+  .kutular{grid-template-columns:1fr 1fr}
+  .paketler{grid-template-columns:1fr;max-width:560px}
+  .sayilar{grid-template-columns:1fr 1fr}
+  .adim{grid-template-columns:1fr;gap:20px;padding:30px 26px}
+  .adim-gorsel{max-width:340px}
+  .adim-no{display:flex;align-items:baseline;gap:14px}
+  .adim-no .et{margin-bottom:0}
+  .adim-no b{font-size:46px}
+}
+@media (max-width:680px){
+  body{font-size:16px}
+  section{padding:74px 0}
+  .giris{padding:58px 0 54px}
+  .alt-metin{font-size:17px}
+  .kutular{grid-template-columns:1fr}
+  .kutu-ara{flex-direction:column;align-items:stretch;border-radius:var(--r);padding:10px}
+  .kutu-ara .zarf{display:none}
+  .kutu-ara input{padding:11px 8px}
+  .kutu-ara .dug{width:100%}
+  .alanlar{grid-template-columns:1fr}
+  .form-kart{padding:22px}
+  .pano{padding:15px}
+  .pano-sar{padding:11px}
+  .sss summary{font-size:17px;padding:20px 2px;gap:14px}
+  .sss .cvp{padding:0 8px 22px 2px;font-size:15.5px}
+  .ft-ust{grid-template-columns:1fr;gap:32px}
+}
+</style>
+</head>
+<body>
+
+<a class="atla" href="#ust">İçeriğe geç</a>
+
+<!-- ═══════════ üst ray ═══════════ -->
+<header class="ray" id="ray">
+  <div class="kap ray-ic">
+    <a class="marka" href="#ust" aria-label="Mailhanem — ana sayfa">
+      <span class="im">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3.6 7.6l7.5 5a1.6 1.6 0 0 0 1.8 0l7.5-5"/>
+        </svg>
+      </span>
+      <span class="ad">Mailhanem</span>
+    </a>
+    <nav class="ray-nav" aria-label="Sayfa bölümleri">
+      <a href="#icerde">Ürün</a>
+      <a href="#kutular">Kutular</a>
+      <a href="#nasil">Nasıl çalışır</a>
+      <a href="#paketler">Paketler</a>
+      <a href="#sorular">Sorular</a>
+    </nav>
+    <div class="ray-sag">
+      <a class="ray-giris" href="giris.html">Giriş</a>
+      <!-- Üst rayda duruyor: ray yapışkan, yani düğme sayfanın her yerinde
+           görünür kalıyor. Hero'daki ikizi de duruyor. -->
+      <a class="dug ray-demo" id="demo-dug-ray" href="/demo">Demoda deneyimleyin
+        <svg class="ok" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+      </a>
+      <a class="dug koyu" href="#talep">Demo talebi
+        <svg class="ok" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+      </a>
+      <button class="ray-menu" id="ray-menu" aria-expanded="false" aria-controls="ray-panel" aria-label="Menüyü aç">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="ray-panel" id="ray-panel" hidden>
+    <div class="kap">
+      <ul>
+        <li><a href="#icerde">Ürün</a></li>
+        <li><a href="#kutular">Kutular</a></li>
+        <li><a href="#nasil">Nasıl çalışır</a></li>
+        <li><a href="#paketler">Paketler</a></li>
+        <li><a href="#sorular">Sorular</a></li>
+        <li><a href="giris.html">Panele giriş</a></li>
+      </ul>
+      <a class="dug koyu" href="#talep">Demo talebi gönder</a>
+      <a class="dug" id="demo-dug-menu" href="/demo">Demoda deneyimleyin</a>
+    </div>
+  </div>
+</header>
+
+<main id="ust">
+
+<!-- ═══════════ ilk görüş alanı ═══════════ -->
+<div class="giris">
+  <div class="yikama" aria-hidden="true">
+    <span class="y1"></span><span class="y2"></span><span class="y3"></span><span class="y4"></span>
+  </div>
+  <div class="kap giris-ic">
+    <span class="rzt"><span class="nokta canli"></span>Erken erişim</span>
+    <h1>info@ kutunuza üç kişi bakıyor.<em>Üçü de diğeri bakar sanıyor.</em></h1>
+    <p class="alt-metin">Mailhanem ortak kutunuzu düzene sokar: gelen her mail sınıflanır,
+      doğru kişiye atanır, yanıt taslağı hazırlanır.</p>
+    <p class="durust"><b>Mailhanem kendiliğinden mail göndermez.</b> Sınıflandırma, yönlendirme,
+      sahiplenme ve taslak hazır; gönderme kararı her zaman sizde kalır.</p>
+
+    <form class="kutu-ara" id="hizli" novalidate>
+      <span class="zarf" aria-hidden="true">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3.6 7.6l7.5 5a1.6 1.6 0 0 0 1.8 0l7.5-5"/>
+        </svg>
+      </span>
+      <label class="gizli" for="hizli-kutu">Ortak posta kutunuzun adresi</label>
+      <input id="hizli-kutu" type="email" autocomplete="email" placeholder="info@firmaniz.com">
+      <button class="dug koyu" type="submit">Demo talebi gönder
+        <svg class="ok" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+      </button>
+    </form>
+    <p class="ara-not">
+      <span class="vur">Kart istemiyoruz</span><i>·</i>
+      <span>Kurulum 45 dakika</span><i>·</i>
+      <span>Mailiniz sizde kalır</span>
+    </p>
+  </div>
+</div>
+
+<!-- ═══════════ kayan şerit ═══════════ -->
+<div class="serit" aria-hidden="true">
+  <div class="serit-akis" id="serit"></div>
+</div>
+
+<!-- ═══════════ içeride ═══════════ -->
+<section id="icerde">
+  <div class="kap">
+    <div class="bolum-ust">
+      <span class="et">Ürünün içi</span>
+      <h2>İki ekran bütün işi taşıyor. <em>Gerisi süs.</em></h2>
+      <p class="alt-metin">Aşağıdakiler çizim değil, panelin kendi arayüzü. İçindeki firma
+        ve mailler örnek veri; kurulumdan sonra orada sizin kutunuz duruyor.</p>
+    </div>
+
+    <div class="icerde">
+      <div class="pano-sar">
+        <div class="pano">
+          <div class="pano-ust">
+            <span class="et">01 / 02</span>
+            <span class="et canli-et"><span class="nokta canli"></span>Gerçek arayüz</span>
+          </div>
+          <div class="min" id="min-kutu"></div>
+          <div class="pano-alt">
+            <span class="rzt yesil"><span class="nokta"></span>Sahipsiz mail göze batar</span>
+            <span class="tus">4 mail · bu sabah</span>
+          </div>
+        </div>
+      </div>
+      <div class="icerde-yazi">
+        <span class="et">İçeride · 01</span>
+        <h2>Gelen kutusu</h2>
+        <p>Her mail bir kategoriye girer, kurallarınıza göre bir kişiye atanır ve ne kadar
+          beklediği listede görünür. Kimsenin üzerinde olmayan mail kendini belli eder;
+          “ben bakarım sanmıştım” cümlesi buradan kalkar.</p>
+        <span class="rzt mavi"><span class="nokta"></span>Kategori · sahip · bekleme süresi</span>
+      </div>
+    </div>
+
+    <div class="icerde ters">
+      <div class="pano-sar">
+        <div class="pano">
+          <div class="pano-ust">
+            <span class="et">02 / 02</span>
+            <span class="et canli-et"><span class="nokta canli"></span>Gerçek arayüz</span>
+          </div>
+          <div class="min" id="min-taslak"></div>
+          <div class="pano-alt">
+            <span class="rzt yesil"><span class="nokta"></span>Onaysız hiçbir mail gitmez</span>
+            <span class="tus"><kbd>↵</kbd> Onayla <i>·</i> <kbd>E</kbd> Düzelt</span>
+          </div>
+        </div>
+      </div>
+      <div class="icerde-yazi">
+        <span class="et">İçeride · 02</span>
+        <h2>Yanıt taslağı</h2>
+        <p>Yapay zekâ yanıtı firmanızın bilgi tabanından yazar ve onay kuyruğuna bırakır.
+          Okursunuz, düzeltirsiniz, gönderirsiniz — ya da kendiniz yazarsınız. Bu bir
+          eksiklik değil, ürünün ilk kararı: otomasyon taslağa kadar.</p>
+        <span class="rzt mavi"><span class="nokta"></span>Karar her zaman insanda</span>
+      </div>
+    </div>
+
+    <!-- Demonun doğal yeri burası: bölümün başında "bunlar çizim değil, panelin
+         kendi arayüzü" dedik, ziyaretçi tam bu noktada içine girmek istiyor.
+         Hero'da denendi, orada formla yarışıyordu. -->
+    <div class="demo-band">
+      <div class="demo-band-yazi">
+        <h3>Bu ekranları kendiniz karıştırın.</h3>
+        <p>Örnek verilerle dolu bir müşteri paneli açılır — gelen kutusu, süzgeçler,
+          sahiplenme, yanıt şablonları. Kayıt yok, kart yok, adres bırakmıyorsunuz.</p>
+      </div>
+      <a class="dug koyu" id="demo-dug" href="/demo">Demoda deneyimleyin
+        <svg class="ok" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ bağlandığı kutular ═══════════ -->
+<section id="kutular">
+  <div class="kap">
+    <div class="bolum-ust">
+      <span class="et">Bağlantı</span>
+      <h2>Kutunuz yerinde kalır. <em>Biz yanına geliriz.</em></h2>
+      <p class="alt-metin">Kurulacak yazılım, bilgisayarlara dağıtılacak bir program yok.
+        IMAP ve SMTP veren her kutu konuşulabilir; aşağıdakiler bugün elimde test edilmiş
+        olanlar.</p>
+    </div>
+    <div class="kutular">
+      <div class="kutu"><h3>cPanel — Turhost</h3>
+        <p>Yerel hosting üzerindeki kurumsal kutular. En sık karşılaştığım kurulum.</p></div>
+      <div class="kutu"><h3>cPanel — Natro</h3>
+        <p>Aynı altyapı, aynı akış. Alan adı sağlayıcınız fark etmiyor.</p></div>
+      <div class="kutu"><h3>Microsoft 365</h3>
+        <p>Exchange kutuları IMAP ile bağlanır; Outlook'unuz olduğu gibi çalışmaya devam eder.</p></div>
+      <div class="kutu"><h3>Google Workspace</h3>
+        <p>Gmail arayüzünü bırakmanız gerekmiyor; iki taraf aynı kutuya bakar.</p></div>
+      <div class="kutu"><h3>Yandex</h3>
+        <p>Türkiye'de yaygın olan ücretsiz kurumsal kutular da destekleniyor.</p></div>
+      <div class="kutu"><h3>Listede yoksa</h3>
+        <p>Görüşmede birlikte bakarız. IMAP veren bir sunucuysa büyük ihtimalle çalışır.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ nasıl çalışır ═══════════ -->
+<section id="nasil">
+  <div class="kap">
+    <div class="bolum-ust">
+      <span class="et">Nasıl çalışır</span>
+      <h2>Üç adım. <em>Sonuncusunda karar sizde.</em></h2>
+    </div>
+    <div class="adimlar">
+      <div class="adim">
+        <div class="adim-no"><span class="et">Adım</span><b>01</b></div>
+        <div class="adim-ic">
+          <h3>Bağlan</h3>
+          <p>Ekran paylaşımıyla kutunuzu bağlarız ve bağlantıyı birlikte test ederiz; kaç
+            mail bulunduğunu ekranda görürsünüz. Mailleriniz kendi sunucunuzda durmaya
+            devam eder — biz okuruz, taşımayız.</p>
+          <div class="adim-meta"><span class="im">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+            <span>IMAP + SMTP</span><i>·</i><span>Parola AES-256-GCM</span><i>·</i><span>Panele geri gösterilmez</span></div>
+        </div>
+        <div class="adim-gorsel" aria-hidden="true">
+          <div class="mini">
+            <div class="mini-satir"><span class="im ol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span><span class="ad"><b>info@arkunmobilya.com</b>
+              <small>imap.turhost.com : 993</small></span><span class="cip c-yesil">bağlı</span></div>
+            <div class="mini-satir"><span class="im ol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span><span class="ad"><b>satis@arkunmobilya.com</b>
+              <small>imap.turhost.com : 993</small></span><span class="cip c-yesil">bağlı</span></div>
+            <div class="mini-satir"><span class="im ol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span><span class="ad"><b>Son çekim</b>
+              <small>2 dakika önce · 1.284 mail</small></span></div>
+          </div>
+        </div>
+      </div>
+      <div class="adim">
+        <div class="adim-no"><span class="et">Adım</span><b>02</b></div>
+        <div class="adim-ic">
+          <h3>Ayıkla ve yönlendir</h3>
+          <p>Bülten, <code>no-reply</code>, otomatik yanıt ve iç yazışma modele hiç gitmeden
+            elenir. Kalanlar kategoriye girer ve kurallarınıza göre doğru kişiye atanır;
+            kimin neye baktığı, ne kadar beklediği görünür olur.</p>
+          <div class="adim-meta"><span class="im">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+            <span>Kural motoru modelden önce</span><i>·</i><span>Elenen mail ücretlendirilmez</span></div>
+        </div>
+        <div class="adim-gorsel" aria-hidden="true">
+          <div class="mini">
+            <div class="mini-satir solgun"><span class="im yok"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="ad"><b>Haftalık bülten</b>
+              <small>List-Unsubscribe</small></span><span class="cip c-gri">elendi</span></div>
+            <div class="mini-satir solgun"><span class="im yok"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="ad"><b>no-reply@kargo.com</b>
+              <small>yanıtlanamaz gönderen</small></span><span class="cip c-gri">elendi</span></div>
+            <div class="mini-satir"><span class="im ol"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span><span class="ad"><b>40 adet ofis koltuğu</b>
+              <small>Satış · Murat Şen</small></span><span class="cip c-yesil">Ayşe'ye</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="adim">
+        <div class="adim-no"><span class="et">Adım</span><b>03</b></div>
+        <div class="adim-ic">
+          <h3>Taslağı gözden geçir</h3>
+          <p>Yanıt hazır bekler. Onaylarsınız, düzeltirsiniz ya da kendiniz yazarsınız.
+            Gönderilen yanıt sizin Gönderilenler klasörünüze de düşer; Outlook'u
+            açtığınızda orada durur.</p>
+          <div class="adim-meta"><span class="im">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>
+            <span>Onay kuyruğu</span><i>·</i><span>Ekip notu</span><i>·</i><span>Atama geçmişi</span></div>
+        </div>
+        <div class="adim-gorsel" aria-hidden="true">
+          <div class="mini" style="padding:14px">
+            <div class="taslak-ust" style="margin-bottom:9px">
+              <span class="cip c-yesil">Yapay zekâ taslağı</span><span class="et">Onay bekliyor</span>
+            </div>
+            <p style="font-size:12.5px;line-height:1.55;color:var(--metin2);padding:11px 12px;
+              background:var(--ak2);border-radius:var(--r2)">Sayın Ayşe Hanım, teslim tarihinden
+              itibaren 14 gün içinde koşulsuz cayma hakkınız bulunuyor…</p>
+            <div class="taslak-dug" style="margin-top:11px">
+              <span class="tdug ana"><span class="harf">↵</span>Onayla</span>
+              <span class="tdug"><span class="harf">E</span>Düzelt</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ sayılar: ürün gerçeği ═══════════ -->
+<div class="sayilar" id="sayilar">
+  <div class="sayi"><b data-say="0">0</b><span>Onayınız olmadan<br>giden mail</span></div>
+  <div class="sayi"><b data-say="45">0</b><span>Dakikada kurulum,<br>ekran paylaşımıyla</span></div>
+  <div class="sayi"><b data-say="3">0</b><span>Rol: sahip,<br>yönetici, personel</span></div>
+  <div class="sayi"><b class="kisa">Firma</b><span>Başına abonelik,<br>kullanıcı başına değil</span></div>
+</div>
+
+<!-- ═══════════ paketler ═══════════ -->
+<section id="paketler">
+  <div class="kap">
+    <div class="bolum-ust">
+      <span class="et">Paketler</span>
+      <h2>Üç kademe. <em>Hepsi firma başına.</em></h2>
+      <p class="alt-metin">Ekibinize kişi eklediğinizde faturanız büyümez. Kademeyi
+        belirleyen şey kaç kutuya baktığınız ve hangi iş akışına ihtiyacınız olduğu.</p>
+    </div>
+    <div class="paketler">
+      <div class="paket">
+        <div class="paket-ad"><span class="et">Başlangıç</span></div>
+        <div class="paket-olcek">Tek kutu<small>Fiyat görüşmede</small></div>
+        <p class="paket-ne">Tek bir <code>info@</code> kutusuna bakan küçük ekipler.</p>
+        <hr>
+        <ul>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Tek posta kutusu</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Kategoriler ve sahiplenme</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Yapay zekâ yanıt taslağı</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>E-posta desteği</li>
+        </ul>
+        <a class="dug" href="#talep">Demo talebi gönder</a>
+      </div>
+
+      <div class="paket one">
+        <div class="paket-ad"><span class="et">Pro</span>
+          <span class="rzt yesil" style="margin-left:auto"><span class="nokta"></span>Tam iş akışı</span></div>
+        <div class="paket-olcek">Çok kutu<small>Fiyat görüşmede</small></div>
+        <p class="paket-ne">Birden fazla kutusu ve yönlendirme kuralı olan ekipler.</p>
+        <hr>
+        <ul>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Birden fazla posta kutusu</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Yönlendirme kuralları</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>PDF ve ek analizi</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Ekip notları ve atama geçmişi</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Öncelikli destek</li>
+        </ul>
+        <a class="dug koyu" href="#talep">Demo talebi gönder</a>
+      </div>
+
+      <div class="paket">
+        <div class="paket-ad"><span class="et">Kurumsal</span></div>
+        <div class="paket-olcek">Sınırsız<small>Fiyat görüşmede</small></div>
+        <p class="paket-ne">Şubeli yapılar ve rol ayrımı gereken kurumlar.</p>
+        <hr>
+        <ul>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Sınırsız kutu ve kullanıcı</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Şube bazlı yönlendirme</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Rol ve yetki yönetimi</li>
+          <li><span class="im"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 12.5l5 5 10-11"/></svg></span>Kurulum ve ekip eğitimi</li>
+        </ul>
+        <a class="dug" href="#talep">Demo talebi gönder</a>
+      </div>
+    </div>
+
+    <div class="fiyat-notu">
+      <span class="et" style="padding-top:4px">Fiyat</span>
+      <p>Rakamları henüz yayınlamıyorum. <strong>Sebebi dürüstlük:</strong> ürünü gerçek
+        trafikle çalıştırıp maliyetini ölçmeden fiyat sabitlemek, sonradan geri alması zor
+        bir söz olur. Ekibinizin büyüklüğünü ve mail hacminizi konuştuğumuzda size net bir
+        rakam veriyorum — ve o rakam firma başına.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ sorular ═══════════ -->
+<section id="sorular">
+  <div class="kap">
+    <div class="bolum-ust">
+      <span class="et">Sorular</span>
+      <h2>İlk sorulanlar. <em>Düz cevaplar.</em></h2>
+    </div>
+    <div class="sss-sek" role="tablist" aria-label="Soru kümeleri">
+      <button role="tab" aria-selected="true" data-kume="hepsi">Hepsi</button>
+      <button role="tab" aria-selected="false" data-kume="baslarken">Başlarken</button>
+      <button role="tab" aria-selected="false" data-kume="guvenlik">Veri ve KVKK</button>
+      <button role="tab" aria-selected="false" data-kume="akis">İş akışı</button>
+      <button role="tab" aria-selected="false" data-kume="fiyat">Fiyat</button>
+    </div>
+    <div class="sss" id="sss"></div>
+  </div>
+</section>
+
+<!-- ═══════════ demo talebi ═══════════ -->
+<section id="talep">
+  <div class="kap">
+    <div class="talep">
+      <div class="talep-sol">
+        <span class="et" style="display:block;margin-bottom:18px">Demo talebi</span>
+        <h2>Kırk beş dakika ayırın, <em>kutunuzu birlikte açalım.</em></h2>
+        <p>Formu bırakın, size uygun saatlerden birkaçını öneriyorum. Görüşmede kendi
+          kutunuzu bağlayıp ilk sonuçları birlikte görüyoruz.</p>
+        <ul class="sonra">
+          <li><span class="n">01</span><span>Talebiniz doğrudan bana düşer; satış ekibine,
+            çağrı merkezine ya da otomatik bir diziye değil.</span></li>
+          <li><span class="n">02</span><span>Bir iş günü içinde yazıp iki üç saat öneriyorum.
+            Uymazsa siz saat söylersiniz.</span></li>
+          <li><span class="n">03</span><span>Görüşmede kutunuzu bağlıyoruz. İlk
+            sınıflandırmayı ekranda birlikte görürsünüz.</span></li>
+          <li><span class="n">04</span><span>Devam etmek istemezseniz bağlantıyı orada
+            kaldırıyoruz. Hiçbir maili taşımadığımız için geride bir şey kalmıyor.</span></li>
+        </ul>
+      </div>
+
+      <div class="form-kart">
+        <span class="et">Bilgileriniz</span>
+        <form id="talep-form" novalidate>
+          <div class="alanlar">
+            <div class="alan">
+              <label for="f-ad">Ad soyad</label>
+              <input id="f-ad" name="ad" type="text" autocomplete="name" placeholder="Adınız ve soyadınız">
+              <span class="alan-hata" id="h-ad"></span>
+            </div>
+            <div class="alan">
+              <label for="f-firma">Firma</label>
+              <input id="f-firma" name="firma" type="text" autocomplete="organization" placeholder="Firmanızın adı">
+              <span class="alan-hata" id="h-firma"></span>
+            </div>
+            <div class="alan">
+              <label for="f-posta">E-posta</label>
+              <input id="f-posta" name="eposta" type="email" autocomplete="email" placeholder="siz@firmaniz.com">
+              <span class="alan-hata" id="h-posta"></span>
+            </div>
+            <div class="alan">
+              <label for="f-tel">Telefon <span class="ops">— isteğe bağlı</span></label>
+              <input id="f-tel" name="telefon" type="tel" autocomplete="tel" placeholder="05xx xxx xx xx">
+            </div>
+            <div class="alan">
+              <label for="f-saglayici">Posta sağlayıcınız</label>
+              <select id="f-saglayici" name="saglayici">
+                <option value="">Seçin</option>
+                <option>cPanel tabanlı yerel hosting</option>
+                <option>Microsoft 365</option>
+                <option>Google Workspace</option>
+                <option>Yandex</option>
+                <option>Bilmiyorum</option>
+              </select>
+              <span class="alan-hata" id="h-saglayici"></span>
+            </div>
+            <div class="alan">
+              <label for="f-kisi">Kutuya kaç kişi bakıyor</label>
+              <select id="f-kisi" name="kisi">
+                <option value="">Seçin</option>
+                <option>1–2 kişi</option>
+                <option>3–5 kişi</option>
+                <option>6–10 kişi</option>
+                <option>10 kişiden fazla</option>
+              </select>
+              <span class="alan-hata" id="h-kisi"></span>
+            </div>
+            <div class="alan tam">
+              <label for="f-not">Ne kayboluyor? <span class="ops">— isteğe bağlı</span></label>
+              <textarea id="f-not" name="not" placeholder="Örnek: fatura mailleri kargo sorularının arasında kalıyor."></textarea>
+            </div>
+          </div>
+          <!-- Cloudflare Turnstile. Kutu normalde hiç çizilmiyor
+               (interaction-only): Cloudflare arka planda karar veriyor ve
+               yalnız şüphelendiğinde bulmacayı gösteriyor. Anahtar
+               /api/site-ayar'dan geliyor; gelmezse koruma kapalı ve form
+               aynen çalışıyor. -->
+          <div id="ts-alan" class="ts-alan"></div>
+          <!-- Aydinlatma verinin toplandigi yerde olmali; footer'daki baglanti
+               tek basina yeterli sayilmiyor. -->
+          <p class="form-kvkk">
+            Gönderdiğinizde ad, firma, e-posta ve telefon bilginiz yalnızca size
+            dönüş yapmak için işlenir; kimseyle paylaşılmaz ve bülten listesine
+            eklenmezsiniz. Ayrıntı:
+            <a class="bag" href="/kvkk">KVKK aydınlatma metni</a>.
+          </p>
+          <div class="form-alt">
+            <button class="dug koyu" type="submit" id="talep-dug">
+              <span id="talep-dug-et">Talebi gönder</span>
+              <svg class="ok" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17L17 7M8 7h9v9"/></svg>
+            </button>
+            <p class="form-not">Bilgileriniz yalnızca bu görüşme için kullanılır.
+              Bülten listesine eklenmezsiniz.</p>
+          </div>
+          <p class="form-durum" id="form-durum" role="status" aria-live="polite"></p>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="kap">
+    <div class="ft-ust">
+      <div class="ft-marka">
+        <a class="marka" href="#ust">
+          <span class="im">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <rect x="2.5" y="5" width="19" height="14" rx="2.5"/><path d="M3.6 7.6l7.5 5a1.6 1.6 0 0 0 1.8 0l7.5-5"/>
+            </svg>
+          </span>
+          <span class="ad">Mailhanem</span>
+        </a>
+        <p>Ortak posta kutusu yönetimi. Gelen mail sınıflanır, doğru kişiye atanır, yanıt
+          taslağı hazırlanır; gönderme kararı sizde kalır.</p>
+        <p class="ft-iletisim" id="ft-iletisim" hidden></p>
+      </div>
+      <div>
+        <span class="et ft-bas">Sayfada</span>
+        <ul class="ft-liste">
+          <li><a href="#icerde">Ürünün içi</a></li>
+          <li><a href="#kutular">Bağlandığı kutular</a></li>
+          <li><a href="#nasil">Nasıl çalışır</a></li>
+          <li><a href="#paketler">Paketler</a></li>
+          <li><a href="#sorular">Sorular</a></li>
+          <li><a href="giris.html">Panele giriş</a></li>
+          <li><a href="/kvkk">KVKK aydınlatma metni</a></li>
+        </ul>
+      </div>
+      <div>
+        <span class="et ft-bas">Bağlanır</span>
+        <ul class="ft-liste">
+          <li><span>cPanel — Turhost, Natro</span></li>
+          <li><span>Microsoft 365</span></li>
+          <li><span>Google Workspace</span></li>
+          <li><span>Yandex</span></li>
+        </ul>
+      </div>
+      <div>
+        <span class="et ft-bas">Açık sözlülük</span>
+        <p class="ft-durust"><strong>Müşteri referansı yok.</strong> Ürün erken erişimde;
+          logo, vaka çalışması ve kullanım istatistiği göstermiyorum çünkü henüz yok.
+          <strong>Fiyat rakamı yayınlanmıyor</strong>: maliyeti ölçmeden fiyat sabitlemek
+          sonradan geri alınamayan bir söz olur.</p>
+      </div>
+    </div>
+    <div class="ft-alt">
+      <span>© 2026 Mailhanem</span>
+      <span>mailhanem.app</span>
+      <span class="sag">Mailleriniz kendi sunucunuzda kalır</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════
+   Operatör panelinden yönetilecek ayarlar. Kodda sabit DEĞİL: arka taraf
+   geldiğinde panelin "Sistem" ekranından düzenlenip /api/site-ayar ile gelir.
+   Hiçbir adres sayfaya elle gömülmedi — AYAR boş kaldığı sürece sayfa o satırı
+   hiç göstermiyor. Demo talebi de panele düşüyor: form talepUcu'na POST eder,
+   talep operatör panelinde "Demo Talepleri" olarak listelenir.
+   ══════════════════════════════════════════════════════════════════════ */
+var AYAR = {
+  eposta:"", telefon:"",
+  /* Uygulama sunucusunun kökü. Site ile uygulama aynı alan adına taşındığında "" yapın. */
+  koku: "http://127.0.0.1:3100",
+  talepUcu: "/api/demo-talebi",
+  ayarUcu:  "/api/site-ayar",
+  /* Dolu müşteri panelini açan uç. Uygulama oturumu kendisi açıyor. */
+  demoUcu:  "/demo"
+};
+function uc(yol){ return AYAR.koku + yol; }
+
+/* Demo düğmelerinin hedefi AYAR'dan kuruluyor: site uygulamadan ayrı bir
+   kökende servis edilirse bağlantılar yine doğru yere gitsin. Üç yerde var —
+   üst ray, hero ve mobil menü. */
+(function demoBaglantisi(){
+  var hedef = uc(AYAR.demoUcu);
+  ["demo-dug", "demo-dug-ray", "demo-dug-menu"].forEach(function(id){
+    var d = document.getElementById(id);
+    if (d) d.setAttribute("href", hedef);
+  });
+})();
+
+(function ayarCek(){
+  if (!window.fetch) return;
+  fetch(uc(AYAR.ayarUcu), {headers:{"Accept":"application/json"}})
+    .then(function(y){ return y.ok ? y.json() : null; })
+    .then(function(d){ if (d){ Object.assign(AYAR, d); iletisimYaz(); turnstileKur(); } })
+    .catch(function(){ /* arka taraf henüz yok: yerel ayarlarla devam */ });
+})();
+
+/* Turnstile'ı ayar geldikten sonra kuruyoruz çünkü site anahtarı sayfaya
+   gömülü değil, /api/site-ayar'dan geliyor. Betik bir kez yükleniyor; widget
+   açıkça (explicit) çiziliyor ve kimliği saklanıyor — jetonu göndermeden önce
+   oradan okuyacağız. */
+var TS_ID = null;
+function turnstileKur(){
+  if (!AYAR.turnstile || TS_ID !== null) return;
+  var alan = document.getElementById("ts-alan");
+  if (!alan) return;
+
+  window.tsHazir = function(){
+    try {
+      TS_ID = window.turnstile.render(alan, {
+        sitekey: AYAR.turnstile,
+        language: "tr",
+        theme: "light",
+        size: "flexible",
+        appearance: "interaction-only"
+      });
+    } catch (e) { TS_ID = null; }
+  };
+
+  var b = document.createElement("script");
+  b.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=tsHazir";
+  b.async = true; b.defer = true;
+  document.head.appendChild(b);
+}
+
+function iletisimYaz(){
+  var el = document.getElementById("ft-iletisim");
+  if (!el) return;
+  var p = [];
+  if (AYAR.eposta)  p.push('<a class="bag" href="mailto:' + AYAR.eposta + '">' + AYAR.eposta + '</a>');
+  if (AYAR.telefon) p.push('<a class="bag" href="tel:' + AYAR.telefon.replace(/ /g,"") + '">' + AYAR.telefon + '</a>');
+  if (!p.length){ el.hidden = true; return; }
+  el.innerHTML = p.join(" · ");
+  el.hidden = false;
+}
+iletisimYaz();
+
+var azHareket = matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ── kayan şerit: yetenekler, iki kopya halinde ── */
+(function seritKur(){
+  var el = document.getElementById("serit");
+  if (!el) return;
+  var kelimeler = ["IMAP ile bağlanır","Kategori ve sahiplenme","Yanıt taslağı","Ekip notu",
+    "Atama geçmişi","Yönlendirme kuralları","Bülten ve no-reply elenir","PDF ve ek analizi",
+    "KVKK uyumlu","Türkçe arayüz","Gönderilenler klasörünüze yazar","Rol ve yetki yönetimi"];
+  var bir = kelimeler.map(function(k){ return "<span>" + k + "</span>"; }).join("");
+  el.innerHTML = bir + bir;
+})();
+
+/* ── üst ray ── */
+(function ray(){
+  var ray = document.getElementById("ray");
+  var dug = document.getElementById("ray-menu");
+  var panel = document.getElementById("ray-panel");
+  var bekle = 0;
+  addEventListener("scroll", function(){
+    if (bekle) return;
+    bekle = requestAnimationFrame(function(){
+      bekle = 0; ray.classList.toggle("kayik", scrollY > 6);
+    });
+  }, {passive:true});
+
+  function kapat(){ panel.hidden = true; dug.setAttribute("aria-expanded","false");
+    dug.setAttribute("aria-label","Menüyü aç"); }
+  dug.addEventListener("click", function(){
+    var acik = panel.hidden;
+    panel.hidden = !acik;
+    dug.setAttribute("aria-expanded", acik ? "true" : "false");
+    dug.setAttribute("aria-label", acik ? "Menüyü kapat" : "Menüyü aç");
+  });
+  panel.addEventListener("click", function(e){ if (e.target.closest("a")) kapat(); });
+  addEventListener("keydown", function(e){ if (e.key === "Escape" && !panel.hidden){ kapat(); dug.focus(); } });
+
+  var baglar = [].slice.call(document.querySelectorAll(".ray-nav a"));
+  var hedefler = baglar.map(function(a){ return document.querySelector(a.getAttribute("href")); });
+  if (!("IntersectionObserver" in window)) return;
+  var g = new IntersectionObserver(function(kayitlar){
+    kayitlar.forEach(function(k){
+      var i = hedefler.indexOf(k.target);
+      if (i < 0 || !k.isIntersecting) return;
+      baglar.forEach(function(a){ a.removeAttribute("aria-current"); });
+      baglar[i].setAttribute("aria-current","true");
+    });
+  }, {rootMargin:"-45% 0px -50% 0px"});
+  hedefler.forEach(function(h){ if (h) g.observe(h); });
+})();
+
+/* ── ürün minyatürleri: panelin kendi arayüzü ── */
+var MAILLER = [
+  {ad:"Ayşe Demir",   bas:"A", renk:"#0F7154", konu:"İade prosedürü hakkında bilgi",
+   kat:"Destek",  knokta:"#2F8F63", cip:"taslak hazır", cipSinif:"c-yesil", sahip:"Enes", vurgu:true},
+  {ad:"Murat Şen",    bas:"M", renk:"#1D4E7C", konu:"40 adet ofis koltuğu için toplu alım",
+   kat:"Satış",   knokta:"#1D4E7C", cip:"2 saat bekliyor", cipSinif:"c-gri", sahip:""},
+  {ad:"Hakan Yılmaz", bas:"H", renk:"#B23A40", konu:"Gelen ürün hasarlı geldi",
+   kat:"Şikayet", knokta:"#B23A40", cip:"5 saat bekliyor", cipSinif:"c-sari", sahip:""},
+  {ad:"Ergün Denetim",bas:"E", renk:"#8A5A07", konu:"Şubat ayı gider faturaları",
+   kat:"Fatura",  knokta:"#B5820A", cip:"", cipSinif:"", sahip:"Elif"}
+];
+
+function kutuCiz(el){
+  if (!el) return;
+  el.innerHTML =
+    '<div class="min-ust">' +
+      '<b>Arkun Mobilya</b><span class="et">Gelen kutusu</span>' +
+      '<span class="min-ornek">örnek veri</span>' +
+    '</div>' +
+    MAILLER.map(function(m){
+      return '<div class="mail' + (m.vurgu ? ' vurgu' : '') + '">' +
+        '<span class="av" style="background:' + m.renk + '">' + m.bas + '</span>' +
+        '<span class="mail-ic">' +
+          '<span class="konu">' + m.konu + '</span>' +
+          '<span class="mail-alt">' +
+            '<span class="knokta" style="background:' + m.knokta + '"></span>' + m.kat +
+            '<span style="color:var(--ayrac)">·</span>' + m.ad +
+            (m.cip ? '<span class="cip ' + m.cipSinif + '">' + m.cip + '</span>' : '') +
+            '<span class="sahip' + (m.sahip ? '' : ' yok') + '">' +
+              (m.sahip ? m.sahip : 'sahipsiz') + '</span>' +
+          '</span>' +
+        '</span>' +
+      '</div>';
+    }).join("");
+}
+
+function taslakCiz(el){
+  if (!el) return;
+  el.innerHTML =
+    '<div class="min-ust">' +
+      '<span class="av" style="background:#0F7154;width:24px;height:24px;font-size:11px">A</span>' +
+      '<b>Ayşe Demir</b><span class="et">İade prosedürü</span>' +
+      '<span class="min-ornek">örnek veri</span>' +
+    '</div>' +
+    '<div class="taslak">' +
+      '<div class="taslak-ust">' +
+        '<span class="cip c-yesil">Yapay zekâ taslağı</span>' +
+        '<span class="et">Onay bekliyor</span>' +
+      '</div>' +
+      '<p>Sayın Ayşe Hanım, teslim tarihinden itibaren 14 gün içinde koşulsuz cayma ' +
+      'hakkınız bulunuyor. Ürünün açılmış olması bu hakkı etkilemez. İade kargo ücreti ' +
+      'tarafımıza aittir.</p>' +
+      '<div class="taslak-dug">' +
+        '<span class="tdug ana"><span class="harf">↵</span>Onayla ve gönder</span>' +
+        '<span class="tdug"><span class="harf">E</span>Düzelt</span>' +
+        '<span class="tdug"><span class="harf">Y</span>Kendim yazacağım</span>' +
+      '</div>' +
+    '</div>';
+}
+kutuCiz(document.getElementById("min-kutu"));
+taslakCiz(document.getElementById("min-taslak"));
+
+/* ── sayılar: görünür olunca sayar ── */
+(function sayilar(){
+  var kutu = document.getElementById("sayilar");
+  if (!kutu || !("IntersectionObserver" in window)) return;
+  var g = new IntersectionObserver(function(k){
+    if (!k[0].isIntersecting) return;
+    g.disconnect();
+    kutu.querySelectorAll("[data-say]").forEach(function(el){
+      var hedef = +el.dataset.say;
+      if (azHareket || hedef === 0){ el.textContent = hedef; return; }
+      var t0 = performance.now(), sure = 950;
+      requestAnimationFrame(function adim(t){
+        var o = Math.min(1, (t - t0) / sure);
+        el.textContent = Math.round(hedef * (1 - Math.pow(1 - o, 3)));
+        if (o < 1) requestAnimationFrame(adim);
+      });
+    });
+  }, {threshold:.35});
+  g.observe(kutu);
+})();
+
+/* ── sorular ── */
+var SORULAR = [
+  {k:"akis", s:"Mailhanem benim adıma kendiliğinden mail gönderir mi?",
+   c:"Göndermez. Yapay zekâ yanıtı <strong>taslak olarak</strong> hazırlar; siz okuyup " +
+     "onaylayana kadar kutunuzdan hiçbir mail çıkmaz. Bu bir eksiklik değil, ürünün ilk " +
+     "kararı: otomasyon taslağa kadar."},
+  {k:"guvenlik", s:"Maillerim nerede duruyor?",
+   c:"Kendi posta sunucunuzda. Mailhanem kutunuzu IMAP ile okur, yanıtı SMTP ile gönderir " +
+     "ve gönderdiğini sizin Gönderilenler klasörünüze yazar. <strong>Sistem kaydı biz " +
+     "değiliz</strong>; bağlantıyı kaldırdığınızda maillerinizin tamamı olduğu yerde durur."},
+  {k:"guvenlik", s:"KVKK tarafında durum ne?",
+   c:"Yazışmanın aslı sizde kaldığı için veri sorumlusu sizsiniz, biz işleyen tarafız. " +
+     "Posta kutusu parolanız AES-256-GCM zarf şifreleme ile saklanır ve <strong>panele geri " +
+     "gösterilmez</strong>. Görüşmede hangi verinin nereye gittiğini tek tek gösteriyorum; " +
+     "yazılı metin isterseniz kurulumdan önce hazırlıyoruz."},
+  {k:"baslarken", s:"Benim posta sağlayıcım destekleniyor mu?",
+   c:"cPanel tabanlı yerel hosting (Turhost, Natro ve benzeri), Microsoft 365, Google " +
+     "Workspace ve Yandex ile çalışıyor. Listede olmayan bir sunucu kullanıyorsanız kesin " +
+     "cevabı görüşmede veriyorum: IMAP ve SMTP veren her kutu konuşulabilir."},
+  {k:"fiyat", s:"Fiyat neden sayfada yazmıyor?",
+   c:"Çünkü henüz ölçmedim. Ürünü gerçek trafikle çalıştırıp mail başına maliyetini " +
+     "görmeden rakam yazmak, sonradan geri alması zor bir söz olur. <strong>Ekip " +
+     "büyüklüğünüzü ve mail hacminizi konuştuğumuzda net bir rakam veriyorum</strong> — " +
+     "ve o rakam firma başına, kullanıcı başına değil."},
+  {k:"baslarken", s:"Kurulum ne kadar sürüyor, bizden ne isteniyor?",
+   c:"Ekran paylaşımıyla yaklaşık kırk beş dakika. Kurulacak yazılım, bilgisayarlara " +
+     "dağıtılacak bir program yok; panel tarayıcıdan çalışıyor. Sizden istenen tek şey " +
+     "kutunun IMAP bilgileri ve kimin hangi kategoriye bakacağı."},
+  {k:"akis", s:"Kaç kişi kullanabilir, yetkiler nasıl?",
+   c:"Abonelik firma başına olduğu için kişi eklemek faturanızı büyütmez. Üç rol var: " +
+     "sahip, yönetici, personel. Erişim posta kutusu bazında veriliyor; muhasebe yalnızca " +
+     "fatura kutusunu görür, satış yalnızca kendi kutusunu."},
+  {k:"fiyat", s:"Her mail için ücret ödüyor muyum?",
+   c:"Hayır. Bülten, <code>no-reply</code> adresleri, otomatik yanıtlar ve kendi alan " +
+     "adınızdan gelen iç yazışma modele hiç gitmeden elenir. <strong>Elenen mail " +
+     "ücretlendirilmez</strong> — ve daha önemlisi, otomatik yanıt veren bir adrese yapay " +
+     "zekânın cevap yazması böylece engellenmiş olur."},
+  {k:"baslarken", s:"Ürün hangi aşamada?",
+   c:"Erken erişimde. Yukarıdaki ekranlar gerçek arayüzün kendisi; içindeki firma ve " +
+     "mailler örnek veri. İlk müşterilerle kurulumu birlikte yapıyorum ve eksik gördükleri " +
+     "şey sıraya doğrudan giriyor. <strong>Gösterebileceğim bir müşteri referansı henüz " +
+     "yok</strong> ve uydurmuyorum."}
+];
+
+(function sss(){
+  var kutu = document.getElementById("sss");
+  var sekmeler = [].slice.call(document.querySelectorAll(".sss-sek button"));
+  if (!kutu) return;
+  var arti = '<span class="im"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">' +
+    '<path d="M12 5v14M5 12h14"/></svg></span>';
+  function ciz(kume){
+    kutu.innerHTML = SORULAR
+      .filter(function(s){ return kume === "hepsi" || s.k === kume; })
+      .map(function(s){
+        return "<details><summary>" + s.s + arti + "</summary>" +
+          '<div class="cvp"><p>' + s.c + "</p></div></details>";
+      }).join("");
+  }
+  sekmeler.forEach(function(b){
+    b.addEventListener("click", function(){
+      sekmeler.forEach(function(x){ x.setAttribute("aria-selected","false"); });
+      b.setAttribute("aria-selected","true");
+      ciz(b.dataset.kume);
+    });
+  });
+  ciz("hepsi");
+})();
+
+/* ── ilk görüş alanındaki hızlı form: adresi taşır, forma götürür ── */
+(function hizli(){
+  var f = document.getElementById("hizli");
+  if (!f) return;
+  f.addEventListener("submit", function(e){
+    e.preventDefault();
+    var deger = document.getElementById("hizli-kutu").value.trim();
+    var hedef = document.getElementById("f-posta");
+    if (deger && hedef) hedef.value = deger;
+    document.getElementById("talep").scrollIntoView({behavior: azHareket ? "auto" : "smooth"});
+    setTimeout(function(){
+      var ilk = document.getElementById(deger ? "f-ad" : "f-posta");
+      if (ilk) ilk.focus({preventScroll:true});
+    }, azHareket ? 0 : 700);
+  });
+})();
+
+/* ── demo talebi: operatör paneline düşer ── */
+(function talep(){
+  var form = document.getElementById("talep-form");
+  if (!form) return;
+  var dug = document.getElementById("talep-dug");
+  var dugEt = document.getElementById("talep-dug-et");
+  var durum = document.getElementById("form-durum");
+
+  var KURALLAR = [
+    {ad:"ad",        hata:"h-ad",        alan:"f-ad",
+     mesaj:"Adınızı yazın; görüşmede size nasıl hitap edeceğimi bilmem gerekiyor."},
+    {ad:"firma",     hata:"h-firma",     alan:"f-firma",
+     mesaj:"Firma adını yazın; hangi sektörde olduğunuza göre demoyu hazırlıyorum."},
+    {ad:"eposta",    hata:"h-posta",     alan:"f-posta",
+     mesaj:"E-posta adresinizi yazın; saat önerimi buraya göndereceğim."},
+    {ad:"saglayici", hata:"h-saglayici", alan:"f-saglayici",
+     mesaj:"Posta sağlayıcınızı seçin. Bilmiyorsanız “Bilmiyorum” da bir cevap."},
+    {ad:"kisi",      hata:"h-kisi",      alan:"f-kisi",
+     mesaj:"Kutuya kaç kişi baktığını seçin; paket önerisi buna göre değişiyor."}
+  ];
+
+  function temizle(k){
+    var a = document.getElementById(k.alan);
+    a.closest(".alan").classList.remove("hata");
+    a.removeAttribute("aria-invalid");
+    document.getElementById(k.hata).textContent = "";
+  }
+  function isaretle(k, mesaj){
+    var a = document.getElementById(k.alan);
+    a.closest(".alan").classList.add("hata");
+    a.setAttribute("aria-invalid","true");
+    a.setAttribute("aria-describedby", k.hata);
+    document.getElementById(k.hata).textContent = mesaj;
+  }
+  function dogrula(){
+    var ilk = null;
+    KURALLAR.forEach(function(k){
+      var a = document.getElementById(k.alan), d = a.value.trim();
+      temizle(k);
+      var bozuk = k.ad === "eposta" && d && !/^[^@\s]+@[^@\s]+[.][^@\s]{2,}$/.test(d);
+      if (!d || bozuk){
+        isaretle(k, bozuk
+          ? "Bu adres eksik görünüyor. @ ve alan adıyla birlikte yazın, örnek: ayse@firmaniz.com"
+          : k.mesaj);
+        if (!ilk) ilk = a;
+      }
+    });
+    return ilk;
+  }
+
+  function basarili(adres){
+    var kart = form.closest(".form-kart");
+    kart.innerHTML =
+      '<div class="tamam">' +
+        '<span class="im" aria-hidden="true">' +
+          '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+          'stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">' +
+          '<path d="M4.5 12.5l5 5 10-11"/></svg></span>' +
+        '<h3 tabindex="-1">Talebiniz bana ulaştı</h3>' +
+        '<p>Bir iş günü içinde <b>' + adres + '</b> adresine yazıp size uygun saatlerden ' +
+        'birkaçını öneriyorum. Bu arada ürünün içine bakmaya devam edebilirsiniz.</p>' +
+        '<a class="bag" href="#icerde">Ekranlara dön →</a>' +
+      '</div>';
+    kart.querySelector("h3").focus();
+  }
+  function hata(mesaj){
+    durum.className = "form-durum gorun kotu";
+    durum.innerHTML = mesaj;
+  }
+
+  form.addEventListener("submit", function(e){
+    e.preventDefault();
+    durum.className = "form-durum";
+    var ilk = dogrula();
+    if (ilk){ ilk.focus(); return; }
+
+    var veri = {};
+    new FormData(form).forEach(function(v,k){ veri[k] = typeof v === "string" ? v.trim() : v; });
+    veri.kaynak = "site/index.html";
+    veri.zaman = new Date().toISOString();
+
+    dug.disabled = true;
+    dugEt.textContent = "Gönderiliyor…";
+
+    var basliklar = {"Content-Type":"application/json"};
+    /* Jeton başlıkta gidiyor: uç gövdeyi hiç ayrıştırmadan karar verebilsin.
+       Koruma kapalıysa TS_ID null kalır ve başlık eklenmez. */
+    if (TS_ID !== null && window.turnstile){
+      try { basliklar["x-turnstile"] = window.turnstile.getResponse(TS_ID) || ""; } catch (e) {}
+    }
+
+    fetch(uc(AYAR.talepUcu), {
+      method:"POST", headers:basliklar, body:JSON.stringify(veri)
+    }).then(function(y){
+      if (!y.ok) throw new Error(y.status);
+      basarili(veri.eposta);
+    }).catch(function(){
+      dug.disabled = false;
+      dugEt.textContent = "Tekrar dene";
+      /* Turnstile jetonu tek kullanımlık; sıfırlamazsak ikinci deneme
+         kesinlikle reddedilirdi. */
+      if (TS_ID !== null && window.turnstile){
+        try { window.turnstile.reset(TS_ID); } catch (e) {}
+      }
+      if (AYAR.eposta){
+        var NL = "%0A";
+        var konu = encodeURIComponent("Demo talebi — " + (veri.firma || veri.ad || ""));
+        var govde =
+          encodeURIComponent("Ad soyad: " + (veri.ad || "")) + NL +
+          encodeURIComponent("Firma: " + (veri.firma || "")) + NL +
+          encodeURIComponent("E-posta: " + (veri.eposta || "")) + NL +
+          encodeURIComponent("Telefon: " + (veri.telefon || "-")) + NL +
+          encodeURIComponent("Sağlayıcı: " + (veri.saglayici || "")) + NL +
+          encodeURIComponent("Kutuya bakan: " + (veri.kisi || "")) + NL + NL +
+          encodeURIComponent("Not: " + (veri.not || "-"));
+        hata('Form şu an gönderilemedi. Talebinizi kaybetmeyelim: ' +
+          '<a class="bag" href="mailto:' + AYAR.eposta + '?subject=' + konu + '&body=' + govde +
+          '">hazırladığım maili açıp gönderin</a>; içinde yazdıklarınızın tamamı var.');
+      } else {
+        hata("Form şu an gönderilemedi. Bağlantınız yerindeyse sorun bizde: " +
+             "birkaç dakika sonra tekrar deneyin.");
+      }
+    });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+# Mailhanem
+# Panel ve uçlar dizine girmesin: ikisi de oturum arkasında ve arama
+# sonucunda görünmelerinin hiçbir faydası yok. Demo vitrini de dışarıda —
+# her ziyarette sıfırlanan uydurma veri arama sonucuna düşmemeli.
+User-agent: *
+Allow: /
+Disallow: /panel
+Disallow: /operator
+Disallow: /api/
+Disallow: /giris
+Disallow: /ek/
+Disallow: /demo
+
+Sitemap: https://mailhanem.app/sitemap.xml

@@ -1,0 +1,42 @@
+From: Muhasebe Arkun <muhasebe@disarifirma.com>
+To: info@arkunmobilya.com
+Subject: =?UTF-8?B?xZ51YmF0IHRla2xpZmkgdmUgw7xyw7xuIGxpc3Rlc2kgZWt0ZQ==?=
+Date: Mon, 22 Sep 2026 09:12:00 +0300
+Message-ID: <ek-testi-001@disarifirma.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="SINIR_MAILHANEM_TEST"
+
+--SINIR_MAILHANEM_TEST
+Content-Type: text/plain; charset=utf-8
+
+Merhaba,
+
+Subat ayi teklifimizi ve urun listesini ekte gonderiyorum.
+Fiyatlar 30 gun gecerlidir.
+
+Iyi calismalar,
+Muhasebe
+
+--SINIR_MAILHANEM_TEST
+Content-Type: application/pdf; name="teklif.pdf"
+Content-Disposition: attachment; filename="teklif.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKMSAwIG9iajw8L1R5cGUvQ2F0YWxvZy9QYWdlcyAyIDAgUj4+ZW5kb2JqCjIgMCBvYmo8PC9UeXBlL1BhZ2VzL0tpZHNbXS9Db3VudCAwPj5lbmRvYmoKdHJhaWxlcjw8L1Jvb3QgMSAwIFI+PgolJUVPRgo=
+
+--SINIR_MAILHANEM_TEST
+Content-Type: text/csv; name="urun-listesi.csv"
+Content-Disposition: attachment; filename="urun-listesi.csv"
+Content-Transfer-Encoding: base64
+
+dXJ1bjthZGV0O2JpcmltCktvbHR1azsxMjtUTApTYW5kYWx5ZTs0MDtUTAo=
+
+--SINIR_MAILHANEM_TEST
+Content-Type: image/gif
+Content-Disposition: inline
+Content-ID: <imza-logo>
+Content-Transfer-Encoding: base64
+
+R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7
+
+--SINIR_MAILHANEM_TEST--

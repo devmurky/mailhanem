@@ -1,0 +1,8 @@
+# Depoda satır sonu her zaman LF; çalışma kopyasında Windows'un istediği gibi.
+* text=auto eol=lf
+
+# İkili dosyalara dokunulmasın
+*.png binary
+*.jpg binary
+*.ico binary
+*.eml -text

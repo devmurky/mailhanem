@@ -1,0 +1,16 @@
+node_modules/
+.next/
+veri/
+.env.local
+.env*.local
+next-env.d.ts
+
+# Tanıtım sayfası derleme öncesi site/ klasöründen kopyalanır (araclar/siteyi-kopyala.mjs).
+# Kaynak orada; buradaki üretilmiş kopya sürüm kontrolüne girmez.
+public/tanitim/
+
+# SMTP kapalıyken giden maillerin düştüğü yerel günlük (giriş bağlantıları içerir).
+veri/giden-mailler.log
+
+# TypeScript artan derleme önbelleği
+tsconfig.tsbuildinfo
