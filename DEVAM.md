@@ -1,6 +1,9 @@
 # Mailhanem — kaldığımız yer
 
-_Son güncelleme: 2026-09-26. Bu turda: **bilgi deposu** (firmanın karakteri +
+_Son güncelleme: 2026-09-26 (ikinci tur). Bu turda: proje **git altına
+alındı** (github.com/devmurky/mailhanem, private) ve memnuniyet listesinin
+**6, 4, 8, 12**'si yapıldı — okundu/okunmadı, klavye kısayolları, "şu an bu
+maile bakıyor", veri dışa aktarma. Aynı gün önce: **bilgi deposu** (firmanın karakteri +
 bilgi kartları, çıkarım boru hattı anahtarsız hazır), **ticket arayüzü yeniden
 dengelendi**, **panel genişlikleri adaptif oldu** (2K turu) ve **kapanış
 turunda açık uçlar kapatıldı** (anahtarın iki adı, maliyet ekranı etiketleri,
@@ -13,7 +16,7 @@ liste. Bu dosya yeni bir oturumun ilk okuyacağı şey._
 
 | Dosya | Ne | Durum |
 |---|---|---|
-| `uygulama/` | **Next.js uygulaması** — site + iki panel, tek kökende | Çalışıyor, 33 rota, 224 test |
+| `uygulama/` | **Next.js uygulaması** — site + iki panel, tek kökende | Çalışıyor, 33 rota, 257 test |
 | `site/index.html` | Tanıtım sayfası — **kaynak dosya**, uygulama `/` adresinde servis ediyor | Çalışıyor |
 | `site/giris.html` | Giriş sayfası — **artık servis edilmiyor**, tasarımı `/giris`'e taşındı | Tasarım artefaktı |
 | `tasarim/panel.html` | Müşteri paneli prototipi, 6 ekran | **Tamamı taşındı** |
@@ -95,10 +98,13 @@ yerde). İsteğe bağlı: `ZEKA_MODEL` (varsayılan `claude-sonnet-5`),
 `ZEKA_KURUS_1M_GIRDI` / `ZEKA_KURUS_1M_CIKTI` (girilmezse token sayılır, kuruş
 sıfır yazılır — uydurma fiyatla marj hesaplatmıyoruz).
 
-Memnuniyet listesinden sıradakiler: **6 (okundu/okunmadı), 4 (klavye
-kısayolları), 8 ("şu an bu maile bakıyor"), 12 (veri dışa aktarma)**. Altıncı
-madde ile başlamak mantıklı: taslak rozeti ve konuşma şeridi zaten satırda yer
-açtı, "buna kim baktı" sorusu aynı yere oturuyor.
+Memnuniyet listesinden **6, 4, 8 ve 12 bitti** (ayrıntı aşağıdaki "Dört
+madde + sürüm kontrolü" bölümünde). Sıradakiler için öneri: **5 ("bana
+hatırlat"), 7 (@bahsetme), 9 (devretme gerekçesi)** — üçü de artık hazır olan
+zemine oturuyor. 5 için `mail_okumalari` deseni birebir tekrarlanabilir
+(kişiye ait satır, yokluğu varsayılan); 7 not sisteminin üstünde küçük bir iş;
+9 devretme eylemine tek alan ekliyor. Kurulum tarafı boşsa 16 (boş ekran
+rehberliği) en ucuz kazanç.
 
 **Konuşma katlaması bir karar bekliyor.** Liste hâlâ mail başına bir satır;
 konuşmalar tek satıra katlanmıyor. Sebebi sayaçlar: sekme rakamları
@@ -130,14 +136,11 @@ Sırada duran işler listenin dışındakiler:
 Ürün maddesi değil; ürün bittiğinde hâlâ eksik kalacak olanlar. Sıra kabaca
 risk büyüklüğüne göre.
 
-- **A. Sürüm kontrolü yok.** `uygulama/.gitignore` hazır ama `saas/` altında
-  hiç `.git` yok — bugüne kadarki tek geri dönüş noktası bu dosya. Yanlış bir
-  `sed` iki ayın işini götürür. `git init` + ilk commit yeter; ignore listesi
-  zaten doğru (`veri/`, `.env.local`, `node_modules/`, `.next/`,
-  `public/tanitim/`). **Klasör adı değişikliğinden önce yapılmalı** —
-  yeniden adlandırmada bir şey kırılırsa dönecek yer olsun. Testlerin
-  otomatik koşması (CI) da buna bağlı; şimdilik `npm run dene` elle
-  çalıştırılıyor.
+- ~~**A. Sürüm kontrolü yok.**~~ **Bitti (2026-09-26):** depo
+  `github.com/devmurky/mailhanem` (private), ana dal `ana`. Ayrıntı aşağıdaki
+  "Dört madde + sürüm kontrolü" bölümünde. **Klasör adı değişikliği artık
+  güvenli** — kırılırsa dönecek yer var. Kalan parça: testleri otomatik koşan
+  bir CI (şimdilik `npm run dene` elle çalıştırılıyor).
 - **B. Giriş ucunda hız sınırı yok.** `app/api/giris-linki/route.ts` gövdeyi
   doğruluyor ama sayaç tutmuyor: bilinen bir adrese saniyede onlarca giriş
   maili tetiklenebilir. Sonuç sadece can sıkıcı değil — SMTP kotası ve
@@ -194,6 +197,119 @@ risk büyüklüğüne göre.
    sonunda çağrılıyor** — kullandıkları `const`lar kendi bölümlerinde ve
    yukarıdan çağrılınca "Cannot access ... before initialization" ile sessizce
    patlıyorlardı. Yeni bir geri doldurma da oraya eklenmeli.
+
+---
+
+## Dört madde + sürüm kontrolü (2026-09-26, ikinci tur)
+
+Memnuniyet listesinin **6, 4, 8 ve 12**'si yapıldı ve proje artık **git
+altında**. Her özellik ayrı commit; testler 224 → **257**.
+
+### Depo — github.com/devmurky/mailhanem (private)
+
+`saas/mailhane/` bir git deposu oldu, ana dal **`ana`**. `uygulama/.gitignore`
+zaten doğruydu (`veri/`, `.env.local`, `node_modules/`, `.next/`,
+`public/tanitim/`); köke `.gitattributes` eklendi (depoda LF, çalışma
+kopyasında CRLF) ve `tsconfig.tsbuildinfo` izlenenlerden çıkarıldı. İlk commit
+163 dosya. Commit öncesi sızıntı taraması yapıldı: dosya listesinde `.env.local`,
+`veri/` ya da veritabanı yok — yalnız boş şablon `.env.ornek` var.
+
+**GitHub CLI winget ile kuruldu:** `C:\Program Files\GitHub CLI\gh.exe`.
+**PATH'te görünmüyor**, tam yolla çağır. Hesap `devmurky`, kimlik doğrulama
+tarayıcıdan yapıldı (`gh auth login --web`), git kimlik yöneticisi bağlı.
+
+`../PRODUCT.md` ve `../.impeccable/` depoya **girmedi**: `saas/` kökünde
+duruyorlar, depo yalnız `mailhane/`. İstenirse taşınır ya da ikinci bir depo
+açılır — taşımak `yakala.py` ve DEVAM'daki `../` yollarını kırar, o yüzden
+kendiliğinden yapılmadı.
+
+### Madde 6 — okundu/okunmadı
+
+Listedeki kalın satır **durumu** okuyordu (`durum === "yeni"`). Yanlış cevap:
+biri maili açıp kapatınca satır herkes için sönüyordu, oysa ortak kutuda okuma
+kişiseldir.
+
+- `mail_okumalari` — satır **yalnız okunmuşlar** için var; okunmamışlık kaydın
+  yokluğu. Yeni mail hiçbir şey yazılmadan herkes için okunmamış, ekibe yeni
+  katılan kuyruğu okunmamış görüyor, "okunmadı işaretle" satırı silmek demek.
+- **"Okunmamış" sekmesi** — kişiye göre değişen tek sekme; sayacı da öyle.
+- Mail detayında **okuma şeridi**: kim baktı (avatar + ad) ve "Okunmadı
+  işaretle". Ekipten çıkarılan kişinin izi kalıyor (kullanıcı silinmiyor,
+  kapatılıyor).
+- **İşaret tarayıcıdan düşüyor** (`app/panel/mail/Okuma.tsx`). Sunucuda çizim
+  sırasında yazmak en kısa yoldu ama Next bağlantıları önceden getiriyor:
+  fareyi satırın üstünden geçirmek hiç bakılmamış maili okunmuş yapardı.
+- Gelen kutusunda **kendiliğinden açılan önizleme okundu sayılmıyor** — yalnız
+  kullanıcı bir satıra tıklayınca (`acikSecim`). Sayılsaydı panele her girişte
+  en yeni mail sessizce okunurdu.
+- Eylem yalnız **ilk** okumada `revalidatePath` çağırıyor; ikinci bakışta
+  sayfayı yeniden kurmak boşuna göz kırpması olurdu.
+
+### Madde 4 — klavye kısayolları
+
+`j`/`k` sonraki-önceki mail, `r` yanıt kutusuna odak, `e` maili kapandı
+işaretle, `/` aramaya geç, `?` kısayol penceresi, `Esc` çık.
+(`app/panel/Kisayollar.tsx`.)
+
+Üç kural: (1) **girdi alanlarında dinleyici hiç çalışmıyor** — yanıt
+kutusundaki "e" harfi maili kapatmaz, tek istisna Esc; (2) her kısayol mevcut
+bir düğmenin işini yapıyor, klavyeye özel yeni yetenek yok; (3) **görünmeyen
+kısayol yok sayılır** — listenin başındaki `?` düğmesi pencereyi açıyor.
+
+Klavyeyle seçilen satır `scrollIntoView({block:"nearest"})` ile görünür alana
+çekiliyor. Kısayollar yalnız gelen kutusunda; `/panel/mail/[id]` paylaşılabilir
+adres, triyaj akışı değil.
+
+### Madde 8 — "şu an bu maile bakıyor"
+
+- `mail_bakanlar` — cevabı satırın **varlığı** değil damganın **tazeliği**
+  veriyor (`BAKIS_SANIYE = 45`): sekmesi kapanan kişi haber veremez. Bayat
+  satırlar her bildirimde siliniyor, ayrı temizlik işi yok.
+- Tarayıcı 20 saniyede bir haber veriyor (pencerenin yarısı, bir haber kaçsa da
+  kimse kaybolmuyor); **arka plandaki sekme hiç vermiyor**. Yanıt kutusuna
+  girip çıkmak anında bildiriliyor — uyarının değeri hızında.
+- **İki ton:** "bakıyor" bilgi, "yanıt yazıyor" uyarı. Şerit **yanıt kutusunun
+  hemen üstünde**: uyarının işe yaradığı an yazmaya başlamadan önceki an,
+  ekranın tepesindeki bir bant o noktada kaydırılıp gitmiş olurdu.
+- Eylem `revalidatePath` **çağırmıyor**: her 20 saniyede sayfayı yeniden
+  çizmek, yazılan yanıtın ortasında olurdu. Cevap doğrudan çağırana dönüyor.
+- **Demo vitrinine eklenmedi:** iki canlı kişi gerektiriyor, uydurma bir
+  "bakıyor" satırı ürünün kendi kuralına aykırı olurdu.
+
+### Madde 12 — veri dışa aktarma
+
+Hesap Kaydı sayfasına (`/panel/gunluk`) üç indirme geldi: mailler (CSV),
+destek talepleri (CSV), tüm veri (JSON). Uç: `app/api/disa-aktar/route.ts`,
+gövde `sunucu/disaAktar.ts`.
+
+- **CSV noktalı virgül ayraçlı ve BOM'lu.** Türkçe Windows'ta Excel'in
+  varsayılan liste ayracı `;` ve BOM'suz UTF-8'i Latin-1 sanıyor: virgüllü
+  "standart" CSV müşterinin ekranında tek sütunda bozuk karakter demekti.
+  Makine tarafı için JSON var.
+- Mail **gövdesi de dosyada** — eksik kopya kopya değildir. Tırnak ikileniyor,
+  satır sonu tırnak içinde korunuyor.
+- JSON künyesi **ne olmadığını** da yazıyor: kutu parolaları (kasada şifreli
+  kalır, çözülüp dosyaya yazılmaz), oturum jetonları, eklerin kendisi.
+  `kutular` sorgusunda `parola_sifreli` sütunu hiç seçilmiyor.
+- **Yetki uçta kesiliyor:** personel alamıyor, operatör bu uçtan indiremiyor
+  (servis sahibinin bütün firmaları tek tıkla dosyalaması, müşterinin hesap
+  kaydında görünmeyen bir yetki olurdu), firma sınırı oturumdan geliyor.
+- Her indirme hesap kaydına **"Veri kopyası"** olarak düşüyor — yeni günlük
+  tipi `veri`, iki panelde de etiketlendi.
+
+### Bu turda çıkan tuzak
+
+**Test dosyasındaki statik import gerçek veritabanını açtı.** `disaAktar.test.ts`
+modülü tepeden `import` edince `db.ts` ortam değişkenleri kurulmadan yüklendi
+ve testler `veri/mailhanem.db`'ye bağlandı; ilk `INSERT` benzersizlik kuralına
+takılıp durdu (veri yazılmadı, kontrol edildi). Kural: **test dosyaları
+`sunucu/` altındaki hiçbir modülü statik import etmeyecek** — `DB_YOLU`
+satırından sonra `await import()` ile yüklenecek. `konusma.test.ts` bunu zaten
+doğru yapıyordu; saf modüller (`posta/konusma.ts` gibi) istisna.
+
+İkinci küçük tuzak: JSX'i import'tan önce eklemek Fast Refresh'i
+"X is not defined" ile düşürüyor ve hata tarayıcı günlüğünde asılı kalıyor.
+Önce import, sonra kullanım.
 
 ---
 
@@ -263,7 +379,7 @@ menü temiz. İki yerde aynı metin varken "ilk eşleşme" yeterli bir ölçüt 
 
 ---
 
-## Müşteri memnuniyeti listesi — 1, 2, 3 ve 11 BİTTİ
+## Müşteri memnuniyeti listesi — 1, 2, 3, 4, 6, 8, 11 ve 12 BİTTİ
 
 Sıralama etki/maliyet oranına göre. Önerilen öncelik 1 → 3 → 2 → 11'di;
 **dördü de yapıldı** (aşağıda "Bu turda yapılanlar"). Kalanlar numaraları
@@ -274,14 +390,16 @@ korunarak duruyor.
 2. ~~**Konuşma görünümü (thread)**~~ — **bitti** (liste katlaması hariç;
    yukarıdaki karar notuna bak). `sunucu/posta/konusma.ts` + `mailler.konusma`.
 3. ~~**Taslak otomatik kaydı**~~ — **bitti.** `yanit_taslaklari` tablosu.
-4. **Klavye kısayolları** (`j/k`, `e`, `r`) — günde 50 mail bakan için en
-   büyük yorgunluk fare gidip gelmesi.
+4. ~~**Klavye kısayolları** (`j/k`, `e`, `r`)~~ — **bitti.**
+   `app/panel/Kisayollar.tsx`; `/` ve `?` de var.
 5. **"Bana hatırlat"** — maile kişisel takip koyabilmek.
-6. **Okundu/okunmadı ayrımı** — durumdan ayrı; "buna kim baktı" sorusu.
+6. ~~**Okundu/okunmadı ayrımı**~~ — **bitti.** `mail_okumalari` +
+   "Okunmamış" sekmesi + detaydaki okuma şeridi.
 
 ### Ekip çalışması
 7. **@bahsetme** (ekip notunda) — not sistemi hazır, üstüne küçük bir iş.
-8. **"Şu an bu maile bakıyor"** — aynı maile iki yanıt en sinir bozucu çakışma.
+8. ~~**"Şu an bu maile bakıyor"**~~ — **bitti.** `mail_bakanlar`, 20 sn'de
+   bir yoklama, yanıt kutusunun üstünde iki tonlu şerit.
 9. **Devretme gerekçesi** — "Elif'e attım" değil, "çünkü fatura sorusu".
 10. **Haftalık özet maili** — pazartesi sabahı ekip özeti.
 
@@ -289,7 +407,8 @@ korunarak duruyor.
 11. ~~**Müşteri kendi denetim kaydını görsün**~~ — **bitti.** `/panel/gunluk`.
     Üstelik ortaya çıkan asıl boşluk kapandı: **hiçbir giriş kaydı
     yazılmıyordu**, oysa operatör ekranı "her giriş bu listede" diyordu.
-12. **Veri dışa aktarma** (mail + ticket, CSV/JSON) — kilitlenme korkusunu kaldırır.
+12. ~~**Veri dışa aktarma** (mail + ticket, CSV/JSON)~~ — **bitti.**
+    `/panel/gunluk` altında; her indirme hesap kaydına düşüyor.
 13. **Hesap silme / veri imha** — KVKK'nın da gereği.
 14. **Durum sayfası** (uptime, son kesinti).
 
@@ -1648,6 +1767,10 @@ _(Bu liste önceki turlardan kalma; üstteki "YARIN BURADAN DEVAM" güncel olan�
 - Outreach için ayrı alan adı (`mailhanem.net`).
 
 ## Ortam notları
+
+- **Sürüm kontrolü:** depo `saas/mailhane/` kökünde, ana dal `ana`, uzak
+  `github.com/devmurky/mailhanem` (private). `gh` PATH'te yok:
+  `"C:\Program Files\GitHub CLI\gh.exe"` diye tam yolla çağır.
 
 - Yakalama: `../.impeccable/yakala.py`. Site artık uygulamanın içinden
   (`http://127.0.0.1:3100/`) servis ediliyor; aracın adresi ona göre verilmeli.
