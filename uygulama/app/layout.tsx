@@ -36,9 +36,33 @@ export const metadata: Metadata = {
   },
 };
 
+/**
+ * Tema, ilk boyamadan **önce** kuruluyor.
+ *
+ * Sunucu hangi temada olduğumuzu bilmiyor (seçim tarayıcıda duruyor). Bu satır
+ * React yüklenmeden çalışıp `data-tema`yı yerine koyuyor; olmasaydı gece
+ * temasını seçmiş biri her sayfa açılışında bir kare beyaz ekran görürdü.
+ *
+ * Kayıtlı seçim yoksa işletim sisteminin tercihi uygulanıyor — kullanıcı
+ * cihazını zaten karanlığa almışsa panelin ayrıca sorması gerekmez.
+ *
+ * **Yalnız paneller.** Tanıtım sayfası, giriş ve KVKK gündüz kalıyor: tanıtım
+ * sayfası ayrı bir dosya (`site/index.html`) ve gece sürümü yok; yanındaki
+ * giriş ekranı tek başına kararsaydı, aynı siteden iki ayrı ürün gibi
+ * görünürdü. Gece modu şimdilik "içeride çalışılan yer"in özelliği.
+ */
+const TEMA_BETIGI = `try{var y=location.pathname;
+if(y.indexOf('/panel')===0||y.indexOf('/operator')===0){
+var t=localStorage.getItem('mailhanem-tema');
+if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)t='gece';
+if(t==='gece')document.documentElement.dataset.tema='gece';}}catch(e){}`;
+
 export default function KokDuzen({ children }: { children: React.ReactNode }) {
   return (
     <html lang="tr" className={`${govde.variable} ${serif.variable} ${mono.variable}`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: TEMA_BETIGI }} />
+      </head>
       <body>{children}</body>
     </html>
   );

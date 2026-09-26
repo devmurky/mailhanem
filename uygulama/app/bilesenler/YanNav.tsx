@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Ikon } from "./Ikon";
+import { TemaDugmesi } from "./Tema";
 import { cikisYap } from "../giris/eylemler";
 
 export type NavOge = { yol: string; ad: string; ikon: string; sayi?: number; dikkat?: boolean };
@@ -65,6 +66,7 @@ export function YanNav({
           <b>{kullanici.ad || kullanici.eposta}</b>
           <small>{kullanici.rol}</small>
         </span>
+        <TemaDugmesi />
         <form action={cikisYap}>
           <button className="cikis" type="submit" aria-label="Çıkış yap" title="Çıkış yap">
             <Ikon ad="cikis" boyut={17} />

@@ -92,6 +92,13 @@ const YOL: Record<string, React.ReactNode> = {
       <path d="M12 7v5.2l3.3 2" />
     </>
   ),
+  ay: <path d="M20.3 14.6A8.6 8.6 0 0 1 9.4 3.7a8.6 8.6 0 1 0 10.9 10.9z" />,
+  gunes: (
+    <>
+      <circle cx="12" cy="12" r="4.2" />
+      <path d="M12 2.6v2.1M12 19.3v2.1M4.5 4.5l1.5 1.5M18 18l1.5 1.5M2.6 12h2.1M19.3 12h2.1M4.5 19.5L6 18M18 6l1.5-1.5" />
+    </>
+  ),
   kilit: (
     <>
       <rect x="4" y="10.5" width="16" height="10" rx="2.5" />

@@ -22,15 +22,11 @@
 .op .sayfa.dar{max-width:clamp(1320px, 88vw, 1860px)}
 
 .op{
-  /* Müşteri paneliyle aynı dil, tek tema — her koşulda beyaz. */
-  --yuzey:#FFFFFF; --yuzey2:#F4F6F9;
-  --cizgi:#E6EAEF; --cizgi2:#D4DAE2;
-  --metin:#16202B; --metin2:#485664; --soluk:#64717F;
-  --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
-  --olumlu:#0F7154; --olm-yum:#E3F2EC;
-  --uyari:#8A5A07;  --uyr-yum:#FBF1DF;
-  --kritik:#B23A40; --krt-yum:#FBE9EA;
-  --serit:#12314F; --serit-metin:#A8C2DA;
+  /* Renkler **kökten miras** alınıyor (globals.css `:root`). Eskiden burada
+     birebir kopyaları duruyordu; gece teması eklenince kopya açık renklerde
+     kalır ve operatör paneli tek başına beyaz kalırdı. Burada yalnız
+     operatöre özel **adlar** ve ölçüler var. */
+  --yuzey:var(--ak); --yuzey2:var(--ak2);
   --r:11px; --r2:8px;
   --ui:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
@@ -137,8 +133,8 @@
 .op .triyaj{display:flex;flex-direction:column;gap:9px;margin-bottom:26px}
 .op .tsatir{display:flex;align-items:center;gap:13px;padding:13px 16px;border:1px solid var(--cizgi);
   border-radius:var(--r);background:var(--yuzey)}
-.op .tsatir.kritik{background:var(--krt-yum);border-color:#F0CFD1}
-.op .tsatir.uyari{background:var(--uyr-yum);border-color:#EBD9B4}
+.op .tsatir.kritik{background:var(--krt-yum);border-color:var(--krt-cizgi)}
+.op .tsatir.uyari{background:var(--uyr-yum);border-color:var(--uyr-cizgi)}
 .op .tsatir.bitti{opacity:.55}
 .op .tsatir .ne{flex:1;min-width:0}
 .op .tsatir .firma{display:block;font-size:14px;font-weight:600;letter-spacing:-.016em}
@@ -149,7 +145,7 @@
 /* ── demo talebi kuyruğu ── */
 .op .talep-satir{display:flex;align-items:flex-start;gap:13px;padding:14px 16px;
   border:1px solid var(--cizgi);border-radius:var(--r);background:var(--yuzey)}
-.op .talep-satir.yeni{background:var(--uyr-yum);border-color:#EBD9B4}
+.op .talep-satir.yeni{background:var(--uyr-yum);border-color:var(--uyr-cizgi)}
 .op .talep-satir.kapandi{opacity:.58}
 .op .talep-satir .av.kare{margin-top:1px}
 .op .talep-ne{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
@@ -192,7 +188,7 @@
 
 .op .rozet{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
   padding:3px 8px;border-radius:4px;flex:none}
-.op .r-kritik{background:var(--kritik);color:#fff}
+.op .r-kritik{background:var(--kritik);color:var(--kritik-metin)}
 .op .r-uyari{background:var(--uyr-yum);color:var(--uyari)}
 .op .r-bilgi{background:var(--mrk-yum);color:var(--mrk-metin)}
 .op .r-bitti{background:var(--olm-yum);color:var(--olumlu)}
@@ -202,7 +198,7 @@
   cursor:pointer;letter-spacing:-.01em;white-space:nowrap;flex:none;
   transition:background .12s,border-color .12s}
 .op .dugme:hover{background:var(--yuzey2);border-color:var(--soluk)}
-.op .dugme.ana{background:var(--murekkep);border-color:var(--murekkep);color:#fff}
+.op .dugme.ana{background:var(--murekkep);border-color:var(--murekkep);color:var(--ana-metin)}
 .op .dugme.ana:hover{filter:brightness(1.12)}
 .op .dugme.ufak{padding:5px 10px;font-size:12.5px}
 .op .dugme.sade{border-color:transparent;color:var(--soluk);padding:5px 8px;font-size:12.5px}
@@ -330,7 +326,7 @@
   padding:1px 5px;border-radius:4px}
 
 .op .ent{border:1px solid var(--cizgi);border-radius:var(--r);margin-bottom:11px}
-.op .ent.uyari{border-color:#EBD9B4}
+.op .ent.uyari{border-color:var(--uyr-cizgi)}
 .op .ent-ust{display:flex;align-items:center;gap:12px;padding:14px 16px}
 .op .ent-ikon{width:36px;height:36px;border-radius:9px;display:grid;place-items:center;
   font-size:15px;flex:none;background:var(--mrk-yum);color:var(--mrk-metin)}
@@ -504,6 +500,10 @@
 .op .cikis{border:0;background:none;color:var(--soluk);font-size:15px;cursor:pointer;
   padding:4px 6px;border-radius:6px;flex:none}
 .op .cikis:hover{background:var(--yuzey2);color:var(--kritik)}
+/* Tema düğmesi çıkışla aynı çifti kuruyor; `form`daki `margin-left:auto`
+   ikisini ayırmasın diye boşluk buradan alınıyor. */
+.op .tema-dugme{margin-left:auto;padding:4px 6px;border-radius:6px}
+.op .tema-dugme:hover{background:var(--yuzey2);color:var(--murekkep)}
 
 .op .modal-perde{position:fixed;inset:0;background:rgba(16,26,38,.45);display:grid;place-items:center;
   padding:24px;z-index:30}
@@ -516,7 +516,7 @@
 .op .modal .eylem{display:flex;gap:9px;justify-content:flex-end}
 
 .op #bildirim{position:fixed;left:50%;bottom:26px;transform:translate(-50%,14px);background:var(--metin);
-  color:#fff;padding:10px 17px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;
+  color:var(--metin-uzeri);padding:10px 17px;border-radius:8px;font-size:13px;font-weight:600;opacity:0;
   pointer-events:none;transition:opacity .18s,transform .18s;z-index:40}
 .op #bildirim.gorunur{opacity:1;transform:translate(-50%,0)}
 
@@ -536,7 +536,7 @@
 /* Prototip yan menüde <button> kullanıyordu (tek sayfaydı); burada gerçek
    rotalar olduğu için <a>. Bağlantı varsayılanları temizleniyor. */
 .op a.nav-oge{text-decoration:none}
-.op .nav-alt form{display:flex;margin-left:auto}
+.op .nav-alt form{display:flex}
 
 /* Ölçülmeyen hücre ve kart: tire, ama sönük değil — "burada bir şey olacak"
    demeli, "bozuk" değil. */
@@ -667,12 +667,12 @@
 }
 
 /* Bağlantı sağlığı: sorunlu firma katlanamıyor, başlığı da uyarı tonunda. */
-.op .firma-kat.sorunlu{border-color:#EBD9B4}
+.op .firma-kat.sorunlu{border-color:var(--uyr-cizgi)}
 .op .firma-basi.sabit{cursor:default;background:var(--uyr-yum)}
-.op .firma-kat.sorunlu .firma-basi.sabit{border-bottom-color:#EBD9B4}
+.op .firma-kat.sorunlu .firma-basi.sabit{border-bottom-color:var(--uyr-cizgi)}
 .op .firma-ok.uyari{color:var(--uyari)}
-.op .kutu-satiri.sag-kopuk{border-color:#F0CFD1;background:var(--krt-yum)}
-.op .kutu-satiri.sag-yavas{border-color:#EBD9B4;background:var(--uyr-yum)}
+.op .kutu-satiri.sag-kopuk{border-color:var(--krt-cizgi);background:var(--krt-yum)}
+.op .kutu-satiri.sag-yavas{border-color:var(--uyr-cizgi);background:var(--uyr-yum)}
 .op .sag-hatalar{margin-top:10px;display:flex;flex-direction:column;gap:6px}
 .op .sag-hatalar p{display:flex;gap:8px;align-items:flex-start;margin:0;
   font-size:12px;line-height:1.5;color:var(--kritik)}
