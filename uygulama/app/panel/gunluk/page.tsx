@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GUNLUK_TIPLERI, firmaGunlugu, firmaGunlukSayilari } from "@/sunucu/db";
+import { aktarimSayilari } from "@/sunucu/disaAktar";
 import { Ikon } from "../../bilesenler/Ikon";
 import { kurulumGorur, panelOturumu } from "../yetki";
 import { redirect } from "next/navigation";
@@ -32,6 +33,7 @@ const TIP_AD: Record<string, string> = {
   hata: "Hata",
   abonelik: "Abonelik",
   zeka: "Yapay zekâ",
+  veri: "Veri kopyası",
 };
 
 const TIP_ANLAM: Record<string, string> = {
@@ -41,6 +43,7 @@ const TIP_ANLAM: Record<string, string> = {
   hata: "Çekim düştü, yanıt gönderilemedi",
   abonelik: "Plan ve ücret değişiklikleri",
   zeka: "Bilgi deposu için maillerin modele okutulduğu turlar",
+  veri: "Verilerinizin dışa aktarıldığı anlar",
 };
 
 export default async function HesapKaydi({
@@ -58,6 +61,8 @@ export default async function HesapKaydi({
   const satirlar = firmaGunlugu(firmaId, tip);
   const sayilar = firmaGunlukSayilari(firmaId);
   const toplam = Object.values(sayilar).reduce((t, n) => t + n, 0);
+  /* Dışa aktarma bölümü kaç satır ineceğini önden söylüyor (madde 12). */
+  const aktarim = aktarimSayilari(firmaId);
 
   return (
     <div className="sayfa">
@@ -80,6 +85,64 @@ export default async function HesapKaydi({
             okuyabildiğimiz bir sistemde giriş kaydını gizlemek kabul edilemez.
           </p>
         </div>
+      </div>
+
+      {/* ── Veri kopyası (madde 12) ────────────────────────
+          Hesap kaydının yanındaki yeri tesadüf değil: ikisi de aynı soruya
+          cevap veriyor — "bu veri gerçekten benim mi". Kayıt "kim baktı"yı,
+          bu bölüm "alıp gidebilir miyim"i cevaplıyor. */}
+      <h2 className="bolum">Verilerinizin kopyası</h2>
+      <div className="kutu aktar-kart">
+        <p className="aktar-giris">
+          Verileriniz sizde kalır. Mailleriniz ve destek yazışmalarınız, biz
+          olmadan da okunabilecek biçimlerde her an indirilebilir — çıkış
+          kapısının kilitli olmadığını göstermenin tek yolu, açık durması.
+        </p>
+
+        <div className="aktar-secenek">
+          <div>
+            <b>Mailler</b>
+            <span>
+              {aktarim.mail} mail, gövdeleriyle birlikte · CSV (Excel)
+            </span>
+          </div>
+          <a className="dugme ufak" href="/api/disa-aktar?tur=mail" download>
+            <Ikon ad="pano" boyut={14} />
+            İndir
+          </a>
+        </div>
+
+        <div className="aktar-secenek">
+          <div>
+            <b>Destek talepleri</b>
+            <span>{aktarim.ticket} talep, yazışmalarıyla · CSV (Excel)</span>
+          </div>
+          <a className="dugme ufak" href="/api/disa-aktar?tur=ticket" download>
+            <Ikon ad="pano" boyut={14} />
+            İndir
+          </a>
+        </div>
+
+        <div className="aktar-secenek">
+          <div>
+            <b>Tüm veri</b>
+            <span>
+              Mailler, yanıtlar, notlar, talepler, şablonlar, kurallar, bilgi
+              deposu, ekip ve kutu ayarları · JSON
+            </span>
+          </div>
+          <a className="dugme ufak ana" href="/api/disa-aktar?tur=hepsi" download>
+            <Ikon ad="pano" boyut={14} />
+            İndir
+          </a>
+        </div>
+
+        <p className="aktar-not">
+          Dosyada <b>ne olmadığı</b> da yazıyor: posta kutusu parolaları kasada
+          şifreli durur ve dışa aktarılmaz, oturum jetonları da yazılmaz.
+          Eklerin kendisi panelden tek tek iniyor; dosyada künyeleri var.
+          Her indirme aşağıdaki kayda <b>“Veri kopyası”</b> olarak düşüyor.
+        </p>
       </div>
 
       <h2 className="bolum">

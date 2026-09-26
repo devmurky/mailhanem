@@ -11,6 +11,7 @@ const TIP_AD: Record<string, string> = {
   hata: "Hata",
   abonelik: "Abonelik",
   zeka: "Yapay zekâ",
+  veri: "Veri kopyası",
 };
 
 const TIP_ROZET: Record<string, string> = {
@@ -20,6 +21,7 @@ const TIP_ROZET: Record<string, string> = {
   hata: "r-kritik",
   abonelik: "r-bitti",
   zeka: "r-bilgi",
+  veri: "r-bilgi",
 };
 
 export default async function SistemGunlugu({

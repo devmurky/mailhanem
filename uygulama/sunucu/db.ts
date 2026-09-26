@@ -3177,7 +3177,12 @@ export function destekKayitlari(firmaId?: number, limit = 50): DestekKaydi[] {
 
 /* "zeka" bilgi deposu çıkarımıyla geldi: modele giden her tur kayda düşüyor —
    müşterinin maillerini bir dil modeline okutan bir işin izsiz kalması olmaz. */
-export const GUNLUK_TIPLERI = ["kurulum", "posta", "giris", "hata", "abonelik", "zeka"] as const;
+/* "veri" dışa aktarmayla geldi (madde 12): firmanın bütün yazışmasını tek
+   dosyada indiren bir işin kayıtsız kalması, denetim izinin en büyük deliği
+   olurdu — kaydın anlamı tam olarak bunu görebilmek. */
+export const GUNLUK_TIPLERI = [
+  "kurulum", "posta", "giris", "hata", "abonelik", "zeka", "veri",
+] as const;
 export type GunlukTipi = (typeof GUNLUK_TIPLERI)[number];
 
 export type Gunluk = {

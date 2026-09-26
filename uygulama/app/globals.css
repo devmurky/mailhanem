@@ -583,6 +583,27 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .bakan-serit.yazan .ikn{color:var(--uyari)}
 .bakan-serit.yazan b{color:#6E4806}
 
+/* ─── veri kopyası (madde 12) ────────────────────────────────
+   Hesap kaydı sayfasındaki indirme bölümü. Üç satır, her satırda ne
+   indirileceği ve kaç kayıt olduğu yazıyor — "indir" düğmesinin ne
+   getireceğini bilmeden basmak, güven veren bir şey değil. */
+.aktar-kart{margin-bottom:26px;max-width:78ch}
+.aktar-giris{font-size:13.5px;color:var(--metin2);line-height:1.6;margin-bottom:16px}
+.aktar-secenek{display:flex;align-items:center;gap:14px;padding:13px 0;
+  border-top:1px solid var(--cizgi)}
+.aktar-secenek>div{display:flex;flex-direction:column;gap:3px;min-width:0}
+.aktar-secenek b{font-size:13.5px;font-weight:600}
+.aktar-secenek span{font-size:12.5px;color:var(--soluk);line-height:1.5}
+.aktar-secenek .dugme{margin-left:auto;flex:none}
+.aktar-not{margin-top:15px;padding-top:14px;border-top:1px solid var(--cizgi);
+  font-size:12.5px;color:var(--soluk);line-height:1.6}
+.aktar-not b{color:var(--metin2);font-weight:600}
+
+@media (max-width:640px){
+  .aktar-secenek{flex-wrap:wrap}
+  .aktar-secenek .dugme{margin-left:0}
+}
+
 .serit{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 16px;
   background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);margin-bottom:16px;
   font-size:13.5px;color:var(--metin2)}
