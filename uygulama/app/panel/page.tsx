@@ -8,6 +8,7 @@ import {
   gelenSay,
   konusmaSayilari,
   kutulariGetir,
+  okunanlar,
   taslakliMailler,
   type GelenSuzgec,
   type Kategori,
@@ -21,11 +22,20 @@ import { MailDetay } from "./mail/MailDetay";
 export const dynamic = "force-dynamic";
 
 /* Sekmeler süzgeç değil, kuyruğun okunma biçimi: "kim bakacak" sorusu. */
-const SEKMELER = ["hepsi", "sahipsiz", "geciken", "bana", "islemde", "kapandi"] as const;
+const SEKMELER = [
+  "hepsi",
+  "okunmamis",
+  "sahipsiz",
+  "geciken",
+  "bana",
+  "islemde",
+  "kapandi",
+] as const;
 type Sekme = (typeof SEKMELER)[number];
 
 const SEKME_AD: Record<Sekme, string> = {
   hepsi: "Tümü",
+  okunmamis: "Okunmamış",
   sahipsiz: "Sahipsiz",
   geciken: "Geciken",
   bana: "Bana atanan",
@@ -43,6 +53,9 @@ const KATEGORI_RENK: Record<string, string> = {
 };
 
 function sekmeSuzgeci(sekme: Sekme, benimId: number): GelenSuzgec {
+  /* "Okunmamış" kişiye göre değişen tek sekme: aynı kutuya bakan iki kişi
+     burada farklı sayı görüyor, çünkü okuma kişiseldir (madde 6). */
+  if (sekme === "okunmamis") return { okumayanId: benimId };
   if (sekme === "sahipsiz") return { sahipsiz: true };
   if (sekme === "geciken") return { geciken: true };
   if (sekme === "bana") return { sahipId: benimId };
@@ -131,6 +144,14 @@ export default async function GelenKutusu({
   /* Çok mesajlı konuşmalar (madde 2): zincir kimliği → mesaj sayısı. Satır,
      ait olduğu yazışmanın kaç mesaj olduğunu söylüyor. */
   const konusmaSayi = konusmaSayilari(firmaId);
+
+  /* Bu kişinin okudukları (madde 6). Yalnız ekranda duran satırlar soruluyor;
+     kalın yazı artık durumdan değil buradan geliyor. */
+  const okunan = okunanlar(
+    firmaId,
+    kullanici.id,
+    mailler.map((m) => m.id),
+  );
 
   const sayilar = Object.fromEntries(
     SEKMELER.map((s) => [s, gelenSay(firmaId, { ...ortak, ...sekmeSuzgeci(s, kullanici.id) })]),
@@ -270,8 +291,11 @@ export default async function GelenKutusu({
                   <input className="satir-secim" type="checkbox" value={m.id} />
                 </label>
               <Link
+                /* Kalın satır "okumadım" demek (madde 6), "yeni durumda"
+                   değil: biri maili açıp bıraktığında satır herkes için
+                   sönüyordu. Okuma kişisel, durum ortak. */
                 className={`satir${m.id === secili ? " secili" : ""}${
-                  m.durum === "yeni" ? " okunmamis" : ""
+                  okunan.has(m.id) ? "" : " okunmamis"
                 }`}
                 href={adres(mevcutParam, { mail: String(m.id) })}
               >
@@ -362,7 +386,14 @@ export default async function GelenKutusu({
       {/* ── sağ: detay ── */}
       <main className="sutun detay-sutun">
         {secili ? (
-          <MailDetay mailId={secili} gomulu suzgecSorgusu={suzgecSorgusu} />
+          /* Kendiliğinden açılan ilk mail okundu sayılmıyor (madde 6):
+             sayılsaydı panele her girişte en yeni mail sessizce okunurdu. */
+          <MailDetay
+            mailId={secili}
+            gomulu
+            suzgecSorgusu={suzgecSorgusu}
+            okundaSay={acikSecim}
+          />
         ) : (
           <div className="detay-bos">
             <Ikon ad="zarf" boyut={22} />

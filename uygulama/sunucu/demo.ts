@@ -328,6 +328,30 @@ function vitriniYaz(): number {
       );
     }
 
+    /* Okuma izleri (madde 6). Vitrinin göstermek istediği şey **ayrım**:
+       ziyaretçi sahibin gözünden bakıyor ve bazı maillere hiç bakmamış —
+       o satırlar kalın, "Okunmamış" sekmesi dolu. Ama ekipten biri bakmış:
+       mail açılınca "Burak baktı" yazıyor. İkisini de sahibin okumuş
+       göstermek, özelliğin anlattığı şeyi vitrinde görünmez yapardı. */
+    const burak = kisiId[1];
+    const demoMailler = db
+      .prepare("SELECT id, sahip_id FROM mailler WHERE firma_id = ? ORDER BY id")
+      .all(firma.id) as { id: number; sahip_id: number | null }[];
+
+    const okumaEkle = db.prepare(
+      `INSERT OR IGNORE INTO mail_okumalari (mail_id, firma_id, kullanici_id, ilk_okuma, son_okuma)
+       VALUES (?, ?, ?, datetime('now', ?), datetime('now', ?))`,
+    );
+
+    demoMailler.forEach((m, i) => {
+      /* Sahibi olan mailin sahibi ona bakmıştır: atama bakmadan yapılmaz. */
+      if (m.sahip_id) okumaEkle.run(m.id, firma.id, m.sahip_id, "-6 hours", "-5 hours");
+      /* Üçte biri de yöneticinin gözünden geçmiş — ziyaretçi bakmamış olsa da. */
+      if (burak !== undefined && i % 3 === 1) {
+        okumaEkle.run(m.id, firma.id, burak, "-9 hours", "-9 hours");
+      }
+    });
+
     /* ── Bilgi deposu ──────────────────────────────────────
        Vitrinde dolu görünmesi gerekiyor: boş bir depo ekranı özelliğin ne işe
        yaradığını anlatmıyor. Bilerek karışık: bazı alanlar elle yazılmış, bazısı

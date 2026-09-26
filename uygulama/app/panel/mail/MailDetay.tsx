@@ -12,6 +12,7 @@ import {
   mailGetir,
   mailEkleri,
   mailNotlari,
+  mailOkuyanlar,
   sablonlariGetir,
   taslakGetir,
   type MailDurum,
@@ -21,6 +22,7 @@ import { KUYRUK_AD, imzaAyir, kuyrukKatlanir, type KuyrukSebebi } from "@/sunucu
 import { Ikon } from "../../bilesenler/Ikon";
 import { panelOturumu } from "../yetki";
 import { DurumSecici, KategoriSecici, Sahiplik, VipDugmesi } from "./MailEylemleri";
+import { OkumaSeridi } from "./Okuma";
 import { YanitFormu } from "./YanitFormu";
 import { Notlar } from "./Notlar";
 
@@ -65,11 +67,19 @@ export async function MailDetay({
   mailId,
   gomulu = false,
   suzgecSorgusu = "",
+  okundaSay = true,
 }: {
   mailId: number;
   gomulu?: boolean;
   /** Listeye dönerken süzgeçleri koruyan sorgu dizgisi. */
   suzgecSorgusu?: string;
+  /**
+   * Bu gösterim okundu sayılsın mı (madde 6). Tam sayfada her zaman evet:
+   * oraya ancak maili açarak gelinir. Gelen kutusunda yalnız kullanıcı bir
+   * satıra tıkladığında — kendiliğinden açılan ilk mail okundu sayılsaydı,
+   * panele her girişte en yeni mail sessizce okunmuş olurdu.
+   */
+  okundaSay?: boolean;
 }) {
   const { kullanici, firma, firmaId } = await panelOturumu();
   const mail = mailGetir(mailId, firmaId);
@@ -144,6 +154,9 @@ export async function MailDetay({
   /* Yarım kalan yanıt (madde 3). Kişiye ait: başkasının taslağı okunmuyor. */
   const taslak = taslakGetir(mail.id, firmaId, kullanici.id);
 
+  /* Kim baktı (madde 6). Ekibin ortak bilgisi: listede herkes görünüyor. */
+  const okuyanlar = mailOkuyanlar(mail.id, firmaId);
+
   const yol = (id: number) =>
     gomulu ? `/panel?${suzgecSorgusu ? suzgecSorgusu + "&" : ""}mail=${id}` : `/panel/mail/${id}`;
 
@@ -170,6 +183,14 @@ export async function MailDetay({
           <span className="sure">{mail.tarih.slice(0, 16)}</span>
           <VipDugmesi mailId={mail.id} vip={Boolean(mail.vip)} gonderen={mail.gonderen} />
         </div>
+        {/* Okuma şeridi (madde 6): başlığın altında, triyajın üstünde —
+            "ben mi bakayım" kararı sahiplik satırından önce veriliyor. */}
+        <OkumaSeridi
+          mailId={mail.id}
+          okuyanlar={okuyanlar}
+          benimId={kullanici.id}
+          isaretle={okundaSay}
+        />
       </div>
 
       {/* Triyaj: üç karar tek şeritte, üstelik aynı hizada. */}

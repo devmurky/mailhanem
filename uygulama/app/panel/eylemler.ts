@@ -15,6 +15,8 @@ import {
   mailGetir,
   mailNotuEkle,
   mailNotuSil,
+  okumaSil,
+  okumaYaz,
   rolYaz,
   sahipYaz,
   taslakSil,
@@ -93,6 +95,28 @@ export async function kategoriSec(hamId: unknown, hamKategori: unknown): Promise
 export async function durumSec(hamId: unknown, hamDurum: unknown): Promise<void> {
   const { firmaId, mail } = await mailIcin(hamId);
   mailDurumYaz(mail.id, firmaId, durumSemasi.parse(hamDurum));
+  tazele(mail.id);
+}
+
+/**
+ * Okundu işareti (madde 6).
+ *
+ * Maili açan bileşen çağırıyor, kullanıcı bir düğmeye basmıyor: "okudum"un
+ * doğal tanımı mailin ekranda açılmasıdır. Kendiliğinden seçilen önizleme
+ * bunu tetiklemiyor — bkz. gelen kutusundaki `acikSecim`.
+ *
+ * Sayfa yalnız **ilk** okumada tazeleniyor: aynı maile ikinci kez bakmak
+ * listede hiçbir şeyi değiştirmiyor, tazelemek boşuna göz kırpması olurdu.
+ */
+export async function okunduIsaretle(hamId: unknown): Promise<void> {
+  const { firmaId, kullanici, mail } = await mailIcin(hamId);
+  if (okumaYaz(mail.id, firmaId, kullanici.id)) tazele(mail.id);
+}
+
+/** "Okunmadı işaretle" — sonra dönmek üzere maili kuyrukta bırakmak. */
+export async function okunmadiIsaretle(hamId: unknown): Promise<void> {
+  const { firmaId, kullanici, mail } = await mailIcin(hamId);
+  okumaSil(mail.id, firmaId, kullanici.id);
   tazele(mail.id);
 }
 

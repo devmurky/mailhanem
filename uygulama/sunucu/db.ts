@@ -265,6 +265,27 @@ CREATE TABLE IF NOT EXISTS yanit_taslaklari (
 );
 CREATE INDEX IF NOT EXISTS taslak_kisi ON yanit_taslaklari(firma_id, kullanici_id);
 
+-- ── okuma kaydı (madde 6) ─────────────────────────────────
+-- "Okundu" durumun değil **kişinin** bilgisi: ortak kutuda Ayşe'nin okuduğu
+-- mail Selin için hâlâ yeni. Durum sütunu (yeni/işlemde/yanıtlandı/kapandı)
+-- işin nerede olduğunu söylüyor; bu tablo "buna kim baktı" sorusunu.
+-- Listedeki kalın satır eskiden durumu okuyordu ve yanlış cevap veriyordu:
+-- biri maili açıp kapatınca satır herkes için normale dönüyordu.
+--
+-- Satır yalnız okunmuşlar için var; **okunmamışlık kaydın yokluğu.** Böylece
+-- yeni gelen mail hiçbir şey yazılmadan herkes için okunmamış oluyor, yeni
+-- gelen ekip üyesi kuyruğu okunmamış görüyor ve "okunmadı işaretle" satırı
+-- silmek demek oluyor.
+CREATE TABLE IF NOT EXISTS mail_okumalari (
+  mail_id      INTEGER NOT NULL REFERENCES mailler(id) ON DELETE CASCADE,
+  firma_id     INTEGER NOT NULL REFERENCES firmalar(id) ON DELETE CASCADE,
+  kullanici_id INTEGER NOT NULL REFERENCES kullanicilar(id) ON DELETE CASCADE,
+  ilk_okuma    TEXT NOT NULL DEFAULT (datetime('now')),
+  son_okuma    TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (mail_id, kullanici_id)
+);
+CREATE INDEX IF NOT EXISTS okuma_kisi ON mail_okumalari(firma_id, kullanici_id);
+
 -- ── bilgi deposu ──────────────────────────────────────────
 -- Firmanın karakteri ve tekrar eden gerçekleri. Yanıt taslağı adımı
 -- bağlandığında model önce buradan okuyacak: kim olduğumuz, nasıl
@@ -1140,6 +1161,11 @@ export type GelenSuzgec = {
   arama?: string;
   /** Açık olup GECIKME_SAAT'ten uzun süredir bekleyenler. */
   geciken?: boolean;
+  /**
+   * Bu kişinin henüz okumadıkları (madde 6). Kişi başına sorulur çünkü okuma
+   * kişiseldir: aynı kutuda birinin okunmamışı ötekinin okuduğu mail olabilir.
+   */
+  okumayanId?: number;
 };
 
 /** Süzgeci SQL koşullarına çevirir. Sayaç ve liste aynı mantığı paylaşsın diye ayrı. */
@@ -1164,6 +1190,15 @@ function gelenKosul(firmaId: number, s: GelenSuzgec): { sql: string; p: unknown[
   if (s.sahipId !== undefined) {
     kosullar.push("m.sahip_id = ?");
     p.push(s.sahipId);
+  }
+  if (s.okumayanId !== undefined) {
+    /* Okunmamışlık kaydın yokluğu (madde 6) — o yüzden NOT EXISTS. Kapanmış
+       maili de kapsıyor: "okumadım" ile "iş bitti" ayrı sorular. */
+    kosullar.push(
+      `NOT EXISTS (SELECT 1 FROM mail_okumalari o
+                     WHERE o.mail_id = m.id AND o.kullanici_id = ?)`,
+    );
+    p.push(s.okumayanId);
   }
   if (s.kutuId !== undefined) {
     kosullar.push("m.kutu_id = ?");
@@ -2496,6 +2531,90 @@ export function taslakliMailler(firmaId: number, kullaniciId: number): Set<numbe
     kullaniciId,
   );
   return new Set(satirlar.map((s) => s.mail_id));
+}
+
+/* ── okuma kaydı (madde 6) ─────────────────────────────────
+   "Okundu" kişiye ait: her sorguda hem firma hem kullanıcı var. Kimin neye
+   baktığı ekibin ortak bilgisi (okuyanlar listesi herkese açık), ama okumayı
+   yazmak ve geri almak yalnız kişinin kendi işi. */
+
+/**
+ * Maili bu kişi için okundu yazar. Dönen değer **ilk okuma mı** — çağıran
+ * ekranı yalnız gerçekten değişiklik olduğunda tazelesin diye: her mail
+ * açılışında sayfayı yeniden kurmak, hiçbir şey değişmezken göz kırpması
+ * demek.
+ */
+export function okumaYaz(mailId: number, firmaId: number, kullaniciId: number): boolean {
+  const zaten = tek<{ x: number }>(
+    "SELECT 1 AS x FROM mail_okumalari WHERE mail_id = ? AND firma_id = ? AND kullanici_id = ?",
+    mailId,
+    firmaId,
+    kullaniciId,
+  );
+  if (zaten) {
+    db.prepare(
+      `UPDATE mail_okumalari SET son_okuma = datetime('now')
+       WHERE mail_id = ? AND firma_id = ? AND kullanici_id = ?`,
+    ).run(mailId, firmaId, kullaniciId);
+    return false;
+  }
+
+  db.prepare(
+    "INSERT INTO mail_okumalari (mail_id, firma_id, kullanici_id) VALUES (?, ?, ?)",
+  ).run(mailId, firmaId, kullaniciId);
+  return true;
+}
+
+/** Okumayı geri alır — "okunmadı işaretle". Satırı silmek okunmamış yapar. */
+export function okumaSil(mailId: number, firmaId: number, kullaniciId: number): void {
+  db.prepare(
+    "DELETE FROM mail_okumalari WHERE mail_id = ? AND firma_id = ? AND kullanici_id = ?",
+  ).run(mailId, firmaId, kullaniciId);
+}
+
+/**
+ * Verilen maillerden bu kişinin okudukları.
+ *
+ * Görünen satırların numaraları soruluyor, kişinin bütün geçmişi değil: okuma
+ * kayıtları maille kişi sayısının çarpımı kadar birikiyor, listede ise en çok
+ * 200 satır var. Boş liste hiç sorgu atmıyor.
+ */
+export function okunanlar(
+  firmaId: number,
+  kullaniciId: number,
+  mailIdleri: number[],
+): Set<number> {
+  if (!mailIdleri.length) return new Set();
+  const yer = mailIdleri.map(() => "?").join(",");
+  const satirlar = sorgu<{ mail_id: number }>(
+    `SELECT mail_id FROM mail_okumalari
+     WHERE firma_id = ? AND kullanici_id = ? AND mail_id IN (${yer})`,
+    firmaId,
+    kullaniciId,
+    ...mailIdleri,
+  );
+  return new Set(satirlar.map((s) => s.mail_id));
+}
+
+export type Okuyan = { kullanici_id: number; ad: string; ilk_okuma: string };
+
+/**
+ * Bu maile kimler baktı. Ekibin ortak sorusu olduğu için herkese görünüyor:
+ * "ben mi bakayım" kararının cevabı büyük ölçüde budur.
+ *
+ * Ekipten çıkarılmış kişi de listede kalıyor — kaydı silmek geçmişi yalan
+ * yapardı (bkz. kullanıcıyı silmek yerine kapatma kararı).
+ */
+export function mailOkuyanlar(mailId: number, firmaId: number): Okuyan[] {
+  return sorgu<Okuyan>(
+    `SELECT o.kullanici_id, COALESCE(u.ad, 'Ayrılmış kullanıcı') AS ad, o.ilk_okuma
+     FROM mail_okumalari o
+       LEFT JOIN kullanicilar u ON u.id = o.kullanici_id
+     WHERE o.mail_id = ? AND o.firma_id = ?
+     ORDER BY o.ilk_okuma`,
+    mailId,
+    firmaId,
+  );
 }
 
 /* ══════════════════════════════════════════════════════════

@@ -555,6 +555,21 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
   flex:none}
 .av.kare.kucuk{width:26px;height:26px;border-radius:8px;font-size:11px}
 
+/* ─── okuma şeridi (madde 6) ─────────────────────────────────
+   Başlıkla triyajın arasında tek satır: "buna kim baktı" ve geri alma.
+   Kendi kartı yok — bilgi ikincil, mailin önüne geçmemeli. */
+.okuma-serit{display:flex;align-items:center;flex-wrap:wrap;gap:8px;margin-top:10px;
+  font-size:12.5px;color:var(--soluk);min-height:28px}
+.okuma-serit>.ikn{color:var(--cizgi2);flex:none}
+.ok-kim{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+/* Okuyanın avatarı sahibinkinden soluk: sahiplik bir karar, okuma bir iz. */
+.ok-kim .av.kucuk{width:19px;height:19px;border-radius:6px;font-size:9.5px;
+  background:var(--ak2);color:var(--metin2);border:1px solid var(--cizgi)}
+.ok-metin{color:var(--metin2)}
+.ok-metin.bos{color:var(--soluk)}
+.ok-dugme{margin-left:auto;font-size:12px;padding:5px 9px}
+.ok-hata{color:var(--kritik)}
+
 .serit{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 16px;
   background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);margin-bottom:16px;
   font-size:13.5px;color:var(--metin2)}
