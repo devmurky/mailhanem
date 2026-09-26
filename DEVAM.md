@@ -1,6 +1,8 @@
 # Mailhanem — kaldığımız yer
 
-_Son güncelleme: 2026-09-26 (ikinci tur). Bu turda: proje **git altına
+_Son güncelleme: 2026-09-26 (üçüncü tur). Bu turda: **gece modu**
+(zarf maskeli geçiş, iki panelde), **pazar raporu** (`../PAZAR.md`) ve
+rapordan çıkan **yeni özellik listesi**. İkinci turda: proje **git altına
 alındı** (github.com/devmurky/mailhanem, private) ve memnuniyet listesinin
 **6, 4, 8, 12**'si yapıldı — okundu/okunmadı, klavye kısayolları, "şu an bu
 maile bakıyor", veri dışa aktarma. Aynı gün önce: **bilgi deposu** (firmanın karakteri +
@@ -16,7 +18,8 @@ liste. Bu dosya yeni bir oturumun ilk okuyacağı şey._
 
 | Dosya | Ne | Durum |
 |---|---|---|
-| `uygulama/` | **Next.js uygulaması** — site + iki panel, tek kökende | Çalışıyor, 33 rota, 257 test |
+| `uygulama/` | **Next.js uygulaması** — site + iki panel, tek kökende | Çalışıyor, 34 rota, 265 test |
+| `../PAZAR.md` | **Pazar raporu** — kaç firma aday, tutar mı, hangi sektör | 2026-09-26 |
 | `site/index.html` | Tanıtım sayfası — **kaynak dosya**, uygulama `/` adresinde servis ediyor | Çalışıyor |
 | `site/giris.html` | Giriş sayfası — **artık servis edilmiyor**, tasarımı `/giris`'e taşındı | Tasarım artefaktı |
 | `tasarim/panel.html` | Müşteri paneli prototipi, 6 ekran | **Tamamı taşındı** |
@@ -98,13 +101,19 @@ yerde). İsteğe bağlı: `ZEKA_MODEL` (varsayılan `claude-sonnet-5`),
 `ZEKA_KURUS_1M_GIRDI` / `ZEKA_KURUS_1M_CIKTI` (girilmezse token sayılır, kuruş
 sıfır yazılır — uydurma fiyatla marj hesaplatmıyoruz).
 
-Memnuniyet listesinden **6, 4, 8 ve 12 bitti** (ayrıntı aşağıdaki "Dört
-madde + sürüm kontrolü" bölümünde). Sıradakiler için öneri: **5 ("bana
-hatırlat"), 7 (@bahsetme), 9 (devretme gerekçesi)** — üçü de artık hazır olan
-zemine oturuyor. 5 için `mail_okumalari` deseni birebir tekrarlanabilir
-(kişiye ait satır, yokluğu varsayılan); 7 not sisteminin üstünde küçük bir iş;
-9 devretme eylemine tek alan ekliyor. Kurulum tarafı boşsa 16 (boş ekran
-rehberliği) en ucuz kazanç.
+Memnuniyet listesinden **6, 4, 8 ve 12 bitti**; ayrıca **gece modu**
+eklendi (ayrıntı aşağıdaki iki bölümde).
+
+**Sıradaki iş artık pazar raporuna bağlı.** `../PAZAR.md` hedef sektörü
+ihracatçı/B2B toptancı imalatçı ve lojistik-gümrük olarak işaret ediyor;
+aşağıdaki "Yeni özellik listesi" o karara göre sıralandı. Önerilen sıra:
+
+**A3 (cevapsız mail raporu) → B2 (kurulum sihirbazı) → A1 (çok dilli yanıt)
+→ A2 (teklif takibi) → B1 (tahsilat) → C1 (yönlendirme modu).**
+
+A3 yarım günlük iş ve satış görüşmesini baştan değiştiriyor: kutuyu bağla,
+iki dakikada "şu 37 mail hiç cevaplanmamış" listesini göster. Veri zaten
+duruyor, eksik olan tek ekran.
 
 **Konuşma katlaması bir karar bekliyor.** Liste hâlâ mail başına bir satır;
 konuşmalar tek satıra katlanmıyor. Sebebi sayaçlar: sekme rakamları
@@ -197,6 +206,99 @@ risk büyüklüğüne göre.
    sonunda çağrılıyor** — kullandıkları `const`lar kendi bölümlerinde ve
    yukarıdan çağrılınca "Cannot access ... before initialization" ile sessizce
    patlıyorlardı. Yeni bir geri doldurma da oraya eklenmeli.
+
+---
+
+## Yeni özellik listesi — pazar raporundan (2026-09-26)
+
+Bu liste `../PAZAR.md`'deki analizden çıktı ve eski listelerin **yerine
+geçmiyor**, onların üstüne bir öncelik koyuyor. Sıralamanın tek ölçütü var:
+**hedef sektörün (ihracatçı/B2B toptancı imalatçı, lojistik-gümrük) bir mailin
+parasını kaybetmesini engelliyor mu.**
+
+Efor tahminleri bir oturumluk çalışma birimiyle: **S** yarım gün, **M** 1–2
+gün, **L** 3+ gün.
+
+### A. Hedef sektörü kazandıran üç madde
+
+- **A1. Çok dilli yanıt — `M`.** Gelen İngilizce/Almanca/Rusça mail Türkçe
+  özetlensin; yanıt taslağı **alıcının dilinde** çıksın. İhracatçının günlük
+  derdi tam bu: alıcının dilinde hızlı ve düzgün cevap. `sunucu/zeka/` altyapısı
+  hazır, istem ve bir alan eklemesi yetiyor. **Anahtar bağlanınca ilk yapılacak
+  iş bu olmalı** — taslak özelliğini rakiplerden ayıran şey burası.
+- **A2. Teklif takibi — `L`.** Maile "teklif verildi" damgası, tutar ve para
+  birimi, hatırlatma tarihi, sonuç (kazanıldı / kaybedildi / cevapsız). Gelen
+  kutusunu hafif bir satış hattına çeviriyor. İhracatçıya "kaç teklif verdim,
+  kaçı cevapsız kaldı" sorusunun cevabını veren ekran, abonelik ücretini tek
+  başına haklı çıkarır. Madde 5 ("bana hatırlat") bunun içinde eriyor.
+- **A3. Cevapsız mail raporu (satış öncesi silahı) — `S`.** Kutuyu bağla, iki
+  dakikada "şu 37 mail hiç cevaplanmamış, en eskisi 11 gün" listesi. Demo
+  görüşmesinin ilk beş dakikasında gösterilecek şey bu; veri zaten var, ekran
+  yok. **En ucuz ve en etkili madde.**
+
+### B. Ürünün para kazanmasını sağlayan
+
+- **B1. Tahsilat — `L`.** iyzico ya da PayTR ile abonelik, otomatik fatura.
+  Abonelik ekranı bugün "ne anlaşıldığının kaydı"; para almıyor. Ürün ne kadar
+  iyi olursa olsun bu olmadan gelir yok.
+- **B2. Kurulum sihirbazı — `M`.** Kutu bağla → kural kur → ekip davet et →
+  bilgi deposunu doldur, tek akışta. KOBİ kayıplarının **%43'ü ilk 90 günde**
+  oluyor; bu madde hem tutma oranı hem de firma başına 2–4 saatlik kurulum
+  emeğini (yani marjı) kurtarıyor.
+- **B3. Kendi kendine kayıt — `M`.** Bugün firmayı operatör açıyor. 100 firmaya
+  kadar sürdürülebilir, sonrası tıkanır. Demo talebinden otomatik firma açma +
+  deneme süresi.
+
+### C. Güveni satın alınabilir yapan
+
+- **C1. Yönlendirme modu (IMAP'siz başlangıç) — `M`.** "Kutumun parolasını
+  vermem" en sık duyulacak itiraz. Alternatif: firma `info@` kutusunda bir
+  kopya yönlendirmesi açsın, biz yalnız kopyayı okuyalım. Yanıt kendi
+  sunucularından gitmeye devam eder. Satışın önündeki en büyük psikolojik engeli
+  kaldırıyor.
+- **C2. Kutu bazında yetki — `S`.** "Muhasebe kutusunu sadece muhasebe görsün."
+  Bugün firmanın bütün kutuları bütün ekibe açık; üç kutulu bir firmada bu
+  satışı durdurur.
+- **C3. Durum sayfası + kesinti kaydı — `S`.** Memnuniyet listesi 14. Mailini
+  emanet eden firma "bugün çalışıyor mu" sorusunu soracak.
+
+### D. Günlük işi hafifleten (memnuniyet listesinden devam)
+
+- **D1. `5` Bana hatırlat — A2'ye bağlandı, ayrı yapılmayacak.**
+- **D2. `7` @bahsetme — `S`.** Not sistemi hazır, üstüne küçük bir iş.
+- **D3. `9` Devretme gerekçesi — `S`.** "Elif'e attım" değil, "çünkü fatura
+  sorusu". Devretme eylemine tek alan.
+- **D4. `10` Haftalık özet maili — `M`.** Pazartesi sabahı: kaç mail geldi, kaçı
+  cevapsız, kim ne kadar baktı. **Ayrıca churn sinyali:** özet mailini açmayan
+  firma gitmek üzeredir.
+- **D5. `17` Kural şablonları — `S`.** "Fatura maillerini muhasebeye", tek tık.
+  Kurulum sihirbazının içine girmeli.
+- **D6. Ekip performans ekranı — `M`.** Kişi başına yanıt sayısı ve ortalama
+  ilk yanıt süresi. Patronun görmek istediği ekran; yenilemeyi o karar veriyor.
+
+### E. Sonraya — kararı ertelenen
+
+- **E1. WhatsApp Business API — `L`+.** E-ticarete gidilecekse zorunlu, B2B
+  ihracatta opsiyonel. Meta onayı, şablon mesaj süreci ve ayrı maliyet getiriyor;
+  **hedef sektör netleşmeden başlanmamalı.**
+- **E2. Mobil uygulama / PWA + bildirim — `L`.** Lojistikte değerli (saha),
+  imalatta değil. Önce web panelin mobil hâli ölçülsün.
+- **E3. Basit CRM / müşteri kartı — `M`.** Gönderen alan adına göre firma
+  gruplama, geçmiş yazışma tek ekranda. Teklif takibi (A2) yapıldıktan sonra
+  doğal devamı.
+- **E4. Muhasebe entegrasyonu (Paraşüt/Logo) — `L`.** Gelen faturaların otomatik
+  ayıklanıp aktarılması. Güçlü ama ayrı bir ürün; erken.
+- **E5. Microsoft OAuth — `M`.** Giriş sayfasındaki düğme hâlâ boş. Hedef
+  sektörün büyük kısmı cPanel/Turhost kullanıyor; Microsoft'çu firmalar
+  gelmeye başlayınca yapılmalı, önce değil.
+
+### Önerilen sıra
+
+**A3 → B2 → A1 → A2 → B1 → C1**
+
+Gerekçe: A3 yarım günlük iş ve satış görüşmesini değiştiriyor; B2 hem tutma
+hem marj; A1 anahtar geldiği an farkı yaratan şey; A2 hedef sektörün asıl
+derdi; B1 olmadan gelir yok; C1 satışın önündeki en büyük itirazı kaldırıyor.
 
 ---
 
