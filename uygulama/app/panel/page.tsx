@@ -15,6 +15,7 @@ import {
   type MailDurum,
 } from "@/sunucu/db";
 import { Ikon } from "../bilesenler/Ikon";
+import { Kisayollar } from "./Kisayollar";
 import { TopluCubuk } from "./TopluCubuk";
 import { panelOturumu } from "./yetki";
 import { MailDetay } from "./mail/MailDetay";
@@ -221,6 +222,13 @@ export default async function GelenKutusu({
               </button>
             </form>
             <span className="adet">{mailler.length} mail</span>
+            {/* Klavye kısayolları (madde 4). Düğme burada duruyor ki kısayol
+                keşfedilebilir olsun: görünmeyen kısayol yok sayılır. */}
+            <Kisayollar
+              idler={mailler.map((m) => m.id)}
+              secili={secili}
+              suzgecSorgusu={suzgecSorgusu}
+            />
           </div>
 
           <TopluCubuk mailIdleri={mailler.map((m) => m.id)} />
