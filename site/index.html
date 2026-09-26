@@ -63,14 +63,15 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A
   --ray-arka-kayik:rgba(255,255,255,.93);
   --golge:rgba(22,32,43,.45);
 
-  /* Akış katmanı: sayfanın arkasından geçen mail trafiği. Mürekkebin yüzde
-     birkaçı kadar koyu — gövde metninin kontrastını ölçülebilir biçimde
-     düşürmüyor ama arkayı da bomboş bırakmıyor. */
-  --akis-yuzey:rgba(22,32,43,.030);
-  --akis-metin:rgba(22,32,43,.20);
-  --akis-av:rgba(29,78,124,.10);
-  --akis-av-metin:rgba(29,78,124,.38);
-  --akis-nokta:rgba(29,78,124,.30);
+  /* Gecikme haritası. Kara noktaları 1.5 pikselde duruyor, yani hücrenin
+     ancak %2'sini kaplıyorlar: nokta rengi koyu görünse de metnin arkasındaki
+     efektif kaplama yok denecek kadar az. */
+  --hrt-kara:rgba(22,32,43,.13);
+  --hrt-rota:rgba(22,32,43,.13);
+  --hrt-iz:rgba(29,78,124,.40);
+  --hrt-mail:rgba(29,78,124,.80);
+  --hrt-etiket:rgba(22,32,43,.36);
+  --hrt-dugum:rgba(29,78,124,.55);
 }
 
 /* ─── gece teması ────────────────────────────────────────────
@@ -93,12 +94,14 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A
   --ray-arka-kayik:rgba(14,20,26,.94);
   --golge:rgba(0,0,0,.55);
 
-  /* Gecede satirlar zeminden **acik**: karanlikta govde ısıkla ayrilir. */
-  --akis-yuzey:rgba(233,238,243,.045);
-  --akis-metin:rgba(233,238,243,.22);
-  --akis-av:rgba(127,182,236,.12);
-  --akis-av-metin:rgba(169,204,238,.45);
-  --akis-nokta:rgba(127,182,236,.38);
+  /* Gece ayrı bir tasarım, ters çevrilmiş kopya değil: karalar neredeyse
+     söner, ışığı **rotalar** taşır. Gece uçuş haritası. */
+  --hrt-kara:rgba(169,204,238,.11);
+  --hrt-rota:rgba(233,238,243,.09);
+  --hrt-iz:rgba(127,182,236,.55);
+  --hrt-mail:rgba(178,214,250,.95);
+  --hrt-etiket:rgba(233,238,243,.38);
+  --hrt-dugum:rgba(127,182,236,.72);
 
   color-scheme:dark;
 }
@@ -233,65 +236,72 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 
 /* ─────────── ilk görüş alanı ─────────── */
 .giris{position:relative;isolation:isolate;padding:92px 0 76px;text-align:center;overflow:hidden}
-/* ─── akış katmanı: sayfanın arkasından geçen mail trafiği ───────────────
-   Sayfanın tek "yazılmış anı" bu. Süs değil, ürünün tezinin kendisi: mail
-   soldan **çözülmemiş** giriyor (bulanık, sahipsiz, kategorisiz), ekranın
-   ortasında netleşip kategori noktasını ve sahibini kazanıyor, sağdan
-   çözülmüş çıkıyor. Kaos girer, düzen çıkar.
+/* ─── gecikme haritası ──────────────────────────────────────────────────
+   Sayfanın tek "yazılmış anı". Söylediği şey "biz globaliz" değil — her SaaS
+   küresi onu söylüyor. Bu harita müşteri hakkında somut bir şey söylüyor:
+   **alıcınız başka bir saat diliminden yazıyor ve kaybettiğiniz saatler işin
+   kendisi.** Onun için:
 
-   Üç kural:
+   · Harita dünyanın tamamı değil, Türkiye'nin ticaret komşuluğu (Avrupa,
+     Kuzey Afrika, Orta Doğu, BDT). Antarktika'lı dünya dekordur.
+   · Her rotanın iki ucunda **canlı yerel saat** var: aynı an, iki rakam.
+   · Mailin yol süresi saat farkıyla orantılı — hareket veri taşıyor.
+   · Varışta düğüm ürünün işini yazıyor: "Fatura · Elif".
 
-   1. **Metnin önüne geçmiyor.** Katman `z-index:-1`, satırlar mürekkebin
-      %5'i kadar koyu. Ölçüldü: gövde metninin kontrastı bir satır tam
-      arkasından geçerken bile 7:1'in altına inmiyor.
-   2. **Dört kenardan siliniyor.** Yatay ve dikey maske birlikte: satırlar
-      ekranın ortasında güçlü, kenarlara doğru yok oluyor. Duvar kâğıdı
-      değil, akış.
-   3. **Hareket azaltılmışsa durur.** O zaman satırlar dağılmış ve çözülmüş
-      hâlde duruyor — kompozisyon yine anlamlı, yalnız hareketsiz.
+   Çizimde yasaklılar: parıltı, gradyanlı kuyruk, nabız atan halka, neon.
+   Bunların yerine sayfanın kendi dili: kare noktalar, 1 piksel kesikli saç
+   teli, IBM Plex Mono etiket. Yayın **katedilmiş** kısmı düz çizgiye dönüyor,
+   yani rota mail ilerledikçe kendini çiziyor.
    ──────────────────────────────────────────────────────────────────────── */
 .akis{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
-  -webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),
-                     linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);
-  mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),
-             linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent),
+                     linear-gradient(180deg,transparent,#000 16%,#000 84%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 14%,#000 86%,transparent),
+             linear-gradient(180deg,transparent,#000 16%,#000 84%,transparent);
   -webkit-mask-composite:source-in;mask-composite:intersect}
+.akis canvas,.akis svg,.hrt-ustkatman{position:absolute;inset:0;width:100%;height:100%;
+  display:block}
 
-.akis-sat{position:absolute;top:var(--y);left:-340px;display:flex;align-items:center;
-  gap:9px;width:max-content;max-width:330px;padding:8px 12px;border-radius:var(--r2);
-  background:var(--akis-yuzey);
-  will-change:transform,filter;
-  animation:akis-gec var(--sure) linear infinite;animation-delay:var(--gec)}
-.akis-av{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;
-  background:var(--akis-av);color:var(--akis-av-metin);font-size:10px;font-weight:700}
-.akis-konu{font-size:12.5px;font-weight:600;letter-spacing:-.012em;color:var(--akis-metin);
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-/* Kategori noktası ve sahip: yalnız ortada, yani "çözüldüğü" anda beliriyor. */
-.akis-im{width:7px;height:7px;border-radius:50%;flex:none;background:var(--akis-nokta);
-  opacity:0;animation:akis-coz var(--sure) linear infinite;animation-delay:var(--gec)}
-.akis-sahip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;flex:none;
-  color:var(--akis-metin);opacity:0;
-  animation:akis-coz var(--sure) linear infinite;animation-delay:var(--gec)}
+/* Rotanın kesikli tabanı ve üstünde kendini çizen izi. */
+.hrt-taban{fill:none;stroke:var(--hrt-rota);stroke-width:1;stroke-dasharray:2 5;
+  stroke-linecap:round}
+.hrt-iz{fill:none;stroke:var(--hrt-iz);stroke-width:1.25;stroke-linecap:round;
+  animation:hrt-ciz var(--sure) linear infinite;animation-delay:var(--gec)}
 
-/* Ortada bile **tam netleşmiyor** (1.4px kalıyor): metnin arkasında keskin
-   bir arayüz parçası, okumayı böler. Çözülmeyi bulanıklık değil, kategori
-   noktasıyla sahibin belirmesi anlatıyor. */
-@keyframes akis-gec{
-  0%   {transform:translate3d(0,0,0);                    filter:blur(5px);opacity:.40}
-  44%  {filter:blur(1.4px);opacity:1}
-  58%  {filter:blur(1.4px);opacity:1}
-  100% {transform:translate3d(calc(100vw + 340px),0,0);  filter:blur(5px);opacity:.40}
-}
-@keyframes akis-coz{0%,40%{opacity:0}54%,100%{opacity:1}}
+/* Yol alan mail: kare, çünkü panelin avatarı da kare. Daire her yerde var. */
+.hrt-mail{position:absolute;left:0;top:0;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;
+  border-radius:2px;background:var(--hrt-mail);
+  animation:hrt-yol var(--sure) linear infinite;animation-delay:var(--gec)}
 
+/* Uç etiketleri: şehir + o şehrin **şu anki** saati. */
+.hrt-etiket{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--hrt-etiket);display:flex;align-items:center;gap:7px}
+.hrt-etiket i{width:4px;height:4px;border-radius:1px;background:var(--hrt-dugum);
+  font-style:normal;flex:none}
+.hrt-etiket b{font-weight:500;font-variant-numeric:tabular-nums;opacity:.72}
+
+/* Varış: mail düğüme değince ürünün yaptığı iş bir an görünüyor. */
+.hrt-varis{position:absolute;transform:translate(-50%,-50%);white-space:nowrap;
+  font-family:var(--mono);font-size:11px;letter-spacing:.1em;color:var(--hrt-dugum);
+  opacity:0;animation:hrt-varis var(--sure) linear infinite;animation-delay:var(--gec)}
+
+@keyframes hrt-yol{from{offset-distance:0%}to{offset-distance:100%}}
+@keyframes hrt-ciz{from{stroke-dashoffset:var(--uzunluk)}to{stroke-dashoffset:0}}
+@keyframes hrt-varis{0%,88%{opacity:0}94%{opacity:1}99%,100%{opacity:0}}
+
+/* Hareket azaltılmışsa: mailler uçlarında park eder, rotalar baştan sona
+   çizili durur, varış etiketleri görünür kalır. Kompozisyon yine anlamlı. */
 @media (prefers-reduced-motion:reduce){
-  .akis-sat{animation:none;transform:translate3d(var(--dur),0,0);filter:none;opacity:1}
-  .akis-im,.akis-sahip{animation:none;opacity:1}
+  .hrt-mail{animation:none;offset-distance:100%}
+  .hrt-iz{animation:none;stroke-dashoffset:0}
+  .hrt-varis{animation:none;opacity:1}
 }
-/* Dar ekranda satırlar metnin altında kalabalık yapıyor: yalnız üç tanesi. */
+/* Dar ekranda etiketler metnin altında kalabalık yapıyor; rota da azalıyor
+   (JS üç rotayla kuruyor). */
 @media (max-width:860px){
-  .akis-sat:nth-child(n+4){display:none}
-  .akis-sat{max-width:240px}
+  .hrt-etiket b{display:none}
+  .hrt-etiket{font-size:10.5px}
 }
 
 /* pastel bantlar: ekranın enine yayılan, yavaşça süzülen renk yıkaması */
@@ -653,48 +663,21 @@ footer{border-top:1px solid var(--cizgi);background:var(--ak3);padding:68px 0 30
 </head>
 <body>
 
-<!-- ═══════════ akış katmanı ═══════════
-     Sayfanın arkasından geçen mail trafiği: soldan çözülmemiş girer, ortada
-     kategorisini ve sahibini kazanır, sağdan çözülmüş çıkar. Konular ürünün
-     kendi örnek verisinden; uydurma bir "lorem" yok. Ekran okuyucudan
-     gizli — anlatılan şey sayfanın metninde zaten yazıyor. -->
+<!-- ═══════════ gecikme haritası ═══════════
+     Türkiye'nin ticaret komşuluğu ve üstünde yurt dışından gelen mailler.
+     Her rotanın iki ucunda o şehrin **şu anki** saati var: aynı an, iki
+     rakam. Mail varınca düğüm ürünün yaptığı işi yazıyor.
+
+     Ekran okuyucudan gizli: anlattığı şey sayfanın metninde zaten yazıyor,
+     harita onu ikinci kez sesli okutmamalı. -->
 <div class="akis" aria-hidden="true">
-  <div class="akis-sat" style="--y:12%;--sure:58s;--gec:-4s;--dur:14vw">
-    <span class="akis-av">M</span>
-    <span class="akis-konu">Şubat teklifi ve ürün listesi ekte</span>
-    <span class="akis-im" style="background:rgba(138,90,7,.32)"></span>
-    <span class="akis-sahip">Elif</span>
-  </div>
-  <div class="akis-sat" style="--y:31%;--sure:71s;--gec:-28s;--dur:46vw">
-    <span class="akis-av">A</span>
-    <span class="akis-konu">İade prosedürü hakkında bilgi</span>
-    <span class="akis-im" style="background:rgba(15,113,84,.32)"></span>
-    <span class="akis-sahip">Ayşe</span>
-  </div>
-  <div class="akis-sat" style="--y:52%;--sure:47s;--gec:-19s;--dur:70vw">
-    <span class="akis-av">M</span>
-    <span class="akis-konu">40 adet ofis koltuğu için toplu alım</span>
-    <span class="akis-im"></span>
-    <span class="akis-sahip">Selin</span>
-  </div>
-  <div class="akis-sat" style="--y:69%;--sure:64s;--gec:-41s;--dur:24vw">
-    <span class="akis-av">S</span>
-    <span class="akis-konu">Montaj randevusu değişikliği</span>
-    <span class="akis-im" style="background:rgba(15,113,84,.32)"></span>
-    <span class="akis-sahip">Burak</span>
-  </div>
-  <div class="akis-sat" style="--y:85%;--sure:53s;--gec:-11s;--dur:58vw">
-    <span class="akis-av">H</span>
-    <span class="akis-konu">Gelen ürün hasarlı geldi</span>
-    <span class="akis-im" style="background:rgba(178,58,64,.32)"></span>
-    <span class="akis-sahip">Enes</span>
-  </div>
-  <div class="akis-sat" style="--y:43%;--sure:78s;--gec:-55s;--dur:86vw">
-    <span class="akis-av">N</span>
-    <span class="akis-konu">Kumaş rengi değişimi mümkün mü?</span>
-    <span class="akis-im"></span>
-    <span class="akis-sahip">Elif</span>
-  </div>
+  <!-- Kara: maske araclar/harita-maskesi.mjs ile uretildi, canvas bir kez cizer. -->
+  <canvas class="hrt-kara" id="hrt-kara"></canvas>
+  <!-- Rotalar, ucan mailler ve etiketler asagidaki betikte kuruluyor:
+       koordinatlar canvas ile ayni izdusumden geliyor, sehirler haritanin
+       ustune tam oturuyor. -->
+  <svg class="hrt-cizgiler" id="hrt-cizgiler" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="hrt-ustkatman" id="hrt-ustkatman"></div>
 </div>
 
 <a class="atla" href="#ust">İçeriğe geç</a>
@@ -1306,6 +1289,251 @@ function uc(yol){ return AYAR.koku + yol; }
         { duration: sure, easing: yumusak, pseudoElement: "::view-transition-old(root)" });
     }).catch(function(){});
   });
+})();
+
+/* ══════════════════════════════════════════════════════════════════════
+   Gecikme haritası.
+
+   İzdüşüm: plate carrée (eşuzaklık silindirik). Dünya haritasının yerleşik
+   dili bu; harita ekrana **sığdırılıyor** (contain), kırpılmıyor — yoksa
+   dünyanın üçte biri görünür ve "dünya" okuması kaybolurdu. Kutuplar zaten
+   maskede yok.
+
+   Kara canvas'a **bir kez** çiziliyor (yeniden boyutlandırma ve tema
+   değişimi dışında hiç). Rotalar SVG, hareket tamamen CSS: kare başına
+   çalışan JavaScript yok.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  /* harita-maskesi:başlangıç */
+/* Bu blok araclar/harita-maskesi.mjs tarafından üretildi — elle düzenleme. */
+var HARITA = { en:288, boy:109, lon0:-180, lon1:180, lat0:-58, lat1:78,
+  veri:"AAAAAAAA4AAAP4Af/////4AAABwAAAAAAAAAADgAAAAAAAAAAAAAAAADHIPGAABj/////wAAAAAAAAAA/AAAC//gAAEAAAAAAAAAAAAAB4Ab/wAAP////wAAAAAAAAAHAAAH///AAAHjAAAAAAAAAAAH4BHeIcAAH////wAAAAAAAAAMAAD////8EADAAAAAAAAAAAAPf7P4/mAAD///9AAAAAAAAAAwAcB//////gH8AAAAwAAwAAAEP/Acf/4AA////AAAAAACAAAYA9///////3//wAABAAP//AHoP/5cB3/AD///+AAAAAD/AAAAA9///////////wDAgB//////9nAP3g+AA///wAAAAAf//AAi+e//////////////8Af//////////jP4B//4AAAAAB///5P//9///////////////xn/////////4AfcB//gBrAAAD//4n//////////////////HB//////////2H/gA/8AB/gAAH+P9v//////////////////AQH////////+OwPwAf4AAMAAAf8////////////////////+AA/////////8BCBgAPwAAAAAD/x////////////////////4AA/+///////4AD4AAHwAAAAAD/x/////////////////+J/AAAP9gf/////wAD8IAAAAAAAAD/4B////////////////8HAAAAA4AD/////4AH+cAAAAAAAEBngf//////////////+AAcAAAABsAAf////8AB/+AAAAAAAcAHhf//////////////8AB+AAAACAAAP/////wB/+AAAAAAAcA7h///////////////wAB8AAAAQAAAH//////H//wAAAAAAuAQD///////////////AAD8AAAAAAAAT//////H//4AAAAADjAf////////////////+ABwAAAAAAAAA//////n//4AAAAADnn//////////////////gBgAAAAAAAAA/////////oAAAAAAPv/////////////////8gBAAAAAAAAAA////////oMAAAAAAA//////////////////8gAAAAAAAAAAAL//////+4fAAAAAAP//////////////////8AAAAAAAAAAAAH///////wBAAAAAAD//////////////////4AAAAAAAAAAAAH///////9AAAAAAAB////M/4f//////////wAAAAAAAAAAAAH///////MAAAAAAAB/8/+E/x///////////hAAAAAAAAAAAAH//////8QAAAAAABB/Of+APx///////////BwAAAAAAAAAAAH//////4AAAAAAAB/wXH8AHw//////////4CgAAAAAAAAAAAH//////gAAAAAAAB/gB3/fH4P/////////wCAAAAAAAAAAAAH//////gAAAAAAAB/AQjH//8f////////fADAAAAAAAAAAAAH//////AAAAAAAAD/AABn//4f///////8DgCAAAAAAAAAAAAD/////+AAAAAAAAB+ADBj//8f///////+xgGAAAAAAAAAAAAB/////+AAAAAAAAAQ/wAAB///////////hweAAAAAAAAAAAAB/////+AAAAAAAAAf/4AAJ//////////+Bj8AAAAAAAAAAAAAP////4AAAAAAAAA//4AAD///////////ALgAAAAAAAAAAAAAP////wAAAAAAAAB///DAD///////////gIAAAAAAAAAAAAAAF////gAAAAAAAAD///j8n///////////wIAAAAAAAAAAAAAAE///BgAAAAAAAAD///////z/////////wAAAAAAAAAAAAAAAA//gAgAAAAAAAAH///////5/////////gAAAAAAAAAAAAAAADP/AAwAAAAAAAAf/////5/4/////////AAAAAAAAAAAAAAAAAn/AAQAAAAAAAA//////5/8D////////AAAAAAAAAAAAAAAAAn/AAEAAAAAAAA//////8/+IA//////+QAAAAAAAAAAAAAAAAB/AAAAAAAAAAB//////8f/+Af/////8gAAAAAAAAAAAAAAAAB/AA4AAAAAAAB//////+f//AP//f//ggAAAAAAAAAAgAAAAAA/A4GAAAAAAAD///////f/+AP/8P/yAAAAAAAAAAAAQAAAAAA/gwBQAAAAAAB///////P/8AD/4P/mAAAAAAAAAAAAAAAAAAAfzwAuAAAAAAB///////H/4AD/gH/kAAAAAAAAAAAAAAAAAAAH/gAAAAAAAAB///////j/wAB/AD/wAwAAAAAAAAAAAAAAAAAA/gAAAAAAAAB///////j/AAB+AG/4AwAAAAAAAAAAAAAAAAAAD+AAAAAAAAD///////z8AAB8AA/4AgAAAAAAAAAAAAAAAAAAA+AAAAAAAAB///////9wAAA8AA/4AIAAAAAAAAAAAAAAAAAAAOAAAAAAAAB///////+AAAA8AAT4AAAAAAAAAAAAAAAAAAAAAGAeAAAAAAA///////+OAAAcAAT4ACAAAAAAAAAAAAAAAAAAADB3+AAAAAAf///////+AAAYAAAgAIAAAAAAAAAAAAAAAAAAAB3/+AAAAAAf///////8AAAaAAQAACAAAAAAAAAAAAAAAAAAAAT//gAAAAAP///////8AAACAAAAAGAAAAAAAAAAAAAAAAAAAAD//wAAAAAH/j/////4AAACAAMAEGAAAAAAAAAAAAAAAAAAAAD///AAAAABiD/////4AAAAADOAOAAAAAAAAAAAAAAAAAAAAAD///gAAAAAAAP////wAAAAABmAcAAAAAAAAAAAAAAAAAAAAAH///gAAAAAAAP////gAAAAAAyB8AAAAAAAAAAAAAAAAAAAAAH///wAAAAAAAf///+AAAAAAAcH+EgAAAAAAAAAAAAAAAAAAAP///wAAAAAAAf///8AAAAAAAOH8AAAAAAAAAAAAAAAAAAAAAf////AAAAAAAf///4AAAAAAAPD5wGAAAAAAAAAAAAAAAAAAAP////QAAAAAAP///wAAAAAAAHj5wDeAAAAAAAAAAAAAAAAAAf////+AAAAAAH///wAAAAAAADgAQD/wAAAAAAAAAAAAAAAAAf/////gAAAAAD///gAAAAAAABgAIAP4QAAAAAAAAAAAAAAAAf/////wAAAAAD///gAAAAAAAAYAABH8CAAAAAAAAAAAAAAAAP/////wAAAAAD///gAAAAAAAAPgAAP8AAAAAAAAAAAAAAAAAH/////wAAAAAD///wAAAAAAAAAGiABmAAAAAAAAAAAAAAAAAH/////gAAAAAB///wAAAAAAAAAAkAADAAAAAAAAAAAAAAAAAD/////AAAAAAB///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAB/////AAAAAAB///wEAAAAAAAAAAPhgAAAAAAAAAAAAAAAAAB////+AAAAAAD///wMAAAAAAAAABPhgAAAAAAAAAAAAAAAAAA////+AAAAAAD///wMAAAAAAAAAD/hwAAQAAAAAAAAAAAAAAAf///+AAAAAAH///w8AAAAAAAAAH/xwAAAAAAAAAAAAAAAAAAH///+AAAAAAH///B8AAAAAAAAAP//4AAACAAAAAAAAAAAAAAD///8AAAAAAD//+B4AAAAAAAAAf//4AAAAAAAAAAAAAAAAAAD///8AAAAAAD//8B4AAAAAAAAB///+ABAAAAAAAAAAAAAAAAD///4AAAAAAB//8B4AAAAAAAAP///+AAgAAAAAAAAAAAAAAAD///4AAAAAAA//8BwAAAAAAAAf////gAAAAAAAAAAAAAAAAAD//+AAAAAAAA//8BwAAAAAAAAf////gAAAAAAAAAAAAAAAAAH//8AAAAAAAA//4BgAAAAAAAAf////wAAAAAAAAAAAAAAAAAH//4AAAAAAAA//wAAAAAAAAAAf////4AAAAAAAAAAAAAAAAAH//4AAAAAAAA//wAAAAAAAAAAf////4AAAAAAAAAAAAAAAAAH//4AAAAAAAAf/wAAAAAAAAAAP////4AAAAAAAAAAAAAAAAAH//wAAAAAAAAP/gAAAAAAAAAAP////4AAAAAAAAAAAAAAAAAH//gAAAAAAAAP/AAAAAAAAAAAP////wAAAAAAAAAAAAAAAAAH//AAAAAAAAAP+AAAAAAAAAAAH8B//wAAAAAAAAAAAAAAAAAH/+AAAAAAAAAH4AAAAAAAAAAAP4Av/gAAAAAAAAAAAAAAAAAP/wAAAAAAAAAAAAAAAAAAAAAAAAAH/gAAgAAAAAAAAAAAAAAP/4AAAAAAAAAAAAAAAAAAAAAAAAAD/AAAQAAAAAAAAAAAAAAf/wAAAAAAAAAAAAAAAAAAAAAAAAAD/AAAKAAAAAAAAAAAAAAf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAf8AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAIAAAAAAAAAAAAAAfwAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAoAAAAAAAAAAAAAAP4AAAAAAAAAAAAAAAAAAAAAAAAAAAMAABgAAAAAAAAAAAAAAPwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAHAAAAAAAAAAAAAAA/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAOAAAAAAAAAAAAAAA/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMAAAAAAAAAAAAAAA/gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/AAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA+AQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAeAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAfAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" };
+/* harita-maskesi:bitiş */
+
+  var tuval = document.getElementById("hrt-kara");
+  var cizgiler = document.getElementById("hrt-cizgiler");
+  var ustkatman = document.getElementById("hrt-ustkatman");
+  if (!tuval || !cizgiler || !ustkatman) return;
+
+  var AD = "http://www.w3.org/2000/svg";
+
+  var SEHIR = {
+    hamburg:  { ad:"HAMBURG",   lon:  9.99, lat:53.55, dilim:"Europe/Berlin" },
+    rotterdam:{ ad:"ROTTERDAM", lon:  4.48, lat:51.92, dilim:"Europe/Amsterdam" },
+    milano:   { ad:"MİLANO",    lon:  9.19, lat:45.46, dilim:"Europe/Rome" },
+    londra:   { ad:"LONDRA",    lon: -0.13, lat:51.51, dilim:"Europe/London" },
+    dubai:    { ad:"DUBAİ",     lon: 55.27, lat:25.20, dilim:"Asia/Dubai" },
+    moskova:  { ad:"MOSKOVA",   lon: 37.62, lat:55.76, dilim:"Europe/Moscow" },
+    sanghay:  { ad:"ŞANGHAY",   lon:121.47, lat:31.23, dilim:"Asia/Shanghai" },
+    newyork:  { ad:"NEW YORK",  lon:-74.01, lat:40.71, dilim:"America/New_York" },
+    istanbul: { ad:"İSTANBUL",  lon: 28.98, lat:41.01, dilim:"Europe/Istanbul" },
+    izmir:    { ad:"İZMİR",     lon: 27.14, lat:38.42, dilim:"Europe/Istanbul" },
+    bursa:    { ad:"BURSA",     lon: 29.06, lat:40.19, dilim:"Europe/Istanbul" },
+    kayseri:  { ad:"KAYSERİ",   lon: 35.49, lat:38.73, dilim:"Europe/Istanbul" }
+  };
+
+  /* Rotalar ihracatçı gerçeğinden. Kayseri mobilyanın merkezi; pilot firma
+     da mobilyacı. Varış metni ürünün yaptığı iş — uydurma istatistik değil. */
+  var ROTA = [
+    { a:"hamburg",   b:"izmir",    varis:"Fatura · Elif" },
+    { a:"dubai",     b:"istanbul", varis:"Satış · sahipsiz" },
+    { a:"moskova",   b:"kayseri",  varis:"Şikayet · Enes" },
+    { a:"sanghay",   b:"istanbul", varis:"Destek · Ayşe" },
+    { a:"newyork",   b:"izmir",    varis:"Satış · Selin" },
+    { a:"milano",    b:"bursa",    varis:"Fatura · Burak" }
+  ];
+
+  var azHareket = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var yolDestegi = CSS.supports("offset-path", 'path("M 0 0 L 1 1")');
+  var maskeBaytlari = null;
+
+  if (HARITA.veri) {
+    try {
+      var ham = atob(HARITA.veri);
+      maskeBaytlari = new Uint8Array(ham.length);
+      for (var i = 0; i < ham.length; i++) maskeBaytlari[i] = ham.charCodeAt(i);
+    } catch (e) { maskeBaytlari = null; }
+  }
+
+  /* Ekranı kaplayan izdüşüm: canvas ile SVG **aynı** dönüşümü kullanıyor,
+     yoksa şehirler haritanın üstüne oturmaz. */
+  function donusum(en, boy) {
+    var genislikDerece = HARITA.lon1 - HARITA.lon0;
+    var yukseklikDerece = HARITA.lat1 - HARITA.lat0;
+    /* contain: dünyanın tamamı görünsün. Üstte ve altta kalan boşluğu
+       katmanın dikey maskesi zaten siliyor. */
+    var olcek = Math.min(en / genislikDerece, boy / yukseklikDerece);
+    return {
+      olcek: olcek,
+      dx: (en - genislikDerece * olcek) / 2,
+      dy: (boy - yukseklikDerece * olcek) / 2
+    };
+  }
+  function xKoy(d, lon){ return d.dx + (lon - HARITA.lon0) * d.olcek; }
+  function yKoy(d, lat){ return d.dy + (HARITA.lat1 - lat) * d.olcek; }
+
+  function karayiCiz(d, en, boy) {
+    var ctx = tuval.getContext("2d");
+    var oran = Math.min(window.devicePixelRatio || 1, 2);
+    tuval.width = Math.round(en * oran);
+    tuval.height = Math.round(boy * oran);
+    ctx.setTransform(oran, 0, 0, oran, 0, 0);
+    ctx.clearRect(0, 0, en, boy);
+    if (!maskeBaytlari) return;
+
+    ctx.fillStyle = getComputedStyle(document.documentElement)
+      .getPropertyValue("--hrt-kara").trim() || "rgba(22,32,43,.13)";
+
+    var adim = (HARITA.lon1 - HARITA.lon0) / HARITA.en;   // derece
+    var nokta = 1.6;
+    for (var satir = 0; satir < HARITA.boy; satir++) {
+      var lat = HARITA.lat1 - (satir + 0.5) * adim;
+      var y = yKoy(d, lat);
+      if (y < -4 || y > boy + 4) continue;
+      for (var sutun = 0; sutun < HARITA.en; sutun++) {
+        var bit = satir * HARITA.en + sutun;
+        if (!(maskeBaytlari[bit >> 3] & (0x80 >> (bit & 7)))) continue;
+        var x = xKoy(d, HARITA.lon0 + (sutun + 0.5) * adim);
+        if (x < -4 || x > en + 4) continue;
+        ctx.fillRect(x - nokta / 2, y - nokta / 2, nokta, nokta);
+      }
+    }
+  }
+
+  /* Hedef şehirle Türkiye arasındaki saat farkı — yaz saati dahil, çünkü
+     tarayıcının kendi saat dilimi tablosundan okunuyor. */
+  function saatFarki(dilim) {
+    var simdi = new Date();
+    var burada = new Date(simdi.toLocaleString("en-US", { timeZone: "Europe/Istanbul" }));
+    var orada = new Date(simdi.toLocaleString("en-US", { timeZone: dilim }));
+    return Math.round((burada - orada) / 3600000);
+  }
+  function saatYaz(dilim) {
+    try {
+      return new Intl.DateTimeFormat("tr-TR", {
+        timeZone: dilim, hour: "2-digit", minute: "2-digit"
+      }).format(new Date());
+    } catch (e) { return ""; }
+  }
+
+  var saatler = [];   // {el, dilim}
+
+  function etiket(metin, dilim, x, y, yukari) {
+    var el = document.createElement("span");
+    el.className = "hrt-etiket";
+    el.style.left = x + "px";
+    el.style.top = (y + (yukari ? -14 : 16)) + "px";
+    var im = document.createElement("i");
+    var ad = document.createTextNode(metin + " ");
+    var saat = document.createElement("b");
+    saat.textContent = saatYaz(dilim);
+    el.appendChild(im); el.appendChild(ad); el.appendChild(saat);
+    ustkatman.appendChild(el);
+    saatler.push({ el: saat, dilim: dilim });
+  }
+
+  function kur() {
+    var en = window.innerWidth, boy = window.innerHeight;
+    var d = donusum(en, boy);
+
+    cizgiler.innerHTML = "";
+    ustkatman.innerHTML = "";
+    saatler.length = 0;
+    karayiCiz(d, en, boy);
+
+    /* Dar ekranda üç rota: altısı metnin arkasını kalabalık yapıyor. */
+    var rotalar = en < 860 ? ROTA.slice(0, 3) : ROTA;
+
+    rotalar.forEach(function (r, sira) {
+      var a = SEHIR[r.a], b = SEHIR[r.b];
+      var ax = xKoy(d, a.lon), ay = yKoy(d, a.lat);
+      var bx = xKoy(d, b.lon), by = yKoy(d, b.lat);
+
+      /* Yay: kirişin dikine, hep kuzeye doğru şişiyor. */
+      var ox = bx - ax, oy = by - ay;
+      var uz = Math.hypot(ox, oy) || 1;
+      var nx = -oy / uz, ny = ox / uz;
+      if (ny > 0) { nx = -nx; ny = -ny; }
+      var kx = (ax + bx) / 2 + nx * uz * 0.16;
+      var ky = (ay + by) / 2 + ny * uz * 0.16;
+      var yol = "M " + ax.toFixed(1) + " " + ay.toFixed(1) +
+                " Q " + kx.toFixed(1) + " " + ky.toFixed(1) +
+                " " + bx.toFixed(1) + " " + by.toFixed(1);
+
+      /* Süre saat farkıyla orantılı: Dubai'den gelen mail Hamburg'dan
+         gelenden farklı sürede varıyor. Hareket veri taşıyor. */
+      var fark = Math.abs(saatFarki(a.dilim));
+      var sure = (26 + fark * 7);
+      var gecikme = -(sira * 7);
+
+      var taban = document.createElementNS(AD, "path");
+      taban.setAttribute("class", "hrt-taban");
+      taban.setAttribute("d", yol);
+      cizgiler.appendChild(taban);
+
+      var iz = document.createElementNS(AD, "path");
+      iz.setAttribute("class", "hrt-iz");
+      iz.setAttribute("d", yol);
+      cizgiler.appendChild(iz);
+      var boyu = iz.getTotalLength();
+      iz.style.strokeDasharray = boyu;
+      iz.style.setProperty("--uzunluk", boyu);
+      iz.style.setProperty("--sure", sure + "s");
+      iz.style.setProperty("--gec", gecikme + "s");
+
+      [[ax, ay], [bx, by]].forEach(function (n) {
+        var d2 = document.createElementNS(AD, "rect");
+        d2.setAttribute("x", n[0] - 1.5); d2.setAttribute("y", n[1] - 1.5);
+        d2.setAttribute("width", 3); d2.setAttribute("height", 3);
+        d2.setAttribute("rx", 1);
+        d2.setAttribute("fill", "var(--hrt-dugum)");
+        cizgiler.appendChild(d2);
+      });
+
+      if (yolDestegi) {
+        var mail = document.createElement("i");
+        mail.className = "hrt-mail";
+        mail.style.offsetPath = 'path("' + yol + '")';
+        mail.style.setProperty("--sure", sure + "s");
+        mail.style.setProperty("--gec", gecikme + "s");
+        ustkatman.appendChild(mail);
+      }
+
+      etiket(a.ad, a.dilim, ax, ay, true);
+      etiket(b.ad, b.dilim, bx, by, false);
+
+      var varis = document.createElement("span");
+      varis.className = "hrt-varis";
+      varis.textContent = r.varis;
+      varis.style.left = bx + "px";
+      varis.style.top = (by + 32) + "px";
+      varis.style.setProperty("--sure", sure + "s");
+      varis.style.setProperty("--gec", gecikme + "s");
+      ustkatman.appendChild(varis);
+    });
+  }
+
+  function saatleriTazele() {
+    for (var i = 0; i < saatler.length; i++) {
+      saatler[i].el.textContent = saatYaz(saatler[i].dilim);
+    }
+  }
+
+  kur();
+  setInterval(saatleriTazele, 30000);
+
+  var zamanlayici;
+  window.addEventListener("resize", function () {
+    clearTimeout(zamanlayici);
+    zamanlayici = setTimeout(kur, 180);
+  });
+
+  /* Tema değişince yalnız kara yeniden çiziliyor: SVG zaten jetonlardan
+     okuyor, canvas okumuyor. */
+  new MutationObserver(function () {
+    var en = window.innerWidth, boy = window.innerHeight;
+    karayiCiz(donusum(en, boy), en, boy);
+  }).observe(document.documentElement, { attributes: true, attributeFilter: ["data-tema"] });
 })();
 
 /* Demo düğmelerinin hedefi AYAR'dan kuruluyor: site uygulamadan ayrı bir
