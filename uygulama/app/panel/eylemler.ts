@@ -5,7 +5,10 @@ import { z } from "zod";
 import {
   DURUMLAR,
   KATEGORILER,
+  bakisBildir,
+  bakisiBirak,
   firmaKullanicilari,
+  mailBakanlar,
   kategoriYaz,
   firmaKutusu,
   gunlukYaz,
@@ -118,6 +121,34 @@ export async function okunmadiIsaretle(hamId: unknown): Promise<void> {
   const { firmaId, kullanici, mail } = await mailIcin(hamId);
   okumaSil(mail.id, firmaId, kullanici.id);
   tazele(mail.id);
+}
+
+/**
+ * "Şu an bu maile bakıyorum" (madde 8).
+ *
+ * Tek çağrıda iki iş: kendi varlığını bildirmek ve başkalarını öğrenmek.
+ * İkiye bölmek her yirmi saniyede iki istek demekti.
+ *
+ * **Sayfayı tazelemiyor.** `revalidatePath` çağırsaydı açık duran her mail
+ * yirmi saniyede bir yeniden çizilirdi — yazılan yanıtın ortasında. Cevap
+ * doğrudan çağırana dönüyor, ekranı bileşen kendi kuruyor.
+ */
+export async function bakistayim(
+  hamId: unknown,
+  hamYaziyor: unknown,
+): Promise<{ ad: string; yaziyor: boolean }[]> {
+  const { firmaId, kullanici, mail } = await mailIcin(hamId);
+  bakisBildir(mail.id, firmaId, kullanici.id, hamYaziyor === true);
+  return mailBakanlar(mail.id, firmaId, kullanici.id).map((b) => ({
+    ad: b.ad,
+    yaziyor: b.yaziyor === 1,
+  }));
+}
+
+/** Sekmeden çıkarken bırakılan haber; gelmezse satır kendiliğinden bayatlar. */
+export async function bakistanCik(hamId: unknown): Promise<void> {
+  const { firmaId, kullanici, mail } = await mailIcin(hamId);
+  bakisiBirak(mail.id, firmaId, kullanici.id);
 }
 
 /**

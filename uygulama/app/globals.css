@@ -570,6 +570,19 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .ok-dugme{margin-left:auto;font-size:12px;padding:5px 9px}
 .ok-hata{color:var(--kritik)}
 
+/* ─── kim bakıyor (madde 8) ──────────────────────────────────
+   Yanıt kutusunun üstünde duran uyarı. İki ton var: birinin bakıyor olması
+   bilgi, yanıt yazıyor olması uyarı — ikisi aynı renkte olsaydı, asıl
+   çakışma riski gürültüye karışırdı. */
+.bakan-serit{display:flex;align-items:center;gap:10px;margin-bottom:12px;
+  padding:11px 14px;border-radius:var(--r2);font-size:13px;line-height:1.45;
+  background:var(--ak2);border:1px solid var(--cizgi);color:var(--metin2)}
+.bakan-serit .ikn{flex:none;color:var(--soluk)}
+.bakan-serit b{font-weight:600;color:var(--metin)}
+.bakan-serit.yazan{background:var(--uyr-yum);border-color:#EBD9B4;color:#6E4806}
+.bakan-serit.yazan .ikn{color:var(--uyari)}
+.bakan-serit.yazan b{color:#6E4806}
+
 .serit{display:flex;flex-wrap:wrap;align-items:center;gap:12px;padding:13px 16px;
   background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);margin-bottom:16px;
   font-size:13.5px;color:var(--metin2)}

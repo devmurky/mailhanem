@@ -286,6 +286,25 @@ CREATE TABLE IF NOT EXISTS mail_okumalari (
 );
 CREATE INDEX IF NOT EXISTS okuma_kisi ON mail_okumalari(firma_id, kullanici_id);
 
+-- ── kim bakıyor (madde 8) ─────────────────────────────────
+-- Ortak kutunun en pahalı çakışması: aynı maile iki kişi ayrı ayrı yanıt
+-- yazıyor ve müşteri iki farklı cevap alıyor. Taslak tablosu metni
+-- kaybetmiyor ama çakışmayı önlemiyor — bu tablo onu görünür kılıyor.
+--
+-- Satır **bayat olur**: tarayıcı açık kaldığı sürece yenileniyor, sekme
+-- kapanınca kimse haber veremeyebilir. O yüzden "bakıyor" sorusunun cevabı
+-- satırın varlığı değil, damganın tazeliği (BAKIS_SANIYE). Eski satırlar her
+-- bildirimde siliniyor; ayrı bir temizlik işi kurmaya değmez.
+CREATE TABLE IF NOT EXISTS mail_bakanlar (
+  mail_id      INTEGER NOT NULL REFERENCES mailler(id) ON DELETE CASCADE,
+  firma_id     INTEGER NOT NULL REFERENCES firmalar(id) ON DELETE CASCADE,
+  kullanici_id INTEGER NOT NULL REFERENCES kullanicilar(id) ON DELETE CASCADE,
+  yaziyor      INTEGER NOT NULL DEFAULT 0,
+  son_gorulme  TEXT NOT NULL DEFAULT (datetime('now')),
+  PRIMARY KEY (mail_id, kullanici_id)
+);
+CREATE INDEX IF NOT EXISTS bakis_zaman ON mail_bakanlar(son_gorulme);
+
 -- ── bilgi deposu ──────────────────────────────────────────
 -- Firmanın karakteri ve tekrar eden gerçekleri. Yanıt taslağı adımı
 -- bağlandığında model önce buradan okuyacak: kim olduğumuz, nasıl
@@ -2594,6 +2613,58 @@ export function okunanlar(
     ...mailIdleri,
   );
   return new Set(satirlar.map((s) => s.mail_id));
+}
+
+/* ── kim bakıyor (madde 8) ─────────────────────────────────
+   Tazelik penceresi burada tek yerde duruyor: tarayıcı bunun yarısı kadar
+   sıklıkla haber veriyor, yani bir bildirim kaçsa da kimse "kayboldu"
+   görünmüyor. Sekmesi kapanan kişi en geç bu süre sonunda listeden düşüyor. */
+export const BAKIS_SANIYE = 45;
+
+export type Bakan = { kullanici_id: number; ad: string; yaziyor: number };
+
+/**
+ * "Buradayım" bildirimi. Aynı çağrıda bayat satırlar da siliniyor — ayrı bir
+ * temizlik işi kurmak, bu boyda bir tabloda kurulumun kendisinden pahalı.
+ */
+export function bakisBildir(
+  mailId: number,
+  firmaId: number,
+  kullaniciId: number,
+  yaziyor: boolean,
+): void {
+  db.prepare("DELETE FROM mail_bakanlar WHERE son_gorulme < datetime('now', ?)").run(
+    `-${BAKIS_SANIYE * 4} seconds`,
+  );
+  db.prepare(
+    `INSERT INTO mail_bakanlar (mail_id, firma_id, kullanici_id, yaziyor, son_gorulme)
+     VALUES (?, ?, ?, ?, datetime('now'))
+     ON CONFLICT (mail_id, kullanici_id)
+       DO UPDATE SET yaziyor = excluded.yaziyor, son_gorulme = excluded.son_gorulme`,
+  ).run(mailId, firmaId, kullaniciId, yaziyor ? 1 : 0);
+}
+
+/** Sekme kapanırken bırakılan haber. Gelmezse satır zaten bayatlayıp düşer. */
+export function bakisiBirak(mailId: number, firmaId: number, kullaniciId: number): void {
+  db.prepare(
+    "DELETE FROM mail_bakanlar WHERE mail_id = ? AND firma_id = ? AND kullanici_id = ?",
+  ).run(mailId, firmaId, kullaniciId);
+}
+
+/** Bu maile şu an bakan **başkaları**. Kendini görmek kimseye bir şey söylemez. */
+export function mailBakanlar(mailId: number, firmaId: number, harici: number): Bakan[] {
+  return sorgu<Bakan>(
+    `SELECT b.kullanici_id, COALESCE(u.ad, 'Ekipten biri') AS ad, b.yaziyor
+     FROM mail_bakanlar b
+       LEFT JOIN kullanicilar u ON u.id = b.kullanici_id
+     WHERE b.mail_id = ? AND b.firma_id = ? AND b.kullanici_id <> ?
+       AND b.son_gorulme >= datetime('now', ?)
+     ORDER BY b.yaziyor DESC, u.ad`,
+    mailId,
+    firmaId,
+    harici,
+    `-${BAKIS_SANIYE} seconds`,
+  );
 }
 
 export type Okuyan = { kullanici_id: number; ad: string; ilk_okuma: string };

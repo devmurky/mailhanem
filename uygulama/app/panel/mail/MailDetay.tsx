@@ -21,6 +21,7 @@ import { boyutYaz } from "@/sunucu/ekDosya";
 import { KUYRUK_AD, imzaAyir, kuyrukKatlanir, type KuyrukSebebi } from "@/sunucu/posta/imza";
 import { Ikon } from "../../bilesenler/Ikon";
 import { panelOturumu } from "../yetki";
+import { Bakanlar } from "./Bakanlar";
 import { DurumSecici, KategoriSecici, Sahiplik, VipDugmesi } from "./MailEylemleri";
 import { OkumaSeridi } from "./Okuma";
 import { YanitFormu } from "./YanitFormu";
@@ -362,6 +363,10 @@ export async function MailDetay({
       {/* `key` şart: gömülü kullanımda maildan maile geçerken bileşen aynı
           yerde duruyor ve React onu **yeniden kullanıyor** — anahtar olmasa
           bir mailin taslağı ötekinin kutusunda görünürdü. */}
+      {/* Kim bakıyor (madde 8) — uyarı yanıt kutusunun hemen üstünde, çünkü
+          değerli olduğu an yazmaya başlamadan önceki an. */}
+      <Bakanlar mailId={mail.id} />
+
       <YanitFormu
         key={mail.id}
         mailId={mail.id}
