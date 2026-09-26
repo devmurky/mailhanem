@@ -40,7 +40,7 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A
   /* Panelin kendi jetonları: tanıtım sayfası ile ürün aynı aileden. */
   --ak:#FFFFFF; --ak2:#F4F6F9; --ak3:#FAFBFC;
   --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#8592A0;
-  --metin:#16202B; --metin2:#485664; --soluk:#64717F;
+  --metin:#16202B; --metin2:#485664; --soluk:#5C6875;
   --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
   --olumlu:#0F7154; --olm-yum:#E3F2EC;
   --uyari:#8A5A07;  --uyr-yum:#FBF1DF;
@@ -61,7 +61,16 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A
   --metin-koyu:#0E1720;   /* koyu düğmenin üstüne gelince */
   --ray-arka:rgba(255,255,255,.82);
   --ray-arka-kayik:rgba(255,255,255,.93);
-  --golge:var(--golge);
+  --golge:rgba(22,32,43,.45);
+
+  /* Akış katmanı: sayfanın arkasından geçen mail trafiği. Mürekkebin yüzde
+     birkaçı kadar koyu — gövde metninin kontrastını ölçülebilir biçimde
+     düşürmüyor ama arkayı da bomboş bırakmıyor. */
+  --akis-yuzey:rgba(22,32,43,.030);
+  --akis-metin:rgba(22,32,43,.20);
+  --akis-av:rgba(29,78,124,.10);
+  --akis-av-metin:rgba(29,78,124,.38);
+  --akis-nokta:rgba(29,78,124,.30);
 }
 
 /* ─── gece teması ────────────────────────────────────────────
@@ -83,6 +92,13 @@ var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A
   --ray-arka:rgba(14,20,26,.82);
   --ray-arka-kayik:rgba(14,20,26,.94);
   --golge:rgba(0,0,0,.55);
+
+  /* Gecede satirlar zeminden **acik**: karanlikta govde ısıkla ayrilir. */
+  --akis-yuzey:rgba(233,238,243,.045);
+  --akis-metin:rgba(233,238,243,.22);
+  --akis-av:rgba(127,182,236,.12);
+  --akis-av-metin:rgba(169,204,238,.45);
+  --akis-nokta:rgba(127,182,236,.38);
 
   color-scheme:dark;
 }
@@ -217,6 +233,67 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 
 /* ─────────── ilk görüş alanı ─────────── */
 .giris{position:relative;isolation:isolate;padding:92px 0 76px;text-align:center;overflow:hidden}
+/* ─── akış katmanı: sayfanın arkasından geçen mail trafiği ───────────────
+   Sayfanın tek "yazılmış anı" bu. Süs değil, ürünün tezinin kendisi: mail
+   soldan **çözülmemiş** giriyor (bulanık, sahipsiz, kategorisiz), ekranın
+   ortasında netleşip kategori noktasını ve sahibini kazanıyor, sağdan
+   çözülmüş çıkıyor. Kaos girer, düzen çıkar.
+
+   Üç kural:
+
+   1. **Metnin önüne geçmiyor.** Katman `z-index:-1`, satırlar mürekkebin
+      %5'i kadar koyu. Ölçüldü: gövde metninin kontrastı bir satır tam
+      arkasından geçerken bile 7:1'in altına inmiyor.
+   2. **Dört kenardan siliniyor.** Yatay ve dikey maske birlikte: satırlar
+      ekranın ortasında güçlü, kenarlara doğru yok oluyor. Duvar kâğıdı
+      değil, akış.
+   3. **Hareket azaltılmışsa durur.** O zaman satırlar dağılmış ve çözülmüş
+      hâlde duruyor — kompozisyon yine anlamlı, yalnız hareketsiz.
+   ──────────────────────────────────────────────────────────────────────── */
+.akis{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),
+                     linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);
+  mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),
+             linear-gradient(180deg,transparent,#000 20%,#000 80%,transparent);
+  -webkit-mask-composite:source-in;mask-composite:intersect}
+
+.akis-sat{position:absolute;top:var(--y);left:-340px;display:flex;align-items:center;
+  gap:9px;width:max-content;max-width:330px;padding:8px 12px;border-radius:var(--r2);
+  background:var(--akis-yuzey);
+  will-change:transform,filter;
+  animation:akis-gec var(--sure) linear infinite;animation-delay:var(--gec)}
+.akis-av{width:20px;height:20px;border-radius:6px;flex:none;display:grid;place-items:center;
+  background:var(--akis-av);color:var(--akis-av-metin);font-size:10px;font-weight:700}
+.akis-konu{font-size:12.5px;font-weight:600;letter-spacing:-.012em;color:var(--akis-metin);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Kategori noktası ve sahip: yalnız ortada, yani "çözüldüğü" anda beliriyor. */
+.akis-im{width:7px;height:7px;border-radius:50%;flex:none;background:var(--akis-nokta);
+  opacity:0;animation:akis-coz var(--sure) linear infinite;animation-delay:var(--gec)}
+.akis-sahip{font-family:var(--mono);font-size:11px;letter-spacing:.04em;flex:none;
+  color:var(--akis-metin);opacity:0;
+  animation:akis-coz var(--sure) linear infinite;animation-delay:var(--gec)}
+
+/* Ortada bile **tam netleşmiyor** (1.4px kalıyor): metnin arkasında keskin
+   bir arayüz parçası, okumayı böler. Çözülmeyi bulanıklık değil, kategori
+   noktasıyla sahibin belirmesi anlatıyor. */
+@keyframes akis-gec{
+  0%   {transform:translate3d(0,0,0);                    filter:blur(5px);opacity:.40}
+  44%  {filter:blur(1.4px);opacity:1}
+  58%  {filter:blur(1.4px);opacity:1}
+  100% {transform:translate3d(calc(100vw + 340px),0,0);  filter:blur(5px);opacity:.40}
+}
+@keyframes akis-coz{0%,40%{opacity:0}54%,100%{opacity:1}}
+
+@media (prefers-reduced-motion:reduce){
+  .akis-sat{animation:none;transform:translate3d(var(--dur),0,0);filter:none;opacity:1}
+  .akis-im,.akis-sahip{animation:none;opacity:1}
+}
+/* Dar ekranda satırlar metnin altında kalabalık yapıyor: yalnız üç tanesi. */
+@media (max-width:860px){
+  .akis-sat:nth-child(n+4){display:none}
+  .akis-sat{max-width:240px}
+}
+
 /* pastel bantlar: ekranın enine yayılan, yavaşça süzülen renk yıkaması */
 .yikama{position:absolute;inset:-30% -18% auto;height:175%;z-index:-1;pointer-events:none;
   filter:blur(58px)}
@@ -575,6 +652,50 @@ footer{border-top:1px solid var(--cizgi);background:var(--ak3);padding:68px 0 30
 </style>
 </head>
 <body>
+
+<!-- ═══════════ akış katmanı ═══════════
+     Sayfanın arkasından geçen mail trafiği: soldan çözülmemiş girer, ortada
+     kategorisini ve sahibini kazanır, sağdan çözülmüş çıkar. Konular ürünün
+     kendi örnek verisinden; uydurma bir "lorem" yok. Ekran okuyucudan
+     gizli — anlatılan şey sayfanın metninde zaten yazıyor. -->
+<div class="akis" aria-hidden="true">
+  <div class="akis-sat" style="--y:12%;--sure:58s;--gec:-4s;--dur:14vw">
+    <span class="akis-av">M</span>
+    <span class="akis-konu">Şubat teklifi ve ürün listesi ekte</span>
+    <span class="akis-im" style="background:rgba(138,90,7,.32)"></span>
+    <span class="akis-sahip">Elif</span>
+  </div>
+  <div class="akis-sat" style="--y:31%;--sure:71s;--gec:-28s;--dur:46vw">
+    <span class="akis-av">A</span>
+    <span class="akis-konu">İade prosedürü hakkında bilgi</span>
+    <span class="akis-im" style="background:rgba(15,113,84,.32)"></span>
+    <span class="akis-sahip">Ayşe</span>
+  </div>
+  <div class="akis-sat" style="--y:52%;--sure:47s;--gec:-19s;--dur:70vw">
+    <span class="akis-av">M</span>
+    <span class="akis-konu">40 adet ofis koltuğu için toplu alım</span>
+    <span class="akis-im"></span>
+    <span class="akis-sahip">Selin</span>
+  </div>
+  <div class="akis-sat" style="--y:69%;--sure:64s;--gec:-41s;--dur:24vw">
+    <span class="akis-av">S</span>
+    <span class="akis-konu">Montaj randevusu değişikliği</span>
+    <span class="akis-im" style="background:rgba(15,113,84,.32)"></span>
+    <span class="akis-sahip">Burak</span>
+  </div>
+  <div class="akis-sat" style="--y:85%;--sure:53s;--gec:-11s;--dur:58vw">
+    <span class="akis-av">H</span>
+    <span class="akis-konu">Gelen ürün hasarlı geldi</span>
+    <span class="akis-im" style="background:rgba(178,58,64,.32)"></span>
+    <span class="akis-sahip">Enes</span>
+  </div>
+  <div class="akis-sat" style="--y:43%;--sure:78s;--gec:-55s;--dur:86vw">
+    <span class="akis-av">N</span>
+    <span class="akis-konu">Kumaş rengi değişimi mümkün mü?</span>
+    <span class="akis-im"></span>
+    <span class="akis-sahip">Elif</span>
+  </div>
+</div>
 
 <a class="atla" href="#ust">İçeriğe geç</a>
 

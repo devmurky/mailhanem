@@ -1,6 +1,8 @@
 # Mailhanem — kaldığımız yer
 
-_Son güncelleme: 2026-09-26 (dördüncü tur). Bu turda: **tek karakter**
+_Son güncelleme: 2026-09-26 (beşinci tur). Bu turda: ana sayfanın arkasına
+**akış katmanı** (mail trafiği bir uçtan bir uca, ortada çözülüyor).
+Dördüncü turda: **tek karakter**
 — üç yüzeydeki yarıçap, düğme ve mikro tipografi ölçekleri tek sisteme indi,
 ana sayfaya gece modu ve tema düğmesi geldi, geçiş animasyonu yumuşak
 dairesel açılmayla yeniden yazıldı. Üçüncü turda: **gece modu**
@@ -209,6 +211,50 @@ risk büyüklüğüne göre.
    sonunda çağrılıyor** — kullandıkları `const`lar kendi bölümlerinde ve
    yukarıdan çağrılınca "Cannot access ... before initialization" ile sessizce
    patlıyorlardı. Yeni bir geri doldurma da oraya eklenmeli.
+
+---
+
+## Akış katmanı — ana sayfanın arkasındaki mail trafiği (2026-09-26)
+
+Kullanıcının fikri: *"blurlu bir ekran altında mailler bir uçtan bir uca
+gidiyormuş tarzı bir animasyon, aydınlık ve karanlık moda göre değişen."*
+Seçilen yön: mevcut pastel bantlar kalsın, katman **tüm sayfa boyunca** olsun.
+
+**Ne yapıyor:** `position:fixed` bir katman (`z-index:-1`), içinde panelin kendi
+mail satırı dilinde altı satır. Soldan **çözülmemiş** giriyorlar (bulanık,
+kategorisiz, sahipsiz), ekranın ortasında kategori noktasını ve sahibini
+kazanıyorlar, sağdan çözülmüş çıkıyorlar. Süs değil, ürünün tezi: kaos girer,
+düzen çıkar. Konular ürünün kendi örnek verisinden.
+
+**Üç kısıt, hepsi ölçülerek konuldu:**
+
+1. **Metnin önüne geçmiyor.** Satır yüzeyi mürekkebin %3'ü. Ölçüm şunu buldu:
+   ilk denemede yüzey + çizgi üst üste gelince soluk metin 4.99:1'den
+   **4.28:1'e** düşüyordu — kendi tabanımızın altı. İki düzeltme: satırdan
+   çizgi kaldırıldı ve **`--soluk` #64717F → #5C6875** oldu (beyazda 5.69:1).
+   Şimdi en kötü durumda bile 5.37:1.
+2. **Ortada bile tam netleşmiyor** (1.4px blur kalıyor). Metnin arkasında
+   keskin bir arayüz parçası okumayı bölüyordu; çözülmeyi artık bulanıklığın
+   kalkması değil, noktanın ve sahibin belirmesi anlatıyor.
+3. **Dört kenardan siliniyor** (yatay + dikey maske, `mask-composite:intersect`)
+   ve `prefers-reduced-motion` açıkken duruyor — satırlar dağılmış ve çözülmüş
+   hâlde kalıyor, kompozisyon yine anlamlı.
+
+Gece temasında satırlar zeminden **açık**: karanlıkta gövde ışıkla ayrılıyor.
+İki temada da ana sayfada düşük kontrastlı metin yok (ölçüldü, 0 bulgu).
+
+**Bilinen ödünler:**
+
+- Sayfada artık iki sonsuz hareket var (akış katmanı + kayan yetenek şeridi).
+  Kalite tabanı "tek yazılmış an" diyor; kullanıcı ikisini de istedi, karar
+  bilinçli. Biri kaldırılacaksa şerit gitmeli, katman kalmalı.
+- Satırlarda `filter: blur()` animasyonu var, yani her karede yeniden boyama.
+  Satırlar küçük (330×36 piksel) ve altı tane, ama **kare hızı ölçülemedi**:
+  tarayıcı paneli arka planda olduğu için animasyon hiç çalışmıyor. Zayıf bir
+  makinede takılırsa ilk çare blur animasyonunu sabit bir kenar maskesine
+  indirmek.
+- Yeni detektör bulgusu `pulsing-dot`: kategori noktasını nabız sanıyor.
+  Nokta bir kez beliriyor, yanıp sönmüyor — yanlış pozitif.
 
 ---
 
