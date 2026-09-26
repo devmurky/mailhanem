@@ -1,6 +1,9 @@
 # Mailhanem — kaldığımız yer
 
-_Son güncelleme: 2026-09-26 (üçüncü tur). Bu turda: **gece modu**
+_Son güncelleme: 2026-09-26 (dördüncü tur). Bu turda: **tek karakter**
+— üç yüzeydeki yarıçap, düğme ve mikro tipografi ölçekleri tek sisteme indi,
+ana sayfaya gece modu ve tema düğmesi geldi, geçiş animasyonu yumuşak
+dairesel açılmayla yeniden yazıldı. Üçüncü turda: **gece modu**
 (zarf maskeli geçiş, iki panelde), **pazar raporu** (`../PAZAR.md`) ve
 rapordan çıkan **yeni özellik listesi**. İkinci turda: proje **git altına
 alındı** (github.com/devmurky/mailhanem, private) ve memnuniyet listesinin
@@ -206,6 +209,104 @@ risk büyüklüğüne göre.
    sonunda çağrılıyor** — kullandıkları `const`lar kendi bölümlerinde ve
    yukarıdan çağrılınca "Cannot access ... before initialization" ile sessizce
    patlıyorlardı. Yeni bir geri doldurma da oraya eklenmeli.
+
+---
+
+## Tek karakter turu (2026-09-26, dördüncü tur)
+
+Kullanıcı şunu söyledi: *"tüm panellerinde ana sayfada dahil tasarım olarak bir
+karmaşıklık, sabit bir karakterde olmalı."* Haklıydı ve ölçülebilirdi.
+
+### Ölçüm — aynı ürün üç ağızdan konuşuyordu
+
+Hesaplanmış değerler (tahmin değil, tarayıcıdan okundu):
+
+| | Ana sayfa | Müşteri paneli | Operatör |
+|---|---|---|---|
+| `--r` (kart) | 14px | 12px | 11px |
+| `--r2` | 10px | 9px | 8px |
+| Düğme | **hap (999px)** | 9px | 8px |
+| Düğme ölçüsü | 15px / 14·24 | 13.5px / 9·15 | 13px / 7·13 |
+| Sekme | — | **6px** (dördüncü yarıçap) | — |
+| Mikro etiket | 11px | **10.5px** | **10.5px** |
+
+Üç yarıçap ailesi, üç düğme türü, dördüncü bir sekme yarıçapı. Üstelik mikro
+etiketler 10.5px'ti — PRODUCT.md'nin kendi taahhüdü **"işlevsel metin 11px'in
+altına inmez"** diyor.
+
+### Karar: sabitlenen yön kazanır
+
+`.impeccable/surfaces/` içindeki yön sözleşmesi bileşen dilini zaten
+yazmış: *"hap rozet, hap düğme, saç teli çerçeveli kart."* Yani karakter
+tanıtım sayfasının dili; paneller ona uyacak, tersi değil.
+
+- **Tek yarıçap ölçeği:** `--r:14px`, `--r2:10px`, `--r3:999px` — üç yüzeyde de.
+  Operatör kendi kopyasını tutuyordu, kaldırıldı; kökten miras alıyor.
+- **Düğme hap oldu**, üç ölçü kademesiyle. Sekmeler ve segment düğmeleri de hap.
+- **Mikro tipografi 11px tabanına çekildi** (18 yer).
+- **`--ayrac` 2.1:1 → 3.2:1.** Nokta ve eğik çizgi ayraçlar grafik tabanının
+  (3:1) altındaydı. Adım rakamları (`#A5B8CB`) 2.0:1 → 3.1:1 oldu: DEVAM'da
+  "bilinçli seçim" diye duruyordu ama PRODUCT.md'nin kendi tabanını deliyordu.
+- **`.kuyruk-metin` sol çizgisi 2px → 1px** — kalite tabanının açık yasağı
+  ("1px üstü renkli yan çizgi").
+
+### Ana sayfada gece modu
+
+Tanıtım sayfası kendi dosyası (`site/index.html`) ve kendi CSS'i olduğu için
+gece modu oraya ayrıca kuruldu — ama **jeton adları ve değerleri panelinkiyle
+birebir aynı**, iki dosyada tek palet var. Seçim de aynı anahtarda
+(`mailhanem-tema`): siteden panele geçerken tema bozulmuyor.
+
+Sabit renkler jetona bağlandı (`--ana-metin`, `--metin-uzeri`, `--ray-arka`,
+`--golge`). `theme-color` meta etiketi de temayla değişiyor — telefonda
+tarayıcı çubuğu sayfayla aynı renkte.
+
+Gece temasında ana sayfada **düşük kontrastlı metin yok** (ölçüldü, 0 bulgu).
+
+### Animasyon yeniden yazıldı
+
+Zarf biçimli çokgen maske gitti. Kullanıcı sevmedi ve haklıydı: çokgenin
+köşeleri ekranı süpürürken sert görünüyor, geçiş "açılma" değil "silme" gibi
+okunuyordu. Yerine:
+
+- **Daire** (`clip-path: circle()`) — kenarını tarayıcı yumuşatıyor, üstelik
+  doğrudan aradeğerleniyor.
+- **Üstel yavaşlama** `cubic-bezier(.22,1,.36,1)`, 620 ms. Öncekinin
+  `.65,0,.35,1` eğrisi ortada hızlanıp sonda frene basıyordu.
+- **İki katman birlikte oynuyor:** yeni katman ilk 240 ms'de saydamdan geliyor
+  (açılan kenar sert bir çizgi olmuyor), eski katman %3 büyüyüp soluyor.
+
+Geometri `app/bilesenler/temaAcilma.ts` içinde, 7 testle çivili (dört ekran
+ölçüsü × beş düğme konumu: daire her durumda ekranı tam kapatıyor).
+
+### Bu turda bulunan dört gerçek hata
+
+1. **Gündüz temasında iki ikon birden görünüyordu.** `.tema-dugme span`
+   seçicisi `.tema-gunes`ten daha özgüldü ve `display:none`u eziyordu.
+   Kullanıcı ekran görüntüsüyle gösterdi.
+2. **Geçiş hiç başlamazsa tema değişmiyordu.** Tarayıcı kare üretmiyorsa
+   (arka plan sekmesi, küçültülmüş pencere) `startViewTransition`a verilen
+   geri çağrı **hiç çalışmıyor** — ölçüldü. Kullanıcı düğmeye basıyor, hiçbir
+   şey olmuyordu. 300 ms'lik güvenlik ağı eklendi.
+3. **Her sayfa açılışında hydration uyarısı.** Tema betiği `data-tema`yı
+   React'ten önce yazıyor. `suppressHydrationWarning` ile susturuldu.
+4. **Operatör panelinde tema düğmesi yoktu.** O panel `YanNav` değil kendi
+   `layout.tsx`ini kullanıyor; düğme oraya ayrıca eklendi.
+
+### Detektör: kalan bulgular ve gerekçeleri
+
+`impeccable detect` üç dosyada 19 bulgu veriyor. Kapatılmayanlar ve sebepleri:
+
+- **Ayraç glifleri 3.2:1** — detektör bunları metin sayıp 4.5:1 istiyor. `·` ve
+  `/` ayraç; bilgi taşımıyorlar, grafik tabanı (3:1) geçerli. 2.1:1'den
+  çıkarıldılar, daha fazla koyulaştırmak ayraçları ayırdıkları metin kadar
+  baskın yapardı.
+- **Büyük harf mikro etiketler** — yön sözleşmesinin kendisi ("bütün mikro
+  etiketler IBM Plex Mono, büyük harf").
+- **Kayan yetenek şeridi (marquee)** — sözleşmede yazılı imza etkileşimi.
+- **Instrument Sans "çok kullanılan font"** — sözleşmede sabitlenmiş.
+- **`.ray-panel` dar dolgu** — yanlış pozitif: çocuklar `.kap` ile içeriden
+  boşluklu (`width:min(1200px,100% - 56px)`).
 
 ---
 

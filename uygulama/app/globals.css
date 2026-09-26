@@ -4,7 +4,7 @@
 */
 :root{
   --ak:#FFFFFF; --ak2:#F4F6F9; --ak3:#FAFBFC;
-  --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#A8B3BE;
+  --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#8592A0;
   --metin:#16202B; --metin2:#485664; --soluk:#64717F;
   --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
   --olumlu:#0F7154; --olm-yum:#E3F2EC;
@@ -27,7 +27,11 @@
   --ui:var(--font-govde),ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:var(--font-mono),ui-monospace,"Cascadia Code",Consolas,monospace;
   --serif:var(--font-serif),ui-serif,Georgia,serif;
-  --r:12px; --r2:9px; --r3:999px;
+  /* Yarıçap ölçeği üç yüzeyde de aynı: tanıtım sayfası 14/10, müşteri
+     paneli 12/9, operatör 11/8 kullanıyordu — aynı ürün üç ağızdan
+     konuşuyordu. Sabitlenen yön tanıtım sayfasının dili olduğu için
+     ölçek oradan alındı. */
+  --r:14px; --r2:10px; --r3:999px;
   --yan:248px;
 }
 
@@ -165,9 +169,9 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
 .nav-marka .amblem{width:32px;height:32px;border-radius:10px;background:var(--murekkep);
   display:grid;place-items:center;flex:none;color:var(--ana-metin)}
 .nav-marka b{display:block;font-size:15.5px;font-weight:700;letter-spacing:-.026em}
-.nav-marka small{display:block;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;
+.nav-marka small{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--soluk);margin-top:1px}
-.nav-bolum{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+.nav-bolum{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--soluk);padding:14px 10px 8px}
 .nav-oge{display:flex;align-items:center;gap:11px;width:100%;text-align:left;cursor:pointer;
   border:0;background:transparent;border-radius:var(--r2);padding:9px 10px;
@@ -198,10 +202,13 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
 .tema-dugme{border:0;background:transparent;cursor:pointer;color:var(--soluk);
   padding:7px;border-radius:var(--r2);display:grid;place-items:center;flex:none}
 .tema-dugme:hover{background:var(--ak2);color:var(--murekkep)}
-.tema-dugme span{display:grid;place-items:center}
-.tema-gunes{display:none}
-:root[data-tema="gece"] .tema-ay{display:none}
-:root[data-tema="gece"] .tema-gunes{display:grid}
+/* Seçici `.tema-dugme span`e eşit özgüllükte olmalı: `.tema-gunes` tek başına
+   kalınca düşük özgüllükte kalıyor, `display:grid` onu eziyor ve gündüz
+   temasında iki ikon birden görünüyordu. */
+.tema-dugme span{display:grid;place-items:center;grid-area:1/1}
+.tema-dugme .tema-gunes{display:none}
+:root[data-tema="gece"] .tema-dugme .tema-ay{display:none}
+:root[data-tema="gece"] .tema-dugme .tema-gunes{display:grid}
 
 .sahne{padding:30px 32px 60px;min-width:0}
 /* Genişlik ekrana göre büyüyor. Sabit 1180'de kalınca 2K dizüstünde sağda
@@ -218,7 +225,7 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
   margin-top:16px}
 .sayfa-ust h1{font-size:26px;font-weight:700;letter-spacing:-.032em;line-height:1.2}
 .sayfa-ust p{margin-top:6px;color:var(--metin2);font-size:14.5px}
-.ornek{margin-left:auto;flex:none;font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+.ornek{margin-left:auto;flex:none;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--uyari);background:var(--uyr-yum);
   padding:5px 10px;border-radius:var(--r3)}
 
@@ -227,7 +234,7 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
   margin:0 0 28px}
 .skart{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r);
   padding:18px 20px 20px}
-.skart dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.11em;text-transform:uppercase;
+.skart dt{font-family:var(--mono);font-size:11px;letter-spacing:.11em;text-transform:uppercase;
   color:var(--soluk)}
 .skart .deger{margin-top:10px}
 .skart dd{margin:0;font-size:31px;font-weight:700;letter-spacing:-.04em;line-height:1}
@@ -250,9 +257,12 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
   background:var(--ak2);border-radius:var(--r3);padding:3px 9px}
 
 /* ─────────── düğmeler ─────────── */
+/* Düğme **hap**: yön sözleşmesinin bileşen dili bunu söylüyor ve tanıtım
+   sayfası zaten böyle. Paneldeki köşeli düğme, aynı ürünün ikinci bir lehçesi
+   oluyordu. Ölçek üç kademe: hero (`.iri`), varsayılan, `.ufak`. */
 .dugme{display:inline-flex;align-items:center;justify-content:center;gap:7px;
-  font-size:13.5px;font-weight:600;letter-spacing:-.008em;padding:9px 15px;
-  border-radius:var(--r2);border:1px solid var(--cizgi2);background:var(--ak);
+  font-size:13.5px;font-weight:600;letter-spacing:-.008em;padding:9px 16px;
+  border-radius:var(--r3);border:1px solid var(--cizgi2);background:var(--ak);
   color:var(--metin);cursor:pointer;text-decoration:none;
   transition:background .14s,border-color .14s,color .14s}
 .dugme:hover{border-color:var(--soluk);background:var(--ak3)}
@@ -260,11 +270,11 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
 .dugme.ana:hover{background:var(--ana-koyu);border-color:var(--ana-koyu)}
 .dugme.sade{border-color:transparent;background:transparent;color:var(--metin2)}
 .dugme.sade:hover{background:var(--ak2);color:var(--metin)}
-.dugme.ufak{font-size:12.5px;padding:7px 12px}
+.dugme.ufak{font-size:12.5px;padding:6px 13px}
 .dugme.genis{width:100%}
 .dugme[disabled]{opacity:.55;cursor:not-allowed}
 
-.rozet{font-family:var(--mono);font-size:10.5px;font-weight:500;letter-spacing:.07em;
+.rozet{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.07em;
   text-transform:uppercase;padding:4px 9px;border-radius:var(--r3);flex:none}
 .r-kritik{background:var(--kritik);color:var(--kritik-metin)}
 .r-uyari{background:var(--uyr-yum);color:var(--uyari)}
@@ -503,7 +513,7 @@ body:has(.demo-serit) .uygulama{min-height:calc(100vh - 74px)}
 .talep-suz{margin-left:auto;display:inline-flex;gap:2px;padding:2px;
   background:var(--ak2);border-radius:var(--r2)}
 .talep-suz a{border:0;background:transparent;color:var(--metin2);text-decoration:none;
-  font:600 12.5px/1 var(--ui);padding:7px 12px;border-radius:6px}
+  font:600 12.5px/1 var(--ui);padding:7px 13px;border-radius:var(--r3)}
 .talep-suz a.etkin{background:var(--ak);color:var(--metin);
   box-shadow:0 1px 2px rgba(22,32,43,.12)}
 .talep-bos{display:flex;flex-direction:column;align-items:center;gap:6px;
@@ -697,7 +707,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .t-satir{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:baseline;
   gap:14px;padding:9px 16px;border-top:1px solid var(--cizgi)}
 .t-satir:first-child{border-top:0}
-.t-et{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+.t-et{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--soluk);font-weight:500;padding-top:8px}
 .t-ic{display:flex;align-items:center;flex-wrap:wrap;gap:6px 9px;min-width:0}
 .t-kisi{display:inline-flex;align-items:center;gap:8px;font-size:13.5px;color:var(--metin2)}
@@ -730,7 +740,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .izgara-uc{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px;
   margin-bottom:16px}
 .kutu-ust{display:flex;align-items:center;gap:10px;margin-bottom:13px}
-.kutu-ad{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;
+.kutu-ad{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;
   color:var(--soluk);font-weight:500}
 .kutu-not{margin-left:auto;font-size:12px;color:var(--soluk)}
 .kutu-not-metin{margin-top:12px;font-size:12.5px;line-height:1.6;color:var(--soluk)}
@@ -783,11 +793,11 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
   user-select:none}
 .kuyruk > summary::-webkit-details-marker{display:none}
 .kuyruk > summary:hover{color:var(--metin2)}
-.kuyruk > summary .sayi{font-family:var(--mono);font-size:10.5px;font-weight:500;
+.kuyruk > summary .sayi{font-family:var(--mono);font-size:11px;font-weight:500;
   color:var(--soluk);background:var(--ak2);border-radius:var(--r3);padding:2px 7px}
 .kuyruk > summary .ikn{color:var(--ayrac);transition:transform .18s cubic-bezier(.2,.9,.3,1)}
 .kuyruk[open] > summary .ikn{transform:rotate(90deg)}
-.kuyruk-metin{margin-top:9px;padding-left:13px;border-left:2px solid var(--cizgi);
+.kuyruk-metin{margin-top:9px;padding-left:13px;border-left:1px solid var(--cizgi);
   font-size:13px;line-height:1.66;color:var(--soluk)}
 
 /* ─── aynı gönderenden (katlanır) ───────────────────────────
@@ -822,7 +832,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
   color:var(--metin2);letter-spacing:0}
 
 /* ─── ekip ─── */
-.liste-ad .ben{margin-left:8px;font-family:var(--mono);font-size:10px;font-weight:500;
+.liste-ad .ben{margin-left:8px;font-family:var(--mono);font-size:11px;font-weight:500;
   letter-spacing:.1em;text-transform:uppercase;color:var(--mrk-metin);
   background:var(--mrk-yum);padding:2px 7px;border-radius:var(--r3)}
 .liste-ad small .ayrac{margin:0 6px;color:var(--cizgi2)}
@@ -938,7 +948,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .yer-tutucular .yt{display:inline-flex;align-items:center;gap:6px;font-size:12px;
   color:var(--soluk)}
 .sablon-sec{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-top:11px}
-.sablon-sec label{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+.sablon-sec label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--soluk)}
 .sablon-sec select{font-size:13.5px;padding:7px 11px;border:1px solid var(--cizgi2);
   border-radius:var(--r2);background:var(--ak);color:var(--metin);cursor:pointer}
@@ -971,7 +981,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 .ucret-alan input{width:120px;text-align:right;font-variant-numeric:tabular-nums}
 .ucret-alan small{font-size:12px;color:var(--soluk)}
 .varsayim-form{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
-.varsayim-form label{font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;
+.varsayim-form label{font-family:var(--mono);font-size:11px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--soluk)}
 .varsayim-form input{font-size:13.5px;padding:8px 11px;border:1px solid var(--cizgi2);
   border-radius:var(--r2);background:var(--ak);color:var(--metin);width:100px;text-align:right}
@@ -1028,7 +1038,7 @@ a.talep-satir:hover{border-color:var(--cizgi2);background:var(--ak3)}
 /* ─── klavye kısayolları (madde 4) ───────────────────────────
    Listenin başındaki küçük "?" — kısayolların tek görünür ucu. */
 .kisayol-ipucu{border:0;background:none;padding:0;cursor:pointer;flex:none;line-height:1}
-kbd{font-family:var(--mono);font-size:10.5px;line-height:1;color:var(--metin2);
+kbd{font-family:var(--mono);font-size:11px;line-height:1;color:var(--metin2);
   background:var(--ak2);border:1px solid var(--cizgi);border-bottom-width:2px;
   border-radius:5px;padding:3px 5px;display:inline-block;min-width:18px;text-align:center}
 .kisayol-ipucu:hover kbd{color:var(--metin);border-color:var(--cizgi2);background:var(--ak3)}
@@ -1052,7 +1062,7 @@ kbd{font-family:var(--mono);font-size:10.5px;line-height:1;color:var(--metin2);
 .serit-kaydir::-webkit-scrollbar{display:none}
 .serit-kaydir > *{flex:none}
 
-.sekme{padding:5px 10px;border:0;background:none;border-radius:6px;font-size:12.5px;
+.sekme{padding:5px 12px;border:0;background:none;border-radius:var(--r3);font-size:12.5px;
   font-weight:600;color:var(--soluk);cursor:pointer;text-decoration:none;
   display:inline-flex;align-items:center}
 .sekme:hover{background:var(--ak2);color:var(--metin)}
@@ -1115,7 +1125,7 @@ kbd{font-family:var(--mono);font-size:10.5px;line-height:1;color:var(--metin2);
   padding:1px 7px;background:transparent;border:1px solid var(--cizgi2);color:var(--metin2);
   font-weight:500}
 .satir .cip.taslak .ikn,.satir .cip.konusma-cip .ikn{color:var(--ayrac)}
-.satir .cip.konusma-cip{font-family:var(--mono);font-size:10.5px}
+.satir .cip.konusma-cip{font-family:var(--mono);font-size:11px}
 .rozet-sahip{display:inline-flex;align-items:center;gap:5px;font-size:11px;
   color:var(--soluk);margin-left:auto}
 .rozet-sahip .av{width:17px;height:17px;border-radius:6px;font-size:9px;
@@ -1310,7 +1320,7 @@ kbd{font-family:var(--mono);font-size:10.5px;line-height:1;color:var(--metin2);
    metin alanı yazmayı kolaylaştırmıyor, satır başını kaybettiriyor. */
 .ticket-formu{display:flex;flex-direction:column;gap:14px;max-width:860px}
 .alan{display:flex;flex-direction:column;gap:6px;min-width:0}
-.alan > span{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+.alan > span{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--soluk)}
 .alan input,.alan select,.alan textarea{font-family:var(--ui);font-size:14px;
   padding:10px 12px;border:1px solid var(--cizgi2);border-radius:var(--r2);

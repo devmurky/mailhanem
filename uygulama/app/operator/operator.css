@@ -27,7 +27,8 @@
      kalır ve operatör paneli tek başına beyaz kalırdı. Burada yalnız
      operatöre özel **adlar** ve ölçüler var. */
   --yuzey:var(--ak); --yuzey2:var(--ak2);
-  --r:11px; --r2:8px;
+  /* Yarıçap da kökten geliyor artık: operatör 11/8 ile kendi ölçeğini
+     tutuyordu, aynı üründe üçüncü bir yarıçap ailesi demekti. */
   --ui:"Instrument Sans",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
 }
@@ -193,15 +194,15 @@
 .op .r-bilgi{background:var(--mrk-yum);color:var(--mrk-metin)}
 .op .r-bitti{background:var(--olm-yum);color:var(--olumlu)}
 
-.op .dugme{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:var(--r2);
+.op .dugme{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;border-radius:var(--r3);
   border:1px solid var(--cizgi2);background:var(--yuzey);font-size:13px;font-weight:600;
   cursor:pointer;letter-spacing:-.01em;white-space:nowrap;flex:none;
   transition:background .12s,border-color .12s}
 .op .dugme:hover{background:var(--yuzey2);border-color:var(--soluk)}
 .op .dugme.ana{background:var(--murekkep);border-color:var(--murekkep);color:var(--ana-metin)}
 .op .dugme.ana:hover{filter:brightness(1.12)}
-.op .dugme.ufak{padding:5px 10px;font-size:12.5px}
-.op .dugme.sade{border-color:transparent;color:var(--soluk);padding:5px 8px;font-size:12.5px}
+.op .dugme.ufak{padding:6px 13px;font-size:12.5px}
+.op .dugme.sade{border-color:transparent;color:var(--soluk);padding:6px 11px;font-size:12.5px}
 .op .dugme.sade:hover{background:var(--yuzey2);color:var(--metin);border-color:transparent}
 
 /* ── araç çubuğu ───────────────────────────── */
@@ -591,7 +592,7 @@
 .op .talep-alanlar > div{padding:13px 0;border-bottom:1px solid var(--cizgi);min-width:0}
 .op .talep-alanlar > div:nth-child(odd){padding-right:16px}
 .op .talep-alanlar > div.genis{grid-column:1 / -1;border-bottom:0;padding-right:0}
-.op .talep-alanlar dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.12em;
+.op .talep-alanlar dt{font-family:var(--mono);font-size:11px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--soluk);margin-bottom:5px}
 .op .talep-alanlar dd{margin:0;font-size:13.5px;color:var(--metin);line-height:1.55;
   overflow-wrap:anywhere}
@@ -634,9 +635,9 @@
 .op .firma-ic{padding:4px 15px 16px}
 .op .firma-bolum{margin-top:14px}
 .op .firma-bolum h3{display:flex;align-items:center;gap:8px;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--soluk);
+  font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soluk);
   font-weight:500;margin:0 0 9px}
-.op .firma-bolum h3 .sayi{font-size:10.5px;background:var(--yuzey2);color:var(--soluk);
+.op .firma-bolum h3 .sayi{font-size:11px;background:var(--yuzey2);color:var(--soluk);
   border-radius:9px;padding:1px 7px}
 .op .firma-bos{font-size:12.5px;color:var(--soluk);margin:0;padding:10px 12px;
   background:var(--yuzey2);border-radius:var(--r2)}
@@ -745,7 +746,7 @@
    tıklamaya bindirmek, kutulara bakmak isteyene her seferinde paneli açardı. */
 .op .firma-kat{position:relative}
 .op .firma-detay{position:absolute;top:13px;right:15px;font-family:var(--mono);
-  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--soluk);
+  font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--soluk);
   text-decoration:none;padding:5px 9px;border:1px solid var(--cizgi);
   border-radius:var(--r2);background:var(--yuzey);z-index:2}
 .op .firma-detay:hover{border-color:var(--murekkep);color:var(--mrk-metin)}
@@ -755,7 +756,7 @@
 .op .c-kapat{display:grid;place-items:center;width:30px;height:30px;border-radius:var(--r2);
   color:var(--soluk);text-decoration:none;flex:none;margin-left:auto}
 .op .c-kapat:hover{background:var(--yuzey2);color:var(--metin)}
-.op .kir .puan.olcusuz{color:var(--cizgi2);font-size:10.5px}
+.op .kir .puan.olcusuz{color:var(--cizgi2);font-size:11px}
 .op .hesap-satir .tut.olcusuz{color:var(--cizgi2)}
 
 /* Aylık hacim grafiği — prototipte satır içi stildi, sınıfa alındı. */

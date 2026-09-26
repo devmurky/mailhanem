@@ -59,7 +59,15 @@ if(t==='gece')document.documentElement.dataset.tema='gece';}}catch(e){}`;
 
 export default function KokDuzen({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr" className={`${govde.variable} ${serif.variable} ${mono.variable}`}>
+    /* `suppressHydrationWarning`: yukarıdaki betik `data-tema`yı React
+       yüklenmeden önce yazıyor, React de sunucudan gelmeyen bu özniteliği
+       görüp her sayfa açılışında uyarı basıyordu. Uyarı yalnız bu öznitelik
+       için susturuluyor — ağacın geri kalanı normal karşılaştırılıyor. */
+    <html
+      lang="tr"
+      className={`${govde.variable} ${serif.variable} ${mono.variable}`}
+      suppressHydrationWarning
+    >
       <head>
         <script dangerouslySetInnerHTML={{ __html: TEMA_BETIGI }} />
       </head>

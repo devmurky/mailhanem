@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { suankiKullanici } from "@/sunucu/oturum";
 import { db, gunlukSayilari, talepSayilari, ticketSayilari } from "@/sunucu/db";
 import { Ikon } from "../bilesenler/Ikon";
+import { TemaDugmesi } from "../bilesenler/Tema";
 import { OpNav } from "./OpNav";
 import { cikisYap } from "../giris/eylemler";
 import "./operator.css";
@@ -92,6 +93,9 @@ export default async function OperatorDuzeni({ children }: { children: React.Rea
                 <b>{kullanici.ad || kullanici.eposta}</b>
                 <small>Servis sahibi</small>
               </span>
+              {/* Müşteri panelindekiyle aynı düğme, aynı yerde: operatör de
+                  gün boyu bu ekranda oturuyor. */}
+              <TemaDugmesi />
               <form action={cikisYap}>
                 <button className="cikis" type="submit" title="Çıkış yap" aria-label="Çıkış yap">
                   <Ikon ad="cikis" boyut={16} />

@@ -25,6 +25,13 @@
 <meta property="og:description" content="info@ kutusuna üç kişi bakıyor, üçü de diğeri bakar sanıyor. Mailhanem gelen her maili sınıflar, doğru kişiye atar, yanıt taslağını hazırlar. Gönderme kararı sizde kalır.">
 <link rel="canonical" href="https://mailhanem.app/">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%231D4E7C'/%3E%3Crect x='6.5' y='9.5' width='19' height='13' rx='2.5' fill='none' stroke='%23fff' stroke-width='2'/%3E%3Cpath d='M7.6 11.8l7.2 4.9a2 2 0 0 0 2.4 0l7.2-4.9' fill='none' stroke='%23fff' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E">
+<!-- Tema, ilk boyamadan ÖNCE kuruluyor. Stil dosyasından da önce: gece
+     temasını seçmiş biri sayfa her açılışında bir kare beyaz görmesin.
+     Anahtar panelle ortak, iki yüzey arasında geçerken tema bozulmuyor. -->
+<script>try{var t=localStorage.getItem('mailhanem-tema');
+if(!t&&window.matchMedia('(prefers-color-scheme: dark)').matches)t='gece';
+if(t==='gece'){document.documentElement.dataset.tema='gece';
+var m=document.querySelector('meta[name="theme-color"]');if(m)m.content='#0E141A';}}catch(e){}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&display=swap">
@@ -32,7 +39,7 @@
 :root{
   /* Panelin kendi jetonları: tanıtım sayfası ile ürün aynı aileden. */
   --ak:#FFFFFF; --ak2:#F4F6F9; --ak3:#FAFBFC;
-  --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#A8B3BE;
+  --cizgi:#E6EAEF; --cizgi2:#D4DAE2; --ayrac:#8592A0;
   --metin:#16202B; --metin2:#485664; --soluk:#64717F;
   --murekkep:#1D4E7C; --mrk-yum:#EAF0F6; --mrk-metin:#1A4570;
   --olumlu:#0F7154; --olm-yum:#E3F2EC;
@@ -45,7 +52,48 @@
 
   --r:14px; --r2:10px; --r3:999px;
   --ray:68px;
+
+  /* Renk çiftleri — panelle aynı adlar: bir yüzey ve onun üstündeki yazı.
+     Gece temasında ikisi birden değişiyor; sabit #fff bırakılan yerler açık
+     mavi düğmenin üstünde okunmaz kalırdı. */
+  --ana-metin:#FFFFFF;    /* --murekkep yüzeyinin üstü */
+  --metin-uzeri:#FFFFFF;  /* --metin yüzeyinin üstü: koyu düğme, atla bağlantısı */
+  --metin-koyu:#0E1720;   /* koyu düğmenin üstüne gelince */
+  --ray-arka:rgba(255,255,255,.82);
+  --ray-arka-kayik:rgba(255,255,255,.93);
+  --golge:var(--golge);
 }
+
+/* ─── gece teması ────────────────────────────────────────────
+   Panelin paletiyle **birebir aynı** değerler: site ile ürün aynı aileden
+   okunuyorsa, karanlıkta da aynı aileden okunmalı. Jeton adları da aynı,
+   böylece iki dosyada tek bir palet var. */
+:root[data-tema="gece"]{
+  --ak:#141B23; --ak2:#0E141A; --ak3:#19212A;
+  --cizgi:#27323E; --cizgi2:#38454F; --ayrac:#6D7A88;
+  --metin:#E9EEF3; --metin2:#B6C2CE; --soluk:#8B98A5;
+  --murekkep:#7FB6EC; --mrk-yum:#17293B; --mrk-metin:#A9CCEE;
+  --olumlu:#56C298; --olm-yum:#11291F;
+  --uyari:#DCA84A; --uyr-yum:#2A2213;
+  --kritik:#E88087; --krt-yum:#2C181A;
+
+  --ana-metin:#0B1620;
+  --metin-uzeri:#0E141A;
+  --metin-koyu:#FFFFFF;
+  --ray-arka:rgba(14,20,26,.82);
+  --ray-arka-kayik:rgba(14,20,26,.94);
+  --golge:rgba(0,0,0,.55);
+
+  color-scheme:dark;
+}
+/* Tema geçişi: tarayıcının kendi çapraz geçişi kapatılıyor, açılmayı
+   aşağıdaki betikteki daire yürütüyor. İkisi birden çalışırsa geçiş
+   bulanıklaşıyor. */
+::view-transition-old(root),
+::view-transition-new(root){animation:none;mix-blend-mode:normal}
+::view-transition-new(root){z-index:2}
+::view-transition-old(root){z-index:1}
+
 *{box-sizing:border-box}
 html{color-scheme:light;scroll-behavior:smooth;scroll-padding-top:calc(var(--ray) + 18px);
   scrollbar-color:var(--cizgi2) transparent;scrollbar-width:thin}
@@ -69,7 +117,7 @@ code{font-family:var(--mono);font-size:.88em}
 .kap{width:min(1200px,100% - 56px);margin-inline:auto}
 @media (max-width:680px){.kap{width:calc(100% - 32px)}}
 
-.atla{position:absolute;left:16px;top:-60px;z-index:90;background:var(--metin);color:#fff;
+.atla{position:absolute;left:16px;top:-60px;z-index:90;background:var(--metin);color:var(--metin-uzeri);
   font-weight:600;font-size:14px;padding:11px 16px;border-radius:var(--r2);
   text-decoration:none;transition:top .16s}
 .atla:focus{top:14px}
@@ -103,10 +151,10 @@ h3{font-family:var(--ui);font-size:21px;font-weight:600;letter-spacing:-.026em;l
   transition:background .16s,border-color .16s,transform .16s,box-shadow .16s}
 .dug:hover{border-color:var(--soluk);transform:translateY(-1px)}
 .dug:active{transform:translateY(0)}
-.dug.koyu{background:var(--metin);border-color:var(--metin);color:#fff;
-  box-shadow:0 6px 14px -8px rgba(22,32,43,.55)}
-.dug.koyu:hover{background:#0E1720;border-color:#0E1720;
-  box-shadow:0 10px 20px -9px rgba(22,32,43,.6)}
+.dug.koyu{background:var(--metin);border-color:var(--metin);color:var(--metin-uzeri);
+  box-shadow:0 6px 14px -8px var(--golge)}
+.dug.koyu:hover{background:var(--metin-koyu);border-color:var(--metin-koyu);
+  box-shadow:0 10px 20px -9px var(--golge)}
 .dug[disabled]{opacity:.6;cursor:progress;transform:none}
 .dug .ok{transition:transform .18s cubic-bezier(.2,.9,.3,1)}
 .dug:hover .ok{transform:translate(2px,-2px)}
@@ -122,10 +170,10 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 .bolum-ust p{margin-top:20px}
 
 /* ─────────── üst ray ─────────── */
-.ray{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.82);
+.ray{position:sticky;top:0;z-index:50;background:var(--ray-arka);
   backdrop-filter:blur(14px) saturate(1.6);-webkit-backdrop-filter:blur(14px) saturate(1.6);
   border-bottom:1px solid transparent;transition:border-color .2s,background .2s}
-.ray.kayik{border-bottom-color:var(--cizgi);background:rgba(255,255,255,.93)}
+.ray.kayik{border-bottom-color:var(--cizgi);background:var(--ray-arka-kayik)}
 .ray-ic{height:var(--ray);display:flex;align-items:center;gap:28px}
 .marka{display:inline-flex;align-items:center;gap:10px;text-decoration:none;flex:none}
 .marka .im{width:28px;height:28px;border-radius:9px;background:var(--murekkep);
@@ -144,6 +192,17 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
   text-transform:uppercase;color:var(--metin2);text-decoration:none;padding:9px 11px;
   border-radius:var(--r2);transition:color .15s,background .15s}
 .ray-giris:hover{color:var(--metin);background:var(--ak2)}
+/* Gündüz / gece düğmesi — panelle aynı ölçü ve aynı davranış. İkon CSS ile
+   seçiliyor; JavaScript'e bırakılsaydı sayfa yüklenirken bir an yanlış ikon
+   görünürdü. */
+.tema-dugme{border:0;background:none;cursor:pointer;color:var(--metin2);
+  width:36px;height:36px;border-radius:var(--r3);display:grid;place-items:center;
+  flex:none;transition:color .15s,background .15s}
+.tema-dugme:hover{color:var(--metin);background:var(--ak2)}
+.tema-dugme span{display:grid;place-items:center;grid-area:1/1}
+.tema-dugme .tema-gunes{display:none}
+:root[data-tema="gece"] .tema-dugme .tema-ay{display:none}
+:root[data-tema="gece"] .tema-dugme .tema-gunes{display:grid}
 /* Raydaki demo düğmesi: birincil eylem "Demo talebi" koyu kalsın diye açık,
    ama rayı şişirmesin diye biraz sıkı. */
 .ray-demo{padding:9px 15px;font-size:13.5px;text-decoration:none;white-space:nowrap}
@@ -181,10 +240,10 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 
 .kutu-ara{display:flex;align-items:center;gap:6px;margin:36px auto 0;max-width:560px;
   background:var(--ak);border:1px solid var(--cizgi2);border-radius:var(--r3);padding:6px 6px 6px 8px;
-  box-shadow:0 8px 20px -14px rgba(22,32,43,.45);
+  box-shadow:0 8px 20px -14px var(--golge);
   transition:border-color .16s,box-shadow .16s}
 .kutu-ara:focus-within{border-color:var(--murekkep);
-  box-shadow:0 0 0 4px var(--mrk-yum),0 8px 20px -14px rgba(22,32,43,.45)}
+  box-shadow:0 0 0 4px var(--mrk-yum),0 8px 20px -14px var(--golge)}
 .kutu-ara .zarf{flex:none;margin-left:8px;color:var(--soluk);display:grid;place-items:center}
 .kutu-ara input{flex:1;min-width:0;border:0;background:transparent;font-size:16px;
   color:var(--metin);padding:12px 8px}
@@ -269,7 +328,7 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 /* ürün minyatürü */
 /* gri panonun üstünde duruyor: yükselti gerçek, o yüzden gölgesi var */
 .min{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r2);
-  box-shadow:0 6px 16px -10px rgba(22,32,43,.4);overflow:hidden}
+  box-shadow:0 6px 16px -10px var(--golge);overflow:hidden}
 .min-ust{display:flex;align-items:center;gap:9px;padding:12px 15px;border-bottom:1px solid var(--cizgi)}
 .min-ust b{font-size:13.5px;font-weight:600;letter-spacing:-.02em}
 .min-ornek{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.1em;
@@ -302,10 +361,10 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 .tdug{display:inline-flex;align-items:center;gap:7px;font-size:12.5px;font-weight:600;
   padding:8px 13px;border-radius:var(--r3);border:1px solid var(--cizgi);background:var(--ak);
   color:var(--metin2)}
-.tdug.ana{background:var(--murekkep);border-color:var(--murekkep);color:#fff}
+.tdug.ana{background:var(--murekkep);border-color:var(--murekkep);color:var(--ana-metin)}
 .tdug .harf{width:19px;height:19px;border-radius:6px;display:grid;place-items:center;
   font-family:var(--mono);font-size:11px;background:var(--ak2);color:var(--metin2)}
-.tdug.ana .harf{background:rgba(255,255,255,.24);color:#fff}
+.tdug.ana .harf{background:rgba(127,127,127,.26);color:var(--ana-metin)}
 
 /* ─────────── bağlandığı kutular ─────────── */
 .kutular{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--cizgi);
@@ -329,7 +388,7 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
    hangi yazı tipi, boyut, tarayıcı olursa olsun aynı duruyor.
    Renk: --murekkep'in açık tonu; nötr griden daha markaya ait. */
 .adim-no b{font-family:var(--ui);font-size:70px;font-weight:500;line-height:.9;
-  letter-spacing:-.03em;color:#A5B8CB;display:block}
+  letter-spacing:-.03em;color:#7B93B0;display:block}
 .adim-ic h3{font-size:23px}
 .adim-ic p{margin-top:11px;color:var(--metin2);font-size:16.5px;line-height:1.6;max-width:52ch}
 .adim-meta{display:flex;align-items:center;gap:9px;margin-top:16px;flex-wrap:wrap;
@@ -340,7 +399,7 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
 
 /* adımın yanındaki küçük gerçek: ürünün kendi parçası, süs değil */
 .mini{background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r2);
-  padding:6px 14px;box-shadow:0 5px 14px -10px rgba(22,32,43,.42)}
+  padding:6px 14px;box-shadow:0 5px 14px -10px var(--golge)}
 .mini-satir{display:flex;align-items:center;gap:10px;padding:11px 0;font-size:12.5px;
   color:var(--metin2);border-bottom:1px solid var(--cizgi)}
 .mini-satir:last-child{border-bottom:0}
@@ -396,7 +455,7 @@ section{border-top:1px solid var(--cizgi);padding:104px 0}
   color:var(--metin2);background:var(--ak);border:1px solid var(--cizgi);border-radius:var(--r3);
   padding:10px 17px;cursor:pointer;transition:background .16s,border-color .16s,color .16s}
 .sss-sek button:hover{border-color:var(--cizgi2);color:var(--metin)}
-.sss-sek button[aria-selected="true"]{background:var(--metin);border-color:var(--metin);color:#fff}
+.sss-sek button[aria-selected="true"]{background:var(--metin);border-color:var(--metin);color:var(--metin-uzeri)}
 .sss{border-top:1px solid var(--cizgi)}
 .sss details{border-bottom:1px solid var(--cizgi)}
 .sss summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:18px;
@@ -538,6 +597,18 @@ footer{border-top:1px solid var(--cizgi);background:var(--ak3);padding:68px 0 30
       <a href="#sorular">Sorular</a>
     </nav>
     <div class="ray-sag">
+      <!-- Gündüz / gece. Panelle aynı düğme, aynı yerde duran karar: ürünün
+           hangi ışıkta çalıştığını ziyaretçi de seçebilsin. Seçim paneldekiyle
+           aynı anahtarda saklanıyor, ikisi arasında geçerken tema bozulmuyor. -->
+      <button class="tema-dugme" id="tema-dugme" type="button"
+              aria-label="Gündüz / gece temasını değiştir" title="Gündüz / gece">
+        <span class="tema-ay">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.3 14.6A8.6 8.6 0 0 1 9.4 3.7a8.6 8.6 0 1 0 10.9 10.9z"/></svg>
+        </span>
+        <span class="tema-gunes">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.1M12 19.3v2.1M4.5 4.5l1.5 1.5M18 18l1.5 1.5M2.6 12h2.1M19.3 12h2.1M4.5 19.5L6 18M18 6l1.5-1.5"/></svg>
+        </span>
+      </button>
       <a class="ray-giris" href="giris.html">Giriş</a>
       <!-- Üst rayda duruyor: ray yapışkan, yani düğme sayfanın her yerinde
            görünür kalıyor. Hero'daki ikizi de duruyor. -->
@@ -1056,6 +1127,65 @@ var AYAR = {
   demoUcu:  "/demo"
 };
 function uc(yol){ return AYAR.koku + yol; }
+
+/* ══════════════════════════════════════════════════════════════════════
+   Gündüz / gece.
+
+   Geçiş panelle aynı: `startViewTransition` eski ekranın fotoğrafını tutuyor,
+   yeni tema düğmenin üstünde doğan bir daireyle açılıyor. Üç şey yumuşatıyor —
+   dairenin yumuşatılmış kenarı, üstel yavaşlama, ve iki katmanın birlikte
+   oynaması (yeni saydamdan geliyor, eski hafifçe büyüyüp soluyor).
+
+   Hareket azaltılmışsa ya da tarayıcı desteklemiyorsa tema animasyonsuz
+   değişiyor; özellik animasyona bağlanmadı.
+   ══════════════════════════════════════════════════════════════════════ */
+(function(){
+  var kok = document.documentElement;
+  var dugme = document.getElementById("tema-dugme");
+  if (!dugme) return;
+
+  function uygulayici(yeni){
+    var calisti = false;
+    return function(){
+      if (calisti) return;
+      calisti = true;
+      if (yeni === "gece") kok.dataset.tema = "gece"; else delete kok.dataset.tema;
+      var m = document.querySelector('meta[name="theme-color"]');
+      if (m) m.content = yeni === "gece" ? "#0E141A" : "#FFFFFF";
+      try { localStorage.setItem("mailhanem-tema", yeni); } catch(e){}
+    };
+  }
+
+  dugme.addEventListener("click", function(){
+    var yeni = kok.dataset.tema === "gece" ? "gunduz" : "gece";
+    var uygula = uygulayici(yeni);
+    var azHareket = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (azHareket || typeof document.startViewTransition !== "function") { uygula(); return; }
+
+    var k = dugme.getBoundingClientRect();
+    var mx = k.left + k.width / 2, my = k.top + k.height / 2;
+    var gecis = document.startViewTransition(uygula);
+
+    /* Guvenlik agi: tarayici kare uretmiyorsa (arka plan sekmesi, kucultulmus
+       pencere) gecis hic baslamiyor ve geri cagri hic calismiyor. Tema o
+       durumda sessizce degismiyordu; kisa sure sonra dogrudan uyguluyoruz. */
+    window.setTimeout(uygula, 300);
+
+    gecis.ready.then(function(){
+      var en = window.innerWidth, boy = window.innerHeight;
+      var r = Math.hypot(Math.max(mx, en - mx), Math.max(my, boy - my));
+      var sure = 620, yumusak = "cubic-bezier(.22,1,.36,1)";
+
+      kok.animate({ clipPath: ["circle(0px at " + mx + "px " + my + "px)",
+                               "circle(" + r + "px at " + mx + "px " + my + "px)"] },
+        { duration: sure, easing: yumusak, pseudoElement: "::view-transition-new(root)" });
+      kok.animate({ opacity: [0.55, 1] },
+        { duration: 240, easing: "ease-out", pseudoElement: "::view-transition-new(root)" });
+      kok.animate({ transform: ["scale(1)", "scale(1.03)"], opacity: [1, 0.86] },
+        { duration: sure, easing: yumusak, pseudoElement: "::view-transition-old(root)" });
+    }).catch(function(){});
+  });
+})();
 
 /* Demo düğmelerinin hedefi AYAR'dan kuruluyor: site uygulamadan ayrı bir
    kökende servis edilirse bağlantılar yine doğru yere gitsin. Üç yerde var —
